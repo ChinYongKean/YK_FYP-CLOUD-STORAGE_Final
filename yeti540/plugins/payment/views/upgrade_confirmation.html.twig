@@ -1,0 +1,139 @@
+{% extends "@themePath/partial/layout.html.twig" %}
+
+{% block title %}{{ pageTitlePrepend|title }} {{ t("account_confirmation", "account confirmation")|title }}{% endblock %}
+{% block description %}{{ pageTitlePrepend|title }} {{ t("upgrade_meta_description", "Your Account")|title }}{% endblock %}
+{% block keywords %}{{ pageTitlePrepend|lower }} {{ t("upgrade_meta_keywords", ", account, paid, membership, upload, download, site") }}{% endblock %}
+
+{% block footer_js %}
+    <script>
+        var formSubmitted = false;
+        $(document).ready(function () {
+            $("#paymentForm").submit(function (event) {
+                if (formSubmitted == true) {
+                    event.preventDefault();
+                    return;
+                }
+
+                $('#submitButton').val('Processing...');
+                $('#submitButton').attr('disabled', true);
+                $('#submitButton').removeClass('btn-default');
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <section>
+        <div class="container form-full-width">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>{{ pageTitlePrepend|title }} {{ t("account_confirmation", "account confirmation")|title }}</h1>
+                    <hr>
+                </div>
+            </div>
+            <div class="row justify-content-between">
+                <div class="col-md-9">
+                    {% if msg_page_errors is defined %}
+                        <div class="alert bg--error">
+                            <div class="alert__body"><i class="fa fa-exclamation-triangle color--error"></i>&nbsp;&nbsp;{% if msg_page_errors is defined %}{{ msg_page_errors|join }}{% endif %}</div>
+                        </div>
+                    {% elseif msg_page_successes is defined %}
+                        <div class="alert bg--success">
+                            <div class="alert__body"><i class="fa fa-check color--success"></i>&nbsp;&nbsp;{% if msg_page_successes is defined %}{{ msg_page_successes|join }}{% endif %}</div>
+                        </div>
+                    {% endif %}
+
+                    {% if gatewayType != 'offsite' %}
+                    <form method="post" role="form" action="{{ CORE_SITE_PATH }}/upgrade_confirmation?cid={{ cid }}" autocomplete="off">
+                        <!-- fix for chrome auto complete not working -->
+                        <input style="display:none"><input type="password" style="display:none">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <span>{{ t("name_on_card", "Name on Card")|title }}:</span>
+                                <input type="text" value="{{ cardHolderName }}" id="cardHolderName" name="cardHolderName" autofocus/>
+                            </div>
+                            <div class="col-md-12">
+                                <span>{{ t("card_number", "Card Number")|title }}:</span>
+                                <input type="text" value="{{ cardNumber }}" id="cardNumber" name="cardNumber"/>
+                            </div>
+                            <div class="col-md-12">
+                                <span>{{ t("expiry_date", "Expiration Date")|title }}:</span>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <select name="expiryMonth" id="expiryMonth">
+                                            <option>Month</option>
+                                            {% for k,monthDropdownItem in monthDropdown %}
+                                                <option value="{{ k }}" {{ expiryMonth == k?"SELECTED":"" }}>{{ monthDropdownItem }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select name="expiryYear">
+                                            <option>Year</option>
+                                            {% for k,yearDropdownItem in yearDropdown %}
+                                                <option value="{{ k }}" {{ expiryYear == k?"SELECTED":"" }}>{{ yearDropdownItem }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <span>{{ t("card_cvv", "Card CVV")|title }}:</span>
+                                <input type="text" value="{{ cvv }}" id="cvv" name="cvv" maxlength="3"/>
+                            </div>
+
+                            <div class="w-100"></div>
+
+                            <div class="col-md-5 col-lg-4">
+                                {% if i|length > 0 %}
+                                    <input type="hidden" name="i" value="{{ i }}" />
+                                {% endif %}
+
+                                {% if f|length > 0 %}
+                                    <input type="hidden" name="f" value="{{ f }}" />
+                                {% endif %}
+                                <input name="user_level_pricing_id" type="hidden" value="{{ userLevelPricingId }}"/>
+                                <button class="btn btn--primary type--uppercase" type="submit">{{ t("submit_payment", "Submit Payment")|title }}</button>
+                            </div>
+                        </div>
+                        <input type="hidden" value="1" name="submitted"/>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 text-center">
+                    <img alt="Image" src="{{ theme.getFrontendImagePath() }}/upgrade-confirmation-banner.png"/>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% if Auth.loggedIn() == true %}
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h2>{{ t("account_status", "account status")|title }}</h2>
+                    </div>
+                    <div class="col-md-12">
+                        <table class="border--round table--alternate-row">
+                            <tbody>
+                                <tr>
+                                    <td class="text-right" style="width: 50%;"><strong>{{ t('account_type', 'account type')|title }}</strong></td>
+                                    <td>{{ accountTypeLabel }}</td>
+                                </tr>
+                                {% if accountType in ['paid', 'admin', 'moderator'] %}
+                                    <tr>
+                                        <td class="text-right"><strong>{{ t('reverts_to_free_account', 'reverts to free account')|title }}</strong></td>
+                                        <td>{{ accountExpiry }}</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    {% include '@themePath/partial/_premium_benefits.html.twig' %}
+{% endblock %}

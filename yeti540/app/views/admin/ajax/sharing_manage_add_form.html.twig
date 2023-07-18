@@ -1,0 +1,51 @@
+<form id="addSharingForm" class="form-horizontal form-label-left input_mask">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Create New Share</h2>
+            <div class="clearfix"></div>
+        </div>
+
+        <p>Use the form below to share a folder with either another user or globally on the site. If you want to share more than 1 folder, you can use the sharing functionality built into the front-end file manager. This tool only allows for 1 folder at a time at the moment.<br/><br/></p>
+
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("select_account_owner", "select account owner")|title }}:</label>
+            <div class="col-md-8 col-sm-8 col-xs-12">
+                <select name="created_by_user_id" id="created_by_user_id" class="form-control" onchange="updateFolderSelect(); return false;">
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("select_folder", "select folder")|title }}:</label>
+            <div class="col-md-8 col-sm-8 col-xs-12" id="folderSelect">
+                <select name="folder_id" id="folder_id" class="form-control" required="required"></select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("shared_with", "share with")|title }}:</label>
+            <div class="col-md-8 col-sm-8 col-xs-12">
+                <select name="shared_with_user_id" id="shared_with_user_id" class="form-control">
+                    <option>- All Users (Everyone will have access to the folder) -</option>
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("access_level", "access level")|title }}:</label>
+            <div class="col-md-5 col-sm-5 col-xs-12">
+                <select name="share_permission_level" id="share_permission_level" class="form-control">
+                    {% for k,accessLevel in accessLevels %}
+                        <option value="{{ k }}">{{ accessLevel }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,132 @@
+{% extends "@corePath/admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}{{ pluginName }} Settings{% endblock %}
+{% block selected_page %}plugins{% endblock %}
+{% block selected_sub_page %}plugin_manage{% endblock %}
+
+{% block body %}
+<div class="row clearfix right_col" role="main">
+    <div class="col_12">
+        <div class="widget clearfix">
+            <h2>{{ pluginName }} Settings</h2>
+            <div class="widget_inside">
+                {{ msg_page_notifications|raw }}
+                <form method="POST" action="{{ ADMIN_WEB_ROOT }}/plugin/paypal/settings" name="pluginForm" id="pluginForm" autocomplete="off" enctype="multipart/form-data">
+                    <div class="clearfix col_12">
+                        <div class="col_4">
+                            <h3>Plugin State</h3>
+                            <p>Whether this plugin is enabled.</p>
+                        </div>
+                        <div class="col_8 last">
+                            <div class="form">
+                                <div class="clearfix alt-highlight">
+                                    <label>Plugin Enabled:</label>
+                                    <div class="input">
+                                        <select name="plugin_enabled" id="plugin_enabled" class="medium validate[required]">
+                                            {% for k,yesNoOption in yesNoOptions %}
+                                                <option value="{{ k }}"{% if plugin_enabled == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix col_12">
+                        <div class="col_4">
+                            <h3>Gateway Settings</h3>
+                            <p>Your Gateway account details, email address etc.</p>
+                        </div>
+                        <div class="col_8 last">
+                            <div class="form">
+                                <div class="clearfix alt-highlight">
+                                    <label>PayPal Email:</label>
+                                    <div class="input">
+                                        <input type="text" name="paypal_email" class="xxlarge" value="{{ paypal_email }}"/>
+                                    </div>
+                                </div>
+                                        
+                                <div class="clearfix alt-highlight">
+                                    <label>Sandbox or Live:</label>
+                                    <div class="input">
+                                        <select name="enable_sandbox_mode" class="medium">
+                                            {% for k,sandboxOption in sandboxOptions %}
+                                                <option value="{{ k }}"{% if enable_sandbox_mode == k %} SELECTED{% endif %}>{{ sandboxOption }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="clearfix alt-highlight"> 
+                                    <label>PayPal Approval:</label>
+                                    <div class="input">
+                                        You may need prior-approval from PayPal to run a file hosting site using their gateway. Please <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_help&t=escalateTab" target="_blank">contact PayPal</a> directly for more information.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix col_12">
+                        <div class="col_4">
+                            <h3>Subscriptions</h3>
+                            <p>Whether to use subscriptions or not.</p>
+                        </div>
+                        <div class="col_8 last">
+                            <div class="form">
+                                <div class="clearfix alt-highlight">
+                                    <label>Enable Subscriptions:</label>
+                                    <div class="input">
+                                        <select name="enable_subscriptions" class="medium">
+                                            {% for k,subsOption in subsOptions %}
+                                                <option value="{{ k }}"{% if enable_subscriptions == k %} SELECTED{% endif %}>{{ subsOption }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="clearfix alt-highlight">
+                                    <label>Additional Requirements:</label>
+                                    <div class="input">
+                                        You may need a specific account type via the payment gateway to enable subscriptions. Please <a href="https://www.paypal.com/us/cgi-bin/webscr?cmd=_help&t=escalateTab" target="_blank">contact PayPal</a> directly for more information.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix col_12">
+                        <div class="col_4">
+                            <h3>Set IPN Callback</h3>
+                            <p>Url callback to auto-upgrade accounts. Add this url to <a href="https://paypal.com" target="_blank">PayPal.com</a> in 'Profile', 'Profile &amp; Settings', 'My Selling Tools', then click update on 'Instant payment notifications'. Set the notification url to this value.</p>
+                        </div>
+                        <div class="col_8 last">
+                            <div class="form">
+                                <div class="clearfix alt-highlight">
+                                    <div class="input">
+                                        {{ WEB_ROOT }}/paypal/payment_ipn
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix col_12">
+                        <div class="col_4 adminResponsiveHide">&nbsp;</div>
+                        <div class="col_8 last">
+                            <div class="clearfix">
+                                <div class="input no-label">
+                                    <input name="submitted" type="hidden" value="1"/>
+                                    <input type="submit" value="Submit" class="button blue">
+                                    <input type="reset" value="Cancel" class="button grey" onClick="window.location = '{{ ADMIN_WEB_ROOT }}/plugin_manage';">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>   
+    </div>
+</div>
+{% endblock %}

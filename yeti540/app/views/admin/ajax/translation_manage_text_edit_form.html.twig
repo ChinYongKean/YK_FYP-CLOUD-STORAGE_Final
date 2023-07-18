@@ -1,0 +1,25 @@
+<p style="padding-bottom: 4px;">Use the form below to update the translation.</p>
+<span id="popupMessageContainer"></span>
+<form id="updateConfigurationForm" class="form-horizontal form-label-left input_mask">
+    <table class="table table-data-list">
+        <tr>
+            <td>Key:</td>
+            <td>{{ translation['languageKey'] }}</td>
+        </tr>
+        <tr>
+            <td>Original English Text:</td>
+            <td>{{ translation['defaultContent'] }}</td>
+        <input id="enTranslationText" type="text" value="{{ translation['defaultContent'] }}" style="display: none;"/>
+        <input id="enTranslationCode" type="text" value="{{ translation['language_code'] }}" style="display: none;"/>
+        </tr>
+    </table>
+
+    <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Translated Text: <a href="#" onClick="processAutoTranslate();
+                return false;" style="text-decoration: underline;">(auto)</a></label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+            <textarea name="translated_content" id="translated_content" class="form-control" style="height: 80px;">{{ translation['content'] }}</textarea>
+        </div>
+    </div>
+    <input id="translation_item_id" name="translation_item_id" value="{{ gTranslationId }}" type="hidden"/>
+</form>

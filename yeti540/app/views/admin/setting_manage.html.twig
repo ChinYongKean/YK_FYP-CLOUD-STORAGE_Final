@@ -1,0 +1,103 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Site Settings{% endblock %}
+{% block selected_page %}configuration{% endblock %}
+{% block selected_sub_page %}setting_manage{% endblock %}
+
+{% block body %}
+<script>
+    $(document).ready(function () {
+        // ensure active menu is set to the system upgrade
+        setSelectedMenuItemByUrl("{{ _CONFIG_SITE_PROTOCOL }}://{{ _CONFIG_SITE_HOST_URL }}{{ currentPageUrl }}");
+
+        // scroll and highlight item
+        {% if selectedItem != null %}
+        $("#row_{{ selectedItem }}").addClass('row-highlighted');
+        $("#row_{{ selectedItem }}").next().addClass('row-highlighted');
+        $("#row_{{ selectedItem }}").find('textarea, input, select').focus();
+        $([document.documentElement, document.body]).animate({
+            scrollTop: $("#row_{{ selectedItem }}").offset().top-16
+        }, 300);
+        {% endif %}
+    });
+</script>
+
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_right">
+                <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                    <form method="GET" action="setting_manage">
+                        <div class="input-group" style="z-index: 1">
+                            <select name="filterByGroup" id="filterByGroup" class="form-control" onChange="$(this).closest('form').trigger('submit');">
+                                <option value="" DISABLED>- Other Settings -</option>
+                                <option value="">- Show All -</option>
+                                {% for groupListingItem in groupListing %}
+                                    <option value="{{ groupListingItem['config_group'] }}"
+                                    {% if filterByGroup != null and filterByGroup == groupListingItem['config_group'] %} SELECTED{% endif %}
+                                    >{{ groupListingItem['config_group'] }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit">Go!</button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+        {{ msg_page_notifications|raw }}
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <form action="setting_manage{{ filterByGroup != null?'?filterByGroup='~filterByGroup:'' }}" method="POST" class="form-horizontal form-label-left">
+                    {% for groupDetail in groupDetails %}
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>{{ groupDetail['config_group'] }}</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <br/>
+                            {% for configItemElement in configItemElements[groupDetail['config_group']] %}
+                            <div id="row_{{ configItemElement['config_key'] }}" class="site-setting-item form-group" style="margin-bottom: 0px;">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="username">{{ configItemElement['label'] }}</label>
+                                <div class="col-md-{{ configItemElement['colSize'] }} col-sm-9 col-xs-12">
+                                {{ configItemElement['elementHtml']|raw }}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12"></label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <p class="elementDescriptionMuted">
+                                        {{ configItemElement['description'] }}
+                                    </p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="x_panel">
+                        <div class="x_content">
+                            
+                            <div class="ln_solid"></div>
+                            <div class="form-group">
+                                <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                    <button type="button" class="btn btn-default" onClick="window.location = '{{ ADMIN_WEB_ROOT }}';">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Update Settings</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <input name="submitted" type="hidden" value="1"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

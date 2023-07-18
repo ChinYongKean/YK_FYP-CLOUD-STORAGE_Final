@@ -1,0 +1,1 @@
+.available_payment_gateways {    text-align: center;}.available_payment_gateways .gateway {    display: inline-block;    margin: 10px;}.available_payment_gateways .gateway img {    opacity: 0.7;    filter: alpha(opacity=70); /* msie */    height: 40px;}.available_payment_gateways .gateway img:hover {    opacity: 1.0;    filter: alpha(opacity=100); /* msie */}

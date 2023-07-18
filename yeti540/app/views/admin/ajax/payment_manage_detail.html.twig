@@ -1,0 +1,33 @@
+<div class="x_panel">
+    <div class="x_title">
+        <h2>View Payment</h2>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+        <p>Full details of the payment are below:</p>
+        <table class="table table-data-list">
+            <tr>
+                <td style="width: 110px;">User:</td>
+                <td><a href="user_manage?filterByAccountId='.urlencode($paymentDetail['user_id'] }}">{{ paymentDetail['username'] }}</a></td>
+            </tr>
+            <tr>
+                <td>Amount:</td>
+                <td>{{ paymentDetail['amount'] }} {{ paymentDetail['currency_code'] }} {{ paymentDetail['payment_method']|length > 0?(' '.paymentDetail['payment_method']):'' }}</td>
+            </tr>
+            <tr>
+                <td>Payment Date:</td>
+                <td>{{ paymentDate }}</td>
+            </tr>
+            <tr>
+                <td>Description:</td>
+                <td>{{ paymentDetail['description'] }}</td>
+            </tr>
+            <tr>
+                <td>Payment Notes:</td>
+                <td>{{ paymentNotes|nl2br }}</td>
+            </tr>
+
+        </table>
+
+    </div>
+</div>

@@ -1,0 +1,126 @@
+<?php
+
+/*
+ * Title: File Import Script
+ * Author: MFScripts.com
+ * Period: Run as required
+ * 
+ * Description:
+ * Script to batch import existing files into an account within your installation.
+ * 
+ * Requirements:
+ * - PHP 7.0+.
+ * - Remote access to your database if you're running this on a file server.
+ * 
+ * Configure this script by replacing any settings below within [[[SQUARE_BRACKETS]]].
+ *
+ * Once configured, upload this file to the root of your install (same place as ___RELEASE_HISTORY.txt)
+ * and call it on the command line via PHP.
+ *
+ * How To Call:
+ * On the command line via PHP, like this:
+ * php import.php
+ */
+
+// account name to import files into
+define('FILE_IMPORT_ACCOUNT_NAME', '[[[FILE_IMPORT_ACCOUNT_NAME]]]');
+
+// local path to files, this must be on the same server as this script
+define('FILE_IMPORT_PATH', '[[[FILE_IMPORT_PATH]]]');
+
+// the folder within the account to start with, set to null (without quotes) for root, the folder must exist in the root aswell
+define('FILE_IMPORT_ACCOUNT_START_FOLDER', '[[[FILE_IMPORT_ACCOUNT_START_FOLDER]]]');
+
+/*
+ * **************************************************
+ * DONT CHANGE ANYTHING BELOW HERE
+ * **************************************************
+ */
+
+// setup environment
+define('CLI_MODE', true);
+define('SHOW_OUTPUT', true);
+
+// include framework
+use App\Core\Database;
+use App\Core\Framework;
+use App\Helpers\CoreHelper;
+use App\Helpers\PluginHelper;
+use App\Models\User;
+
+require_once(realpath(dirname(__FILE__) . '/app/core/Framework.class.php'));
+
+// setup light environment
+Framework::runLight();
+
+// get database
+$db = Database::getDatabase();
+
+// get our fileimport plugin
+$pluginObj = PluginHelper::getInstance('fileimport');
+
+// padding
+$pluginObj->output();
+
+// check local folder path exists
+if (!file_exists(FILE_IMPORT_PATH)) {
+    $pluginObj->output('ERROR: Local file path not found: ' . FILE_IMPORT_PATH, true);
+}
+
+// make sure account exists
+if (!$user = User::loadOneByClause('username = :username', array(
+            'username' => FILE_IMPORT_ACCOUNT_NAME,
+        ))) {
+    $pluginObj->output('ERROR: User account not found: ' . FILE_IMPORT_ACCOUNT_NAME, true);
+}
+
+// set user id for later
+define('FILE_IMPORT_ACCOUNT_USER_ID', $user->id);
+
+// make sure the folder id exists on the account
+$folderId = 0;
+if (FILE_IMPORT_ACCOUNT_START_FOLDER != null) {
+    $folder = $db->getRow('SELECT * '
+            . 'FROM file_folder '
+            . 'WHERE userId = :user_id '
+            . 'AND folderName = :folder_name '
+            . 'AND parentId IS NULL '
+            . 'AND status = "active" '
+            . 'LIMIT 1', array(
+                'user_id' => (int)FILE_IMPORT_ACCOUNT_USER_ID,
+                'folder_name' => FILE_IMPORT_ACCOUNT_START_FOLDER,
+            ));
+    if (!$folder) {
+        $pluginObj->output('ERROR: Could not load folder: ' . FILE_IMPORT_ACCOUNT_START_FOLDER, true);
+    }
+    else {
+        if ($folder['userId'] != $user->id) {
+            $pluginObj->output('ERROR: Folder does not belong to that user: ' . FILE_IMPORT_ACCOUNT_START_FOLDER, true);
+        }
+    }
+
+    $folderId = $folder['id'];
+}
+
+// prepare folder id
+if ((int) $folderId == 0) {
+    $folderId = null;
+}
+
+// prepare path
+$localPath = FILE_IMPORT_PATH;
+if (substr($localPath, strlen($localPath) - 1, 1) != '/') {
+    $localPath .= '/';
+}
+
+// scan for files
+$items = CoreHelper::getDirectoryListing($localPath);
+if (count($items) == 0) {
+    $pluginObj->output('ERROR: No files or folders found in folder. Total: ' . COUNT($items), true);
+}
+
+// import files
+$pluginObj->importFiles($localPath, FILE_IMPORT_ACCOUNT_USER_ID, $folderId);
+
+// finish
+$pluginObj->output('Import process completed.');

@@ -1,0 +1,123 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}System Update{% endblock %}
+{% block selected_page %}configuration{% endblock %}
+{% block selected_sub_page %}configuration{% endblock %}
+
+{% block body %}
+    <script>
+        function checkForUpdates() {
+            $('#checkUpdatesBtn1').hide();
+            $('#checkUpdatesBtn2').show();
+
+            $(document).ready(function () {
+                $.ajax({
+                    url: "ajax/",
+                    dataType: "json"
+                }).done(function (response) {
+                    console.log(response);
+                    if (typeof (response['core']) != "undefined") {
+                        // updates available
+                        $('.availableVersionNumber').html(response['core']['latest_version']);
+                        $('#checkUpdatesBtn3').text('Upgrade to v' + response['core']['latest_version']);
+                        $('.releaseNotesTitle').html('Release Notes for v' + response['core']['latest_version']);
+                        $('.releaseNotesPara1').html(response['core']['release_detail']['release_date_formatted'] + ' - ' + response['core']['release_detail']['release_title']);
+                        $('.releaseNotesPara2').html(response['core']['release_detail']['release_detail']);
+
+                        $('.updateCheckerWrapper').hide();
+                        $('.updateAvailableWrapper').show();
+                    } else {
+                        // no updates available
+                        $('.updateCheckerWrapper').hide();
+                        $('.updateNotAvailableWrapper').show();
+                    }
+                });
+            });
+        }
+    </script>
+
+    <!-- page content -->
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>{{ block('title') }}</h3>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel updateCheckerWrapper">
+                        <div class="x_title">
+                            <h2>Update Check</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p>Use this page to check and apply updates for your install.</p>
+                            <p>Current Version: v{{ scriptInstalledVersion }}</p>
+                        </div>
+
+                        <a id="checkUpdatesBtn1" href="#" class="btn btn-primary" onClick="checkForUpdates();
+                            return false;">{{ t('system_update_check_for_updates', 'Check for Updates') }}</a>
+                        <a id="checkUpdatesBtn2" href="#" class="btn btn-primary" onClick="return false;" style="display: none;" disabled="disabled">{{ t('system_update_checking_for_updates', 'Checking...') }} <span class="glyphicon glyphicon-refresh spinning"></span></a>
+                    </div>
+
+                    <div class="x_panel updateNotAvailableWrapper" style="display: none;">
+                        <div class="x_title">
+                            <h2>You're Up To Date!</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p>Congratulations, you are already on the latest copy of the script. Check again at any time or keep an eye on our website for announcements.</p>
+                        </div>
+                    </div>
+
+                    <div class="x_panel updateAvailableWrapper" style="display: none;">
+                        <div class="x_title">
+                            <h2>Update Available!</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p>A new update to your install is available! Click the button below to download <strong>v<span class="availableVersionNumber"></span></strong> via your account login on the {{ currentProductName }} website.</p>
+                        </div>
+
+                        <a id="checkUpdatesBtn3" href="{{ currentProductUrl }}" class="btn btn-success" target="_blank">{{ t('system_update_start_update', 'Upgrade') }}</a>
+                    </div>
+
+                    <div class="x_panel updateAvailableWrapper" style="display: none;">
+                        <div class="x_title">
+                            <h2 class="releaseNotesTitle">Release Notes</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p class="releaseNotesPara1"></p>
+                            <p class="literal-block releaseNotesPara2"></p>
+                        </div>
+                    </div>
+
+                    <div class="x_panel updateAvailableWrapper" style="display: none;">
+                        <div class="x_title">
+                            <h2>How to Upgrade</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <ol>
+                                <li>Download the latest release code.</li>
+                                <li>Backup your MySQL database, any /files/ and the _config.inc file.</li>
+                                <li>Backup any custom code or changes you have made (these may be overwritten).</li>
+                                <li>Unzip the newly downloaded zip file onto your local computer.</li>
+                                <li>Within that local code, remove the _config.inc file & the install/ folder.</li>
+                                <li>Upload the new files to your existing installation of {{ currentProductName }} replacing all existing files.</li>
+                                <li>Within your hosting control panel, load phpMyAdmin and select your new database. In the right-hand section click on 'import'. Attach the the relevant sql patches from the directory `/install/resources/upgrade_sql_statements/` and submit the form. Choose the patches between your current script version number and the latest, ensuring you do them in version number order. If there are none, you can ignore this step.</li>
+                                <li>Done - Enjoy the upgrade!</li>
+                                </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,10 @@
+DELETED FILES:
+/admin/assets/scripts/uploadify/uploadify.php
+/admin/assets/scripts/uploadify/check.php
+
+
+NOTES:
+
+Important security update. Ensure the above files are removed from any live website and local development copies.
+
+Produced with WinMerge

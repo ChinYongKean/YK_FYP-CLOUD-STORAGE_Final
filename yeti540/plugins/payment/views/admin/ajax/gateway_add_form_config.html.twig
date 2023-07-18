@@ -1,0 +1,28 @@
+<div class="x_panel">
+    <div class="x_content">
+        <p>Enter the details supplied by your gateway account in the fields below. Note that all fields may not be required by the payment gateway. More information on the Omnipay payment gateway API can be <a href="https://omnipay.thephpleague.com/" target="_blank">found here</a>.</p>
+
+        <div>
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">&nbsp;</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                <a href="{{ gateway['url'] }}" target="_blank" rel="nofollow" class="gateway"><img src="{{ PLUGIN_WEB_ROOT }}/payment/assets/img/gateways/{{ gateway['class_name'] }}/logo.jpg" alt="{{ gateway['gateway_group'] }}" style="height: 70px;"/></a>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Gateway Website:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12" style="padding-top: 7px;">
+                <a href="{{ gateway['url'] }}" target="_blank" rel="nofollow" class="gateway">{{ gateway['url'] }}</a>
+            </div>
+        </div>
+
+        {% for label,gatewayParam in gatewayParams %}
+            <div class="form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ AdminHelper.convertCamelcaseToHuman(label) }}:</label>
+                <div class="col-md-9 col-sm-9 col-xs-12">
+                    <input type="text" name="gateway_settings[{{ label }}]" id="{{ label }}" class="form-control" value="{{ gatewaySettings[label] is defined?gatewaySettings[label]:'' }}"/>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

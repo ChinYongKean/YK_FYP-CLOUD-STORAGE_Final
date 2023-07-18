@@ -1,0 +1,202 @@
+{% extends "@corePath/admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}{{ pluginName }} Settings{% endblock %}
+{% block selected_page %}plugins{% endblock %}
+{% block selected_sub_page %}plugin_manage{% endblock %}
+
+{% block head_css %}
+    <link rel="stylesheet" href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/jstree/themes/default/style.css" />
+{% endblock %}
+
+{% block body %}
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3>Import Files</h3>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+            {{ msg_page_notifications|raw }}
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Bulk Import</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                        {% if startImport == false %}
+                        <form method="POST" action="{{ ADMIN_WEB_ROOT }}/plugin/fileimport/settings" class="form-horizontal form-label-left" onSubmit="return confirmSubmission();">
+                            <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                                <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                                    <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Import Tool</a>
+                                    </li>
+                                    <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Manual Import</a>
+                                    </li>
+                                </ul>
+                                <div id="myTabContent" class="tab-content">
+                                    <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
+                                        <p>Use the form below to bulk import files into the database on the current server. If you require files to be imported onto an external file server, please load the admin area directly on that server and open this page.</p>
+                                        <p>Upload the files into a sub-folder on your server and select it below. Note that this process doesn't move or copy the files into the script storage. It'll create an entry in the database, you'll then need to copy the files into the folder {{ DOC_ROOT }}/files/imported/</p>
+                                        <p><strong>IMPORTANT:</strong> If you have a lot of files to import, server timeouts can cause the import process to fail. We'd recommend using the "Manual Import" process via the command line instead. You should be able to run the import multiple times and it'll pickup where it failed until complete.</p>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="import_path">Select Path to Import <span class="required">*</span>
+                                            </label>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <input type="text" id="import_path" name="import_path" required="required" class="form-control col-md-7 col-xs-12" placeholder="select below..." value="{{ import_path }}" style="margin-bottom: 6px;"/>
+                                                {% if CoreHelper.inDemoMode() == false %}
+                                                    <div id="import_folder_listing"></div>
+                                                    <p class="text-muted" style="margin-top: 6px;">Path to script installation: {{ DOC_ROOT }}</p>
+                                                {% else %}
+                                                    <div class="alert alert-danger" role="alert" style="padding: 15px 15px 6px 15px">Note: You can not browse the server folders in demo mode.</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="import_account">Import into Account <span class="required">*</span>
+                                            </label>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <input type="text" id="import_account" name="import_account" required="required" class="form-control col-md-7 col-xs-12 txt-auto" placeholder="account username..." value="{{ import_account }}" autocomplete="off"/>
+                                                <p class="text-muted">The account username to import the files into. Start typing to find the account.</p>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="import_folder">Import into Account Folder <span class="required">*</span>
+                                            </label>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <span id="import_folder_wrapper">
+                                                    <select id="import_folder" name="import_folder" class="form-control col-md-7 col-xs-12" disabled="disabled">
+                                                        <option value="">- select account above first -</option>
+                                                    </select>
+                                                </span>
+                                                <p class="text-muted">Updated with the folder list of the above users account. Files will be placed directly in this folder. <a href="#" onClick="reloadUserFolderListing(); return false;">(reload)</a></p>
+                                            </div>
+                                        </div>
+
+                                        <div class="ln_solid"></div>
+                                        <div class="form-group">
+                                            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                                <button type="submit" class="btn btn-primary">Import Files</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
+                                        <p>The import script enables you to migrate your existing 'offline' files into the script. It can be run on your main server aswell as file servers.</p>
+                                        <p>First download the <a href="{{ ADMIN_WEB_ROOT }}/plugin/fileimport/download_import_script">import.php script</a>. This can also be found in:</p>
+                                        <code>
+                                            {{ DOC_ROOT }}/plugins/fileimport/offline/import.php.txt (rename to import.php)
+                                        </code>
+                                        <br/><br/>
+                                        <p>Populate the constants in [[[SQUARE_BRACKET]]] at the top of import.php. i.e. FILE_IMPORT_ACCOUNT_NAME, FILE_IMPORT_PATH, FILE_IMPORT_ACCOUNT_START_FOLDER</p>
+                                        <p>Save and upload the file, either to the Yetishare root of your main site or the Yetishare root of a file server. The Yetishare root path is the same location as this file: _config.inc.php</p>
+                                        <p>Using FTP or WinSCP, upload or move all the files you want to import to a folder on that server. This should be outside of the Yetishare installation (FILE_IMPORT_PATH in import.php).</p>
+                                        <p>Execute the script on the command line (via SSH) using PHP. Like this:</p>
+                                        <code>
+                                            php {{ DOC_ROOT }}/import.php
+                                        </code>
+                                        <br/><br/>
+                                        <p>The import will complete with progress onscreen. Files will not be moved, they'll be added to the database, so you will need to manually move them into {{ DOC_ROOT }}/files/imported/ after the import.</p>
+                                        <p>Once the import is complete, ensure you remove the import.php script from your Yetishare root.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="submitted" value="1"/>
+                        </form>
+                        {% else %}
+                            <p>Importing files from {{ import_path }}, please check below for progress. Note that this process can take some time.</p>
+                            <iframe src="{{ ADMIN_WEB_ROOT }}/plugin/fileimport/process_file_import?{{ urlParams }}" style="border: 0px; width: 100%; height: 360px;"></iframe>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block head_js %}
+<script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/jstree/jstree.min.js"></script>
+<script>
+    var firstLoad = true;
+    $(function () {
+        $('#import_folder_listing').jstree({
+            'core': {
+                'data': {
+                    'url': '{{ ADMIN_WEB_ROOT }}/plugin/fileimport/ajax/folder_listing',
+                    'data': function (node) {
+                        return {'id': node.id};
+                    }
+                },
+                'check_callback': function (o, n, p, i, m) {
+                    if (m && m.dnd && m.pos !== 'i') {
+                        return false;
+                    }
+                    return true;
+                },
+                'force_text': true,
+                'themes': {
+                    'responsive': false,
+                    'variant': 'small',
+                    'stripes': true
+                }
+            },
+            'sort': function (a, b) {
+                return this.get_type(a) === this.get_type(b) ? (this.get_text(a) > this.get_text(b) ? 1 : -1) : (this.get_type(a) >= this.get_type(b) ? 1 : -1);
+            },
+            'types': {
+                'default': {'icon': 'folder'}
+            },
+            'plugins': ['state', 'sort', 'types']
+        }).on("select_node.jstree", function (e, data) {
+            $('#import_path').val('{{ basePath }}'+data.node.id);
+        });
+        
+        $('#import_account').typeahead({
+            source: function( request, response ) {
+                $.ajax({
+                    url : '{{ ADMIN_WEB_ROOT }}/ajax/file_manage_auto_complete',
+                    dataType: "json",
+                    data: {
+                       filterByUser: $("#import_account").val()
+                    },
+                     success: function( data ) {
+                        response( data );
+                    }
+                });
+            },
+            minLength: 3,
+            delay: 1,
+            afterSelect: function() { 
+                reloadUserFolderListing();
+            }
+        });
+        
+        {% if submitted == true %}
+            reloadUserFolderListing();
+        {% endif %}
+    });
+    
+    function reloadUserFolderListing()
+    {
+        setElementLoading('#import_folder_wrapper');
+        $('#import_folder_wrapper').load('{{ ADMIN_WEB_ROOT }}/ajax/get_user_folder_for_select', {'import_account': $("#import_account").val()}, function() {
+            // reload selected item
+            if(firstLoad == true)
+            {
+                {% if import_folder|length > 0 %}
+                    $('#import_folder').val({{ import_folder }});
+                {% endif %}
+                firstLoad = false;
+            }
+        });
+    }
+    
+    function confirmSubmission()
+    {
+        return confirm("Are you sure you want to import these files? Please confirm the details below. Once submitted, this may take some time to complete.\n\nImport Files: "+$('#import_path').val()+"\nInto Account: "+$('#import_account').val()+"\nInto User Folder: "+$('#import_folder option:selected').text());
+    }
+</script>
+{% endblock %}

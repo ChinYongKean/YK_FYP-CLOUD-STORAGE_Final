@@ -1,0 +1,661 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Manage Files{% endblock %}
+{% block selected_page %}files{% endblock %}
+{% block selected_sub_page %}file_manage{% endblock %}
+
+{% block body %}
+    <script>
+        oTable = null;
+        gFileId = null;
+        gEditFileId = null;
+        oldStart = 0;
+        $(document).ready(function () {
+            // datatable
+            oTable = $('#fileTable').dataTable({
+                "sPaginationType": "full_numbers",
+                "bServerSide": true,
+                "bProcessing": true,
+                "sAjaxSource": 'ajax/file_manage',
+                "deferRender": true,
+                "iDisplayLength": 25,
+                "aLengthMenu": [10, 25, 50, 100, 250],
+                "aaSorting": [[2, "desc"]],
+                "aoColumns": [
+                    {bSortable: false, sWidth: '3%', sName: 'file_icon', sClass: "center adminResponsiveHide"},
+                    {sName: 'filename'},
+                    {sName: 'date_uploaded', sWidth: '12%', sClass: "center adminResponsiveHide"},
+                    {sName: 'filesize', sWidth: '10%', sClass: "center adminResponsiveHide"},
+                    {sName: 'downloads', sWidth: '10%', sClass: "center adminResponsiveHide"},
+                    {sName: 'owner', sWidth: '11%', sClass: "center adminResponsiveHide"},
+                    {sName: 'status', sWidth: '11%', sClass: "center adminResponsiveHide"},
+                    {bSortable: false, sWidth: '14%', sClass: "center removeMultiFilesButton"}
+                ],
+                "fnServerData": function (sSource, aoData, fnCallback, oSettings) {
+                    setTableLoading();
+                    if (oSettings._iDisplayStart != oldStart) {
+                        var targetOffset = $('.dataTables_wrapper').offset().top - 10;
+                        $('html, body').animate({scrollTop: targetOffset}, 300);
+                        oldStart = oSettings._iDisplayStart;
+                    }
+                    aoData.push({"name": "filterText", "value": $('#filterText').val()});
+                    aoData.push({"name": "filterByUser", "value": $('#filterByUser').val()});
+                    aoData.push({"name": "filterByServer", "value": $('#filterByServer').val()});
+                    aoData.push({"name": "filterByStatus", "value": $('#filterByStatus').val()});
+                    aoData.push({"name": "filterBySource", "value": $('#filterBySource').val()});
+                    aoData.push({"name": "filterView", "value": $('#filterView').val()});
+                    aoData.push({"name": "filterByFileId", "value": $('#filterByFileId').val()});
+                    $.ajax({
+                        "dataType": 'json',
+                        "type": "GET",
+                        "url": sSource,
+                        "data": aoData,
+                        "success": fnCallback
+                    });
+                },
+                "fnDrawCallback": function (oSettings) {
+                    postDatatableRender();
+                },
+                "oLanguage": {
+                    "sEmptyTable": "There are no files in the current filters."
+                },
+                dom: "lBfrtip",
+                buttons: [
+                    {
+                        extend: "copy",
+                        className: "btn-sm"
+                    },
+                    {
+                        extend: "csv",
+                        className: "btn-sm"
+                    },
+                    {
+                        extend: "excel",
+                        className: "btn-sm"
+                    },
+                    {
+                        extend: "pdfHtml5",
+                        className: "btn-sm"
+                    },
+                    {
+                        extend: "print",
+                        className: "btn-sm"
+                    }
+                ]
+            });
+
+            // update custom filter
+            $('.dataTables_filter').html($('#customFilter').html());
+
+            $('#filterByUser').typeahead({
+                source: function (request, response) {
+                    $.ajax({
+                        url: 'ajax/file_manage_auto_complete',
+                        dataType: "json",
+                        data: {
+                            filterByUser: $("#filterByUser").val()
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 3,
+                delay: 1,
+                afterSelect: function () {
+                    reloadTable();
+                }
+            });
+        });
+
+        function bulkMoveFiles()
+        {
+            if (countChecked() == 0)
+            {
+                alert('Please select some files to move.');
+                return false;
+            }
+
+            // show popup
+            loadMoveFileForm();
+            $('#moveFilesForm').modal('show');
+        }
+
+        function loadMoveFileForm()
+        {
+            $('#moveFilesForm .modal-body').html('');
+            $.ajax({
+                type: "POST",
+                url: "ajax/file_manage_move_form",
+                dataType: 'json',
+                success: function (json) {
+                    if (json.error == true)
+                    {
+                        $('#moveFilesForm .modal-body').html(json.msg);
+                    } else
+                    {
+                        $('#moveFilesForm .modal-body').html(json.html);
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $('#moveFilesForm .modal-body').html(XMLHttpRequest.responseText);
+                }
+            });
+        }
+
+        function processMoveFileForm()
+        {
+            // get data
+            serverIds = $('#server_ids').val();
+            $.ajax({
+                type: "POST",
+                url: "ajax/file_manage_move_process",
+                data: {serverIds: serverIds, gFileIds: getCheckboxFiles()},
+                dataType: 'json',
+                success: function (json) {
+                    if (json.error == true)
+                    {
+                        showError(json.msg, 'popupMessageContainer');
+                    } else
+                    {
+                        showSuccess(json.msg);
+                        reloadTable();
+                        clearBulkResponses();
+                        checkboxIds = {};
+                        updateButtonText();
+                        $("#moveFilesForm").modal('hide');
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    showError(XMLHttpRequest.responseText, 'popupMessageContainer');
+                }
+            });
+
+        }
+
+        function reloadTable()
+        {
+            oTable.fnDraw(false);
+        }
+
+        function confirmRemoveFile(fileId)
+        {
+            showModal($('#confirmDelete .modal-body'), $('#confirmDelete .modal-footer'));
+            gFileId = fileId;
+        }
+
+        function processRemoveFile()
+        {
+            removeFile(function () {
+                hideModal();
+            });
+        }
+
+        function showNotes(notes)
+        {
+            showBasicModal('<p>' + notes + '</p>', 'File Notes');
+        }
+
+        function removeFile(callback)
+        {
+            // find out file server first
+            $.ajax({
+                type: "POST",
+                url: "ajax/update_file_state",
+                data: {fileId: gFileId, statusId: $('#genericModalContainer #removal_type').val(), adminNotes: $('#genericModalContainer #admin_notes').val(), blockUploads: $('#genericModalContainer #block_uploads').val()},
+                dataType: 'json',
+                success: function (json) {
+                    if (json.error == true)
+                    {
+                        showError(json.msg);
+                    } else
+                    {
+                        showSuccess(json.msg);
+                        $('#removal_type').val(3);
+                        $('#admin_notes').val('');
+                        reloadTable();
+                        callback();
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    showError(XMLHttpRequest.responseText);
+                }
+            });
+        }
+
+        function setupActionButtons()
+        {
+            updateButtonText();
+        }
+
+        function updateButtonText()
+        {
+            totalFiles = countChecked();
+            $('#actionMultiMenu li').removeClass('disabled');
+            if (totalFiles == 0)
+            {
+                totalFilesStr = '';
+                $('#actionMultiMenu li').addClass('disabled');
+                $('#actionMultiMenuBase').addClass('btn-default');
+                $('#actionMultiMenuBase').removeClass('btn-primary');
+            } else
+            {
+                totalFilesStr = ' (' + totalFiles + ' File';
+                if (totalFiles > 1)
+                {
+                    totalFilesStr += 's';
+                }
+                totalFilesStr += ')';
+                $('#actionMultiMenuBase').removeClass('btn-default');
+                $('#actionMultiMenuBase').addClass('btn-primary');
+            }
+
+            $('#actionMultiMenuBase .fileCount').html(totalFilesStr);
+        }
+
+        function getCheckboxFiles()
+        {
+            count = 0;
+            for (i in checkboxIds)
+            {
+                count++;
+            }
+
+            return checkboxIds;
+        }
+
+        function bulkDeleteFiles(deleteData)
+        {
+            if (typeof (deleteData) == 'undefined')
+            {
+                deleteData = false;
+            }
+
+            if (countChecked() == 0)
+            {
+                alert('Please select some files to remove.');
+                return false;
+            }
+
+            msg = 'Are you sure you want to remove ' + countChecked() + ' files? This can not be undone once confirmed.';
+            if (deleteData == true)
+            {
+                msg += '\n\nAll file data and associated data such as the stats, will also be deleted from the database. This will entirely clear any record of the upload. (exc logs)';
+            } else
+            {
+                msg += '\n\nThe original file record will be retained along with the file stats.';
+            }
+
+            if (confirm(msg))
+            {
+                bulkDeleteConfirm(deleteData);
+            }
+        }
+
+        var bulkError = '';
+        var bulkSuccess = '';
+        var totalDone = 0;
+        function addBulkError(x)
+        {
+            bulkError += x;
+        }
+        function getBulkError(x)
+        {
+            return bulkError;
+        }
+        function addBulkSuccess(x)
+        {
+            bulkSuccess += x;
+        }
+        function getBulkSuccess(x)
+        {
+            return bulkSuccess;
+        }
+        function clearBulkResponses()
+        {
+            bulkError = '';
+            bulkSuccess = '';
+        }
+        function bulkDeleteConfirm(deleteData)
+        {
+            // get server list first
+            $.ajax({
+                type: "POST",
+                url: "ajax/file_manage_bulk_delete",
+                data: {fileIds: checkboxIds, deleteData: deleteData},
+                dataType: 'json',
+                success: function (json) {
+                    if (json.error == true)
+                    {
+                        showError(json.msg);
+                    } else
+                    {
+                        addBulkSuccess(json.msg);
+                        finishBulkProcess();
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    showError('Failed connecting to server to get the list of servers, please try again later.');
+                }
+            });
+        }
+
+        function finishBulkProcess()
+        {
+            // get final response
+            bulkError = getBulkError();
+            bulkSuccess = getBulkSuccess();
+
+            // compile result
+            if (bulkError.length > 0)
+            {
+                showError(bulkError + bulkSuccess);
+            } else
+            {
+                showSuccess(bulkSuccess);
+            }
+            reloadTable();
+            clearBulkResponses();
+            checkboxIds = {};
+            updateButtonText();
+
+            // scroll to the top of the page
+            $("html, body").animate({scrollTop: 0}, "slow");
+            $('#selectAllCB').prop('checked', false);
+        }
+
+        function editFile(fileId)
+        {
+            gEditFileId = fileId;
+            loadEditFileForm();
+            $('#editFileForm').modal('show');
+        }
+
+        function loadEditFileForm()
+        {
+            $('#editFileFormInner').html('Loading...');
+            $.ajax({
+                type: "POST",
+                url: "ajax/file_manage_edit_form",
+                data: {gEditFileId: gEditFileId},
+                dataType: 'json',
+                success: function (json) {
+                    if (json.error == true)
+                    {
+                        $('#editFileFormInner').html(json.msg);
+                    } else
+                    {
+                        $('#editFileFormInner').html(json.html);
+                        setupTagInterface();
+                        toggleFilePasswordField();
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $('#editFileFormInner').html(textStatus + ': ' + errorThrown);
+                }
+            });
+        }
+
+        function toggleFilePasswordField()
+        {
+            if ($('#editFileForm #enablePassword').is(':checked'))
+            {
+                $('#editFileForm #password').attr('READONLY', false);
+            } else
+            {
+                $('#editFileForm #password').attr('READONLY', true);
+            }
+        }
+
+        function processEditFile()
+        {
+            $.ajax({
+                type: "POST",
+                url: "ajax/file_manage_edit_process",
+                data: $('form#editFileFormInner').serialize(),
+                dataType: 'json',
+                success: function (json) {
+                    if (json.error == true)
+                    {
+                        showError(json.msg, 'popupMessageContainer');
+                    } else
+                    {
+                        showSuccess(json.msg);
+                        reloadTable();
+                        $("#editFileForm").modal('hide');
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    showError(textStatus + ': ' + errorThrown, 'popupMessageContainer');
+                }
+            });
+
+        }
+
+        function updateSelectedRemoveFileSelect()
+        {
+            if ($('#removal_type').val() == '4')
+            {
+                $('#block_uploads').val('1');
+            } else
+            {
+                $('#block_uploads').val('0');
+            }
+        }
+    </script>
+
+    <!-- page content -->
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>{{ block('title') }}</h3>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>File List</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <table id="fileTable" class="table table-striped table-only-border dtLoading bulk_action">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="check-all" class="flat"/></th>
+                                        <th class="align-left fileManageFileName">{{ t('filename', 'Filename')|title }}</th>
+                                        <th class="align-left">{{ t('date_uploaded', 'Date Uploaded')|title }}</th>
+                                        <th >{{ t('filesize', 'Filesize')|title }}</th>
+                                        <th>{{ t('downloads', 'Downloads')|title }}</th>
+                                        <th>{{ t('owner', 'Owner')|title }}</th>
+                                        <th>{{ t('status', 'Status')|title }}</th>
+                                        <th class="align-left fileManageActions">{{ t('actions', 'Actions')|title }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="20">{{ t('admin_loading_data', 'Loading data...')|title }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="x_panel">
+                        <div class="btn-group">
+                            <div class="dropup">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="actionMultiMenuBase" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    Bulk Action<span class="fileCount"></span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="actionMultiMenuBase" id="actionMultiMenu">
+                                    <li class="disabled"><a href="#" onClick="bulkDeleteFiles(false); return false;">{{ t('remove_files_total', 'Remove Files[[[FILE_COUNT]]]', {'FILE_COUNT': ''})|title }}</a></li>
+                                    <li class="disabled"><a href="#" onClick="bulkDeleteFiles(true);
+                                        return false;">{{ t('delete_files_and_data_total', 'Delete Files And Stats Data[[[FILE_COUNT]]]', {'FILE_COUNT': ''})|title }}</a></li>
+                                    {% if Auth.hasAccessLevel(20) %}
+                                    <li class="disabled"><a href="#" onClick="bulkMoveFiles();
+                                        return false;">{{ t('move_files_total', 'Move Files[[[FILE_COUNT]]]', {'FILE_COUNT': ''})|title }}</a></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                        {% if Auth.hasAccessLevel(20) %}
+                            <div class="btn-group">
+                                <a href="export_csv?type=files" type="button" class="btn btn-default">Export All Data (CSV)</a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="customFilter" id="customFilter" style="display: none;">
+        <label>
+            Filter:
+            <input name="filterText" id="filterText" type="text" value="{{ filterText }}" onKeyUp="reloadTable();
+                return false;" style="width: 180px;" class="form-control input-sm"/>
+        </label>
+        <label id="username" style="padding-left: 6px;">
+            User:
+            <input name="filterByUser" id="filterByUser" type="text" class="filterByUser form-control input-sm txt-auto" style="width: 120px;" value="{{ filterByUserLabel }}" autocomplete="off"/>
+        </label>
+        <label class="adminResponsiveHide filterByServerWrapper" style="padding-left: 6px;">
+            Server:
+            <select name="filterByServer" id="filterByServer" onChange="reloadTable(); return false;" style="width: 120px;" class="form-control input-sm">
+                <option value="">- all -</option>
+                {% for serverDetail in serverDetails %}
+                    <option value="{{ serverDetail['id'] }}"{{ filterByServer == serverDetail['id']?' SELECTED':'' }}>{{ serverDetail['serverLabel'] }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label class="adminResponsiveHide filterByStatusWrapper" style="padding-left: 6px;">
+            Status:
+            <select name="filterByStatus" id="filterByStatus" onChange="reloadTable(); return false;" style="width: 120px;" class="form-control input-sm">
+                <option value="">- all -</option>
+                {% for statusDetail in statusDetails %}
+                    <option value="{{ statusDetail }}"{{ filterByStatus == statusDetail?' SELECTED':'' }}>{{ statusDetail }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label class="adminResponsiveHide filterBySourceWrapper" style="padding-left: 6px; display: none;">
+            Src:
+            <select name="filterBySource" id="filterBySource" onChange="reloadTable();
+                return false;" style="width: 80px;" class="form-control input-sm">
+                <option value="">- all -</option>
+                <option value="direct">Direct</option>
+                <option value="ftp">FTP</option>
+                <option value="remote">Remote</option>
+                <option value="torrent">Torrent</option>
+                <option value="leech">Leech</option>
+                <option value="webdav">Webdav</option>
+                <option value="api">API</option>
+                <option value="other">Other</option>
+            </select>
+        </label>
+
+        <label class="adminResponsiveHide updateViewWrapper" style="padding-left: 6px;">
+            View:
+            <select name="filterView" id="filterView" onChange="reloadTable(); return false;" style="width: 80px;" class="form-control input-sm">
+                <option value="list" {{ SITE_CONFIG_DEFAULT_ADMIN_FILE_MANAGER_VIEW == 'list' ? 'SELECTED' : '' }}>List</option>
+                <option value="thumb" {{ SITE_CONFIG_DEFAULT_ADMIN_FILE_MANAGER_VIEW == 'thumb' ? 'SELECTED' : '' }}>Thumbnails</option>
+            </select>
+        </label>
+
+        <input type="hidden" value="{{ filterByFileId }}" name="filterByFileId" id="filterByFileId"/>
+    </div>
+
+    <div id="editFileForm" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button></div>
+                <div class="modal-body" id="editFileFormInner"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onClick="processEditFile();">Update File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmDelete" style="display: none;">
+        <div class="modal-body">
+            <form id="removeFileForm" class="form-horizontal form-label-left input_mask">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Remove File:</h2>
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <div class="x_content">
+                        <p>Select the type of removal below. You can also add removal notes such as a copy of the original removal request. The notes are only visible by an admin user.</p>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                Removal Type:
+                            </label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <div class="input-group">
+                                    <select name="removal_type" id="removal_type" class="form-control" onChange="updateSelectedRemoveFileSelect();
+                                          return false;">
+                                        <option value="3">General</option>
+                                        <option value="4">Copyright Breach (DMCA)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                Notes:
+                            </label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <textarea name="admin_notes" id="admin_notes" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                Block Future Uploads:
+                            </label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <div class="input-group">
+                                    <select name="block_uploads" id="block_uploads" class="form-control">
+                                        <option value="0">No (allow the same file to be uploaded again)</option>
+                                        <option value="1">Yes (this file will be blocked from uploading again)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onClick="processRemoveFile();">Remove File</button>
+        </div>
+    </div>
+
+    <div id="moveFilesForm" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button></div>
+                <div class="modal-body" id="moveFilesRawFileForm"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onClick="processMoveFileForm();">Move Files</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

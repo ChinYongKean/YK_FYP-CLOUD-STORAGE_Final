@@ -1,0 +1,48 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}View Log Files{% endblock %}
+{% block selected_page %}configuration{% endblock %}
+{% block selected_sub_page %}translation_manage{% endblock %}
+
+{% block body %}
+<script>
+    $(document).ready(function () {
+        var psconsole = $('#logViewer');
+        if (typeof (psconsole[0]) != "undefined")
+        {
+            psconsole.scrollTop(
+                    psconsole[0].scrollHeight - psconsole.height()
+                    );
+        }
+    });
+</script>
+
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3>{{ block('title') }}</h3>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+        {{ msg_page_notifications|raw }}
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Logs{% if lType|length > 0 %} ({{ lType }}{% if lFile|length > 0 %}/{{ lFile }}{% endif %}){% endif %}</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        {{ logMsg|raw }}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,237 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}API Testing Tool{% endblock %}
+{% block selected_page %}api{% endblock %}
+{% block selected_sub_page %}api_test_framework{% endblock %}
+
+{% block body %}
+    <script>
+        $(document).ready(function () {
+            rebuildApiForm();
+        });
+
+        var replacementAccessToken = '';
+        var replacementAccountId = '';
+        var lastUrl = '';
+        var lastAction = '';
+        function rebuildApiForm()
+        {
+            params = jQuery.parseJSON($('#api_action option:selected').attr('data-params'));
+            newForm = '';
+            for (i in params)
+            {
+                newForm += '<div class="form-group">';
+                newForm += '    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="confirm_password" style="text-transform: none;">' + i + ':</span>';
+                newForm += '    </label>';
+                newForm += '    <div class="col-md-3 col-sm-3 col-xs-12">';
+
+                newForm += '        <input id="' + i + '" name="' + i + '" class="form-control api_params" type="';
+                if (i == 'password')
+                {
+                    newForm += 'password';
+                } else if (i == 'upload_file')
+                {
+                    newForm += 'file';
+                } else
+                {
+                    newForm += 'text';
+                }
+                newForm += '" value="' + replaceParam(i, params[i]) + '"/>';
+
+
+                newForm += '    </div>';
+                newForm += '</div>';
+            }
+
+            $('#appendedForm').html(newForm);
+        }
+
+        function replaceParam(paramName, initialValue)
+        {
+            if (paramName == 'access_token')
+            {
+                return replacementAccessToken;
+            } else if (paramName == 'account_id')
+            {
+                return replacementAccountId;
+            }
+
+            return initialValue;
+        }
+
+        function submitApiRequest()
+        {
+            apiUrl = "{{ apiUrl }}";
+            apiUrl += $('#api_action option:selected').val().substring(1);
+            lastUrl = apiUrl;
+            lastAction = $('#api_action option:selected').val();
+
+            apiParams = {};
+            $('.api_params').each(function () {
+                apiParams[$(this).attr('id')] = $(this).val();
+            });
+
+            showRequest(apiUrl, apiParams);
+            setResponseLoading();
+
+            // find form
+            var form = $('#testForm');
+
+            // send request
+            $.ajax({
+                method: "POST",
+                dataType: 'json',
+                cache: false,
+                contentType: false,
+                processData: false,
+                url: apiUrl,
+                data: new FormData($(form)[0])
+            })
+                    .done(function (msg) {
+                        setSuccessResponse(msg);
+                        // store the access_token and account_id
+                        if (typeof (msg['data']['access_token']) != 'undefined')
+                        {
+                            replacementAccessToken = msg['data']['access_token'];
+                            replacementAccountId = msg['data']['account_id'];
+                        }
+                    })
+                    .fail(function (msg) {
+                        setErrorResponse(msg.responseText);
+                    });
+        }
+
+        function showRequest(apiUrl, apiParams)
+        {
+            $('.request-content').show();
+            $('.request-content .literal-block').html(apiUrl + "\n\t?" + jQuery.param(apiParams, null));
+        }
+
+        function hideResponseBoxes()
+        {
+            $('.response-error').hide();
+            $('.response-success').hide();
+        }
+
+        function setResponseLoading()
+        {
+            hideResponseBoxes();
+            $('.response-success .literal-block').html('Loading...');
+            $('.response-success').show();
+        }
+
+        function setSuccessResponse(jsonText)
+        {
+            hideResponseBoxes();
+            $('.response-success .literal-block').html(htmlEncode(JSON.stringify(jsonText, null, '\t')));
+            $('.response-success').show();
+        }
+
+        function setErrorResponse(responseText)
+        {
+            hideResponseBoxes();
+            $('.response-error .x_content').html("<div class='alert alert-danger'>Error: Failed finding url: " + lastUrl + " " + htmlEncode(responseText) + "</div>");
+            $('.response-error').show();
+        }
+
+        function htmlEncode(value)
+        {
+            return $('<div/>').text(value).html();
+        }
+    </script>
+
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>API Testing Tool</h3>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row request-content" style="display: none;">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Request</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <pre class="literal-block"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row response-success" style="display: none;">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>JSON Response</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <pre class="literal-block"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row response-error" style="display: none;">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Error 404</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <form action="#" method="POST" id="testForm" class="form-horizontal form-label-left" enctype="multipart/form-data" onSubmit="submitApiRequest();
+                            return false;">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Select Action</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Select the API action below. Ensure you've initially generated an access key for your request by submitting '/authorize' below.</p>
+                                <br/>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="api_action">Action:</span>
+                                    </label>
+                                    <div class="col-md-3 col-sm-3 col-xs-12">
+                                        <select id="api_action" name="api_action" class="form-control" required="required" onChange="rebuildApiForm();
+                                                return false;">
+                                            {% for action,params in actions %}
+                                                <option value="{{ action }}" data-params="{{ params|json_encode(true) }}">{{ action }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <span id="appendedForm"></span>
+
+                                <div class="ln_solid"></div>
+                                <div class="form-group">
+                                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                        <button type="submit" class="btn btn-primary">Submit API Request</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input name="submitted" type="hidden" value="1"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,56 @@
+AMENDED FILES:
+___RELEASE_HISTORY.txt
+admin/ajax/check_for_upgrade.ajax.php
+admin/ajax/plugin_manage.ajax.php
+admin/ajax/server_manage_add_form.ajax.php
+admin/server_manage.php
+core/includes/image_resizer/CustomSimpleImage.php
+core/includes/CoreHelper.class.php
+core/includes/master.inc.php
+core/includes/notification.class.php
+core/includes/orderPeer.class.php
+core/includes/pluginHelper.class.php
+core/includes/uploader.class.php
+core/includes/userPeer.class.php
+core/page/file_download.php
+install/resources/upgrade_sql_statements/v4.0.1 - v4.1.sql
+install/resources/database.sql
+install/config.tpl
+themes/blue_v2/templates/partial/_file_manager_javascript.inc.php
+themes/blue_v2/templates/partial/_index_javascript.inc.php
+themes/blue_v2/templates/partial/_upgrade_benefits.inc.php
+themes/blue_v2/templates/partial/_upgrade_boxes.inc.php
+themes/blue_v2/templates/account_edit.html
+themes/blue_v2/templates/contact.html
+themes/blue_v2/templates/share_file.html
+themes/flow/frontend_assets/css/bootstrap/bootstrap.min.css
+themes/flow/frontend_assets/css/responsive.css
+themes/flow/templates/partial/_header_file_manager.inc.php
+themes/flow/templates/partial/_uploader_javascript.inc.php
+themes/flow/templates/contact.html
+themes/flow/templates/faq.html
+themes/flow/templates/share_file.html
+themes/flow/templates/view_folder.html
+
+
+
+
+DELETED FILES:
+None
+
+
+
+NEW FILES:
+install/resources/upgrade_sql_statements/v4.1 - v4.1.1.sql
+themes/blue_v2/images/folder_fm_grid.png
+themes/blue_v2/images/folder_fm_list.png
+themes/blue_v2/images/folder_full_fm_grid.png
+themes/blue_v2/images/folder_full_fm_list.png
+themes/blue_v2/images/folder_lock_fm_grid.png
+themes/blue_v2/images/folder_lock_fm_list.png
+
+
+
+NOTES:
+
+Produced with WinMerge

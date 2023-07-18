@@ -1,0 +1,96 @@
+{% extends "@corePath/admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Export User Data{% endblock %}
+{% block selected_page %}newsletters{% endblock %}
+{% block selected_sub_page %}newsletters_export_user_data{% endblock %}
+
+{% block body %}
+<div class="row clearfix right_col" role="main">
+    <div class="col_12">
+        <div class="widget clearfix">
+            <h2>Export User Data</h2>
+            <div class="widget_inside">
+                {{ msg_page_notifications|raw }}
+                <form method="POST" action="export_user_data" name="pluginForm" id="pluginForm" autocomplete="off">
+                    <div class="clearfix col_12">
+                        <div class="col_4">
+                            <h3>Included Columns</h3>
+                            <p>Which columns to include within the export.</p>
+                        </div>
+                        <div class="col_8 last">
+                            <div class="form">
+                                <div class="clearfix alt-highlight">
+                                    <label>Select Columns: <a href="#" onClick="$('#columns').find('option').attr('selected','selected'); return false;">(all)</a></label>
+                                    <div class="input">
+                                        <select multiple name="columns[]" id="columns" class="xxlarge validate[required]" style="height:100px;">
+                                            {% for columnName,columnLabel in availableColumns %}
+                                                <option value="{{ columnName }}"{% if columnName in columns %} SELECTED{% endif %}>{{ columnLabel }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="formFieldFix">Use ctrl &amp; click to select multiple.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix col_12">
+                        <div class="col_4">
+                            <h3>Other Options</h3>
+                            <p>Restrict by group, include any unsubscribed users and the export file format.</p>
+                        </div>
+                        <div class="col_8 last">
+                            <div class="form">
+                                <div class="clearfix alt-highlight">
+                                    <label>By Account Type:</label>
+                                    <div class="input">
+                                        <select name="userGroup" id="userGroup" class="large">
+                                            <option value="all registered"{{ userGroup == 'all registered' ? ' SELECTED' : '' }}>All Registered Accounts</option>
+                                            <option value="free only"{{ userGroup == 'free only' ? ' SELECTED' : '' }}>Free Accounts Only</option>
+                                            <option value="premium only"{{ userGroup == 'premium only' ? ' SELECTED' : '' }}>Paid Accounts Only</option>
+                                            <option value="moderator only"{{ userGroup == 'moderator only' ? ' SELECTED' : '' }}>Moderator Accounts Only</option>
+                                            <option value="admin only"{{ userGroup == 'admin only' ? ' SELECTED' : '' }}>Admin Accounts Only</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="clearfix">
+                                    <label for="includeUnsubscribed">Include Unsubscribed:</label>
+                                    <div class="input" style="padding-top: 2px; height: 24px;"><input id="includeUnsubscribed" name="includeUnsubscribed" type="checkbox" value="1" {{ includeUnsubscribed == 1 ? 'CHECKED' : '' }}/></div>
+                                </div>
+                                <div class="clearfix alt-highlight">
+                                    <label>Export Format:</label>
+                                    <div class="input">
+                                        <select name="exportFormat" id="exportFormat" class="large">
+                                            {% for k,availableFormat in availableFormats %}
+                                                <option value="{{ k }}"{% if k == exportFormat %} SELECTED{% endif %}>{{ availableFormat }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix col_12">
+                        <div class="col_4 adminResponsiveHide">&nbsp;</div>
+                        <div class="col_8 last">
+                            <div class="clearfix">
+                                <div class="input no-label">
+                                    <input type="submit" value="Export Data" class="button blue">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input name="submitted" type="hidden" value="1"/>
+                </form>
+            </div>
+        </div>   
+    </div>
+</div>
+<script>
+$(document).ready(function() {
+    $('#columns').find('option').attr('selected','selected');
+});
+</script>
+{% endblock %}

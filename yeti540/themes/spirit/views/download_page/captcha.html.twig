@@ -1,0 +1,78 @@
+{% extends "partial/layout.html.twig" %}
+
+{% block title %}{{ file.originalFilename }}{% endblock %}
+{% block description %}{{ file.description|length > 0 ? file.description|slice(0, 250) : t("file_download_description", "Download file")~' - '~file.originalFilename }}{% endblock %}
+{% block keywords %}{{ file.getFileKeywords() }}{% endblock %}
+
+{% block body %}
+    <section>
+        <div class="container">
+            <div class="row align-items-center justify-content-around download-page">
+                <div class="col-md-12 text-center">
+                    <h2>
+                        {{ file.originalFilename }}
+                    </h2>
+                </div>
+                
+                {% if UserHelper.showSiteAdverts() %}
+                    <div class="col-md-12 text-center advert-wrapper top-advert">
+                        {{ file.shouldShowAdultAdvert() == true ? SITE_CONFIG_ADULT_ADVERT_DELAYED_REDIRECT_TOP|raw : SITE_CONFIG_ADVERT_DELAYED_REDIRECT_TOP|raw }}
+                    </div>
+                {% endif %}
+
+                <div class="col-md-12">
+                    {% if msg_page_errors is defined %}
+                        <div class="alert bg--error">
+                            <div class="alert__body"><i class="fa fa-exclamation-triangle color--error"></i>&nbsp;&nbsp;{% if msg_page_errors is defined %}{{ msg_page_errors|join('. ') }}{% endif %}</div>
+                        </div>
+                    {% endif %}
+                    <form method="POST" action="{{ file.getFullLongUrl() }}?pt={{ pt }}" autocomplete="off">
+                        <table class="border--round download-page-simple-timed text-center">
+                            <tbody>
+                                <tr>
+                                    <th class="col-md-3 responsiveInfoTable">
+                                        <strong>
+                                            {{ file.originalFilename }} ({{ file.getFormattedFilesize() }})
+                                        </strong>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="input-group" style="display: block; overflow: hidden;">
+                                            {{ CoreHelper.outputCaptcha()|raw }}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button type='submit' class="btn btn--primary">
+                                            <span class="btn__text">
+                                                {{ t('continue', 'continue')|upper }}
+                                            </span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <input type="hidden" name="submitted" value="1"/>
+                        <input type="hidden" name="d" value="1"/>
+                    </form>
+                </div>
+
+                {% if UserHelper.showSiteAdverts() %}
+                    <div class="col-md-12 text-center advert-wrapper bottom-advert">
+                        {{ file.shouldShowAdultAdvert() == true ? SITE_CONFIG_ADULT_ADVERT_DELAYED_REDIRECT_BOTTOM|raw : SITE_CONFIG_ADVERT_DELAYED_REDIRECT_BOTTOM|raw }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    {% include '@themePath/partial/_premium_benefits.html.twig' %}
+{% endblock %}
+
+{% block footerjs %}
+    {% if downloadPageData['additional_javascript_code'] is defined %}
+        {{ downloadPageData['additional_javascript_code']|raw }}
+    {% endif %}
+{% endblock %}

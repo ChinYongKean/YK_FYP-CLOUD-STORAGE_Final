@@ -1,0 +1,6 @@
+<select id="import_folder" name="import_folder" class="form-control col-md-7 col-xs-12">
+    <option value="">/</option>
+    {% for folderId,userFolder in userFolders %}
+        <option value="{{ folderId }}">{{ userFolder }}</option>
+    {% endfor %}
+</select>

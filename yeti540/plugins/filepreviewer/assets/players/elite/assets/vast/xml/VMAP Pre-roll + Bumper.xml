@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vmap:VMAP xmlns:vmap="https://www.iab.net/videosuite/vmap" version="1.0">
+ <vmap:AdBreak timeOffset="start" breakType="linear" breakId="preroll-1">
+  <vmap:AdSource id="preroll-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[assets/vast/xml/Single-preroll-linear.xml]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="start" breakType="linear" breakId="preroll-2">
+  <vmap:AdSource id="preroll-post-bumper" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[assets/vast/xml/bumper.xml]]></vmap:AdTagURI>
+  </vmap:AdSource>
+  <vmap:Extensions>
+   <vmap:Extension type="bumper" suppress_bumper="true"></vmap:Extension>
+  </vmap:Extensions>
+ </vmap:AdBreak> 
+ <vmap:AdBreak timeOffset="start" breakType="linear" breakId="preroll-3">
+  <vmap:AdSource id="preroll-post-bumper" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[assets/vast/xml/Single Skippable Inline.xml]]></vmap:AdTagURI>
+  </vmap:AdSource>
+  <vmap:Extensions>
+   <vmap:Extension type="bumper" suppress_bumper="true"></vmap:Extension>
+  </vmap:Extensions>
+ </vmap:AdBreak>
+ 
+ <!-- custom -->
+ <vmap:AdBreak timeOffset="00:00:05" breakType="linear" breakId="midroll-1">
+  <vmap:AdSource id="midroll-1-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[assets/vast/xml/Single-inline-linear-middle.xml]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="50%" breakType="linear" breakId="midroll-2">
+  <vmap:AdSource id="midroll-1-ad-2" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[assets/vast/xml/Single Skippable Inline.xml]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="70%" breakType="linear" breakId="midroll-3">
+  <vmap:AdSource id="midroll-1-ad-3" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[assets/vast/xml/bumper.xml]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+
+ <vmap:AdBreak timeOffset="end" breakType="linear" breakId="postroll">
+  <vmap:AdSource id="postroll-post-bumper" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[assets/vast/xml/Single-postroll-linear.xml]]></vmap:AdTagURI>
+  </vmap:AdSource>
+  <vmap:Extensions>
+   <vmap:Extension type="bumper" suppress_bumper="true"></vmap:Extension>
+  </vmap:Extensions>
+ </vmap:AdBreak>
+</vmap:VMAP>
+
+<!-- timeOffset: -->
+<!-- time -->
+<!-- percentage -->
+<!-- start/end: -->

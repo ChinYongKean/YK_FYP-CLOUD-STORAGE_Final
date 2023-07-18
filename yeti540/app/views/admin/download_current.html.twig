@@ -1,0 +1,105 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Downloads{% endblock %}
+{% block selected_page %}downloads{% endblock %}
+{% block selected_sub_page %}download_current{% endblock %}
+
+{% block body %}
+    <script>
+        oTable = null;
+        oTableRefreshTimer = null;
+        $(document).ready(function () {
+            // datatable
+            oTable = $('#currentDownloadsTable').dataTable({
+                "sPaginationType": "full_numbers",
+                "bServerSide": true,
+                "bProcessing": true,
+                "sAjaxSource": 'ajax/download_current',
+                "iDisplayLength": 100,
+                "aaSorting": [[1, "desc"]],
+                "bFilter": false,
+                "bLengthChange": false,
+                "aoColumns": [
+                    {bSortable: false, sWidth: '3%', sName: 'file_icon', sClass: "center adminResponsiveHide"},
+                    {sName: 'date_started', sWidth: '15%', sClass: "activeDownloadsColumn"},
+                    {sName: 'ip_address', sWidth: '12%', sClass: "center adminResponsiveHide"},
+                    {sName: 'file_name'},
+                    {sName: 'file_size', sWidth: '12%', sClass: "center adminResponsiveHide"},
+                    {sName: 'total_threads', sWidth: '10%', sClass: "center adminResponsiveHide"},
+                    {sName: 'status', sWidth: '14%', sClass: "center adminResponsiveHide"}
+                ],
+                "fnServerData": function (sSource, aoData, fnCallback, oSettings) {
+                    setTableLoading();
+                    $.ajax({
+                        "dataType": 'json',
+                        "type": "GET",
+                        "url": sSource,
+                        "data": aoData,
+                        "success": fnCallback
+                    });
+                },
+                "fnDrawCallback": function (oSettings) {
+                    postDatatableRender();
+                },
+                "oLanguage": {
+                    "sEmptyTable": "There are no active downloads."
+                }
+            });
+
+            oTableRefreshTimer = setInterval('reloadTable()', 15 * 1000)
+        });
+
+        function reloadTable()
+        {
+            oTable.fnDraw();
+        }
+    </script>
+
+    <!-- page content -->
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>{{ block('title') }}</h3>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Active Downloads</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p>The table below shows all active downloads on the site. This screen will automatically refresh every 15 seconds.</p>
+                            <p>Note: This page will not show any data if you are using xSendFile (Apache), xAccelRedirect (Nginx) or X-LiteSpeed-Location (LiteSpeed) to handle your file downloads.</p>
+                            <table id="currentDownloadsTable" class="table table-striped table-only-border dtLoading bulk_action">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>{{ t("date_started", "date started")|title }}</th>
+                                        <th>{{ t("downloader", "downloader")|title }}</th>
+                                        <th>{{ t("file_name", "file name")|title }}</th>
+                                        <th>{{ t("file_size", "file size")|title }}</th>
+                                        <th>{{ t("threads", "threads")|title }}</th>
+                                        <th>{{ t("status", "status")|title }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="20">{{ t('admin_loading_data', 'Loading data...') }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

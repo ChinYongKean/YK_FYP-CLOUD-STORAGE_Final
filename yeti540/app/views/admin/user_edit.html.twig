@@ -1,0 +1,339 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Edit User{% endblock %}
+{% block selected_page %}users{% endblock %}
+{% block selected_sub_page %}user_manage{% endblock %}
+
+{% block body %}
+    <script>
+        $(function () {
+        $('#expiry_date').daterangepicker({
+        singleDatePicker: true,
+                calender_style: "picker_1",
+                autoUpdateInput: false,
+                locale: {
+                format: 'DD/MM/YYYY'
+                }
+        }, function (chosen_date) {
+        $('#expiry_date').val(chosen_date.format('DD/MM/YYYY'));
+        });
+        });
+        function checkExpiryDate()
+        {
+        userType = $('#account_type option:selected').val();
+        if (userType > 1)
+        {
+        // default to 1 year
+        $('#expiry_date').val('{{ defaultExpiryDate }}');
+        }
+        }
+
+        function createRandomKey(eleId)
+        {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (var i = 0; i < 64; i++)
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+        $('#' + eleId).val(text);
+        }
+    </script>
+
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>User Details</h3>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <form action="{{ ADMIN_WEB_ROOT }}/user_edit/{{ user.id }}" method="POST" class="form-horizontal form-label-left" enctype="multipart/form-data">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Account Details</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Information about the account.</p>
+                                <br/>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="username">Username:
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input id="username" name="username" class="form-control" required="required" type="text" value="{{ username }}" READONLY/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="account_status">Account Status:
+                                    </label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        <select name="account_status" id="account_status" class="form-control" {{ current_user_id == user.id ? 'disabled' : ''}}>
+                                            {% for accountStatusDetail in accountStatusDetails %}
+                                                <option value="{{ accountStatusDetail }}"{{ account_status == accountStatusDetail?' SELECTED':'' }}>{{ accountStatusDetail|title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="account_type">Account Type:
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <select name="account_type" id="account_type" class="form-control" onChange="checkExpiryDate();">
+                                            {% for accountTypeDetail in accountTypeDetails %}
+                                                <option value="{{ accountTypeDetail['id'] }}"{{ account_type == accountTypeDetail['id']?' SELECTED':'' }}>{{ accountTypeDetail['label']|title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group paid_account_expiry">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="expiry_date">Paid Expiry Date:
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input id="expiry_date" name="expiry_date" type="text" class="form-control" value="{{ expiry_date }}"/>
+                                        <span class="text-muted">Format: dd/mm/yyyy. Maximum 19th January 2038. Leave empty to never expire the account.</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="storage_limit">Filesize Storage Limit:
+                                    </label>
+                                    <div class="col-md-5 col-sm-5 col-xs-12">
+                                        <div class="input-group">
+                                            <input id="storage_limit" name="storage_limit" placeholder="i.e. 1073741824" type="text" class="form-control" value="{{ storage_limit }}"/>
+                                            <span class="input-group-addon">bytes</span>
+                                        </div>
+                                        <span class="text-muted">Optional in bytes. Overrides account type limits. 1073741824 = 1GB. Use zero for unlimited.</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="remainingBWDownload">Download Allowance:
+                                    </label>
+                                    <div class="col-md-5 col-sm-5 col-xs-12">
+                                        <div class="input-group">
+                                            <input id="remainingBWDownload" name="remainingBWDownload" placeholder="i.e. 1073741824" type="text" class="form-control" value="{{ remainingBWDownload }}"/>
+                                            <span class="input-group-addon">bytes</span>
+                                        </div>
+                                        <span class="text-muted">Optional in bytes. Generally left blank. Use zero for unlimited.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>User Details</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Details about the user.</p>
+                                <br/>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="title">Title:
+                                    </label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        <select name="title" id="title" class="form-control">
+                                            <option value="">- not set -</option>
+                                            {% for titleItem in titleItems %}
+                                                <option value="{{ titleItem }}"{{ title == titleItem?' SELECTED':'' }}>{{ titleItem|title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first_name">First Name:
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input id="first_name" name="first_name" type="text" class="form-control" value="{{ first_name }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last_name">Last Name:
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input id="last_name" name="last_name" type="text" class="form-control" value="{{ last_name }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="email_address">Email Address:
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input id="email_address" name="email_address" type="text" class="form-control" value="{{ email_address }}"/>
+                                    </div>
+                                </div>                            
+                            </div>
+                        </div>
+
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Reset Password</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Reset the user password. Leave blank to keep the existing.</p>
+                                <br/>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="password">Password:
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input id="password" name="user_password" class="form-control" type="password" value="{{ user_password }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="confirm_password">Confirm Password:
+                                    </label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input id="confirm_password" name="confirm_password" class="form-control" type="password" value="{{ confirm_password }}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Account Avatar</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>If an account avatar is supported on the site theme, update it here.</p>
+                                <br/>
+
+                                <div class="form-group">
+                                    <label for="avatar" class="control-label col-md-3 col-sm-3 col-xs-12">Select File (jpg, png or gif)</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="file" class="form-control" id="avatar" name="avatar" placeholder="Select File (jpg, png or gif)">
+                                        {% if hasAvatar == true %}
+                                            <br/>
+                                            <img class="img-square settings-avatar pull-right" src="{{ ADMIN_WEB_ROOT }}/ajax/account_view_avatar?userId={{ user.id }}&width=70&amp;height=70">
+                                            <div class="checkbox pull-left">
+                                                <label>
+                                                    <input type="checkbox" id="removeAvatar" name="removeAvatar" value="1"/>Remove avatar
+                                                </label>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>2FA</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Whether 2FA is enabled for the user.</p>
+                                <br/>
+                                
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">2FA Status:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12" style="margin-top: 8px;">
+                                        {{ login_2fa_enabled == 1 ? 'Enabled':'Disabled' }}
+                                    </div>
+                                </div>
+
+                                {% if login_2fa_enabled == 1 %}
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12"></label>
+                                    <div class="col-md-5 col-sm-5 col-xs-12">
+                                        <div class="input-group">
+                                            <button class="btn btn-secondary" type="button" onClick="if(confirm('Are you sure you want to disable 2FA for this user?')) { window.location='{{ ADMIN_WEB_ROOT }}/user_edit/{{ user.id }}?disable_2fa=1'; }">Disable</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                                            
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>File Upload API Keys</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Set or generate API keys.</p>
+                                <br/>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="key1">Key 1:
+                                    </label>
+                                    <div class="col-md-5 col-sm-5 col-xs-12">
+                                        <div class="input-group">
+                                            <input id="key1" name="key1" class="form-control" type="text" value="{{ key1 }}"/>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-secondary" type="button" onClick="createRandomKey('key1'); return false;">Generate</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="key2">Key 2:
+                                    </label>
+                                    <div class="col-md-5 col-sm-5 col-xs-12">
+                                        <div class="input-group">
+                                            <input id="key2" name="key2" class="form-control" type="text" value="{{ key2 }}"/>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-secondary" type="button" onClick="createRandomKey('key2'); return false;">Generate</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Other Options</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Server upload override.</p>
+                                <br/>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="upload_server_override">Upload Server Override:
+                                    </label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        <select name="upload_server_override" id="upload_server_override" class="form-control">
+                                            <option value="">- none - (default)</option>
+                                            {% for serverDetail in serverDetails %}
+                                                <option value="{{ serverDetail['id'] }}"{{ upload_server_override == serverDetail['id']?' SELECTED':'' }}>{{ serverDetail['serverLabel'] }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span class="text-muted">Useful for testing new servers for a specific user. Leave as 'none' to use the global settings.</span>
+                                    </div>
+                                </div>
+
+                                <div class="ln_solid"></div>
+                                <div class="form-group">
+                                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                        <button type="button" class="btn btn-default" onClick="window.location = '{{ ADMIN_WEB_ROOT }}/user_manage';">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Update User</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input name="submitted" type="hidden" value="1"/>
+                        <input name="id" type="hidden" value="{{ user.id }}"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

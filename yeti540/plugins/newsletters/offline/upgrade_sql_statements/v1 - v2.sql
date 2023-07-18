@@ -1,0 +1,1 @@
+ALTER TABLE  `plugin_newsletter` CHANGE  `user_group`  `user_group` VARCHAR( 20 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;

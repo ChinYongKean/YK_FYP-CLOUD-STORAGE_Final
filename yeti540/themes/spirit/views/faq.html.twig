@@ -1,0 +1,71 @@
+{% extends "partial/layout.html.twig" %}
+
+{% block title %}{{ t("faq_page_name", "FAQ") }}{% endblock %}
+{% block description %}{{ t("faq_meta_description", "Frequently Asked Questions") }}{% endblock %}
+{% block keywords %}{{ t("faq_meta_keywords", "faq, frequently, asked, questions, file, hosting, site") }}{% endblock %}
+{% block selected_navigation_link %}faq{% endblock %}
+
+{% block body %}
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>{{ t("faq_page_name", "FAQ") }}</h1>
+                    <hr>
+                </div>
+            </div>
+            <div class="row justify-content-between">
+                <div class="col-md-9">
+                    <ul class="accordion accordion-1 accordion--oneopen">
+                        <li class="active">
+                            <div class="accordion__title"> <span class="h5">{{ t('faq_q1_question', 'Is this free?') }}</span> </div>
+                            <div class="accordion__content">
+                                <p class="lead">{{ t('faq_q1_answer', 'Yes, uploading and downloading is 100% Free for all users. We offer premium accounts which allows for greater flexibility with uploading/downloading.') }}</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="accordion__title"> <span class="h5">{{ t('faq_q2_question', 'Will my files be removed?') }}</span> </div>
+                            <div class="accordion__content">
+                                <p class="lead">{{ t('faq_q2_answer', 'Free/non accounts files are kept for [[[KEPT_FOR_DAYS_FREE]]] days. Premium accounts files are kept for [[[KEPT_FOR_DAYS_PAID]]] days.', {'KEPT_FOR_DAYS_FREE': fileRemovalFreeAcc, 'KEPT_FOR_DAYS_PAID' : fileRemovalPaidAcc}) }}</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="accordion__title"> <span class="h5">{{ t('faq_q3_question', 'How many files can I upload?') }}</span> </div>
+                            <div class="accordion__content">
+                                <p class="lead">{{ t('faq_q3_answer', 'You can upload as many files as you want, as long as each one adheres to the Terms of Service and the maximum file upload size.') }}</p>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="accordion__title"> <span class="h5">{{ t('faq_q4_question', 'Which files types am I allowed to upload?') }}</span> </div>
+                            <div class="accordion__content">
+                                <p class="lead">{{ t('faq_q4_answer', 'You may upload the following types of files: [[[FILE_TYPES]]].', {'FILE_TYPES': fileTypesStr }) }}</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="accordion__title"> <span class="h5">{{ t('faq_q5_question', 'Are there any restrictions to the size of my uploaded files?') }}</span> </div>
+                            <div class="accordion__content">
+                                <p class="lead">{{ t('faq_q5_answer', 'Each file you upload must be less than [[[MAX_UPLOAD_SIZE_FREE]]] in size for free/non accounts or less than [[[MAX_UPLOAD_SIZE_PAID]]] in size for premium accounts. If it is greater than that amount, your file will be rejected.', {'MAX_UPLOAD_SIZE_FREE': maxUploadSizeFreeAcc, 'MAX_UPLOAD_SIZE_PAID': maxUploadSizePaidAcc }) }}</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="accordion__title"> <span class="h5">{{ t('faq_q6_question', 'Can I upload music or videos?') }}</span> </div>
+                            <div class="accordion__content">
+                                <p class="lead">{{ t('faq_q6_answer', 'Yes. Music and video hosting is permitted as long as you own the copyright on the content and it adheres to the terms and conditions.') }}</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="accordion__title"> <span class="h5">{{ t('faq_q7_question', 'There are some files on our servers which may have been subject to copyright protection, how can I notify you of them?') }}</span> </div>
+                            <div class="accordion__content">
+                                <p class="lead">{{ t('faq_q7_answer', 'Via our <a href="report_file">report abuse</a> pages.', {'SITE_CONFIG_PAGE_EXTENSION': SITE_CONFIG_PAGE_EXTENSION })|raw }}</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-3 text-center">
+                    <img alt="Image" src="{{ theme.getFrontendImagePath() }}/faq-banner.png"/>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

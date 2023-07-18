@@ -1,0 +1,92 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Themes{% endblock %}
+{% block selected_page %}themes{% endblock %}
+{% block selected_sub_page %}theme_manage{% endblock %}
+
+{% block body %}
+    <!-- page content -->
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>{{ block('title') }}</h3>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Manage Themes</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="row">
+                                {% for row in limitedRS %}
+                                    <div class="col-md-6 col-sm-6 col-xs-12 profile_details">
+                                        <div class="well profile_view">
+                                            <div class="col-sm-12">
+                                                <h4 class="brief"></h4>
+                                                <div class="left col-xs-7">
+                                                    <h2>{{ row['theme_name'] }}{{ (row['folder_name'] == siteTheme ? ('&nbsp;&nbsp;<span style="color: green;">(active)</a>') : '')|raw }}</h2>
+                                                    <p><strong>Description: </strong>{{ row['theme_description'] }}</p>
+                                                    <ul class="list-unstyled">
+                                                        <li><i class="fa fa-user" title="author"></i> {{ row['author_name'] }}{{ (row['author_website']|length > 0 ? (' (<a href="'~row['author_website']~'" target="_blank">'~row['author_website']~'</a>)') : '')|raw }}</li>
+                                                        <li><i class="fa fa-folder-o" title="folder"></i> /{{ row['folder_name'] }}</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="right col-xs-5 text-center">
+                                                    <img src="{{ SITE_THEME_WEB_ROOT }}{{ row['folder_name'] }}/thumb_preview.png" class="img-square img-responsive pull-right" style="width: 100%;"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 bottom text-center">
+                                                <div class="col-xs-12 col-sm-12 emphasis">
+                                                    {% if row['folder_name'] != siteTheme %}
+                                                        <a type="button" class="btn btn-disabled" href="{{ ADMIN_WEB_ROOT }}/theme_manage?delete={{ row['folder_name'] }}" onClick="return confirm('Are you sure that you want to completely delete the theme files from the server.');">
+                                                            <i class="fa fa-trash"> </i> Remove
+                                                        </a>
+                                                    {% endif %}
+
+                                                    {% if row['settingsPath']|length > 0 and row['folder_name'] == siteTheme %}
+                                                        <a type="button" class="btn btn-primary" href="{{ row['settingsPath'] }}">
+                                                            <i class="fa fa-cogs"> </i> Settings
+                                                        </a>
+                                                    {% endif %}
+
+
+                                                    {% if row['folder_name'] != siteTheme %}
+                                                        <a type="button" class="btn btn-default" onClick="return confirm('This will set your current logged in session to use this theme. Switch back by logging out or by clicking \'view\' on the original theme on this page.');" href="{{ ADMIN_WEB_ROOT }}/theme_preview/{{ row['folder_name'] }}" target="_blank">
+                                                            <i class="fa fa-search-plus"> </i> Preview
+                                                        </a>
+
+                                                        <a type="button" class="btn btn-success" onClick="return confirm('Are you sure you want to enable this theme? The website will be immediately updated.');" href="theme_manage?activate={{ row['folder_name'] }}">
+                                                            <i class="fa fa-check"> </i> Activate
+                                                        </a>
+                                                    {% else %}
+                                                        <a type="button" class="btn btn-default" href="{{ ADMIN_WEB_ROOT }}/theme_preview/{{ row['folder_name'] }}" target="_blank">
+                                                            <i class="fa fa-search-plus"> </i> View
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="x_panel">
+                        <a href="theme_manage_add" type="button" class="btn btn-primary">Add Theme</a>
+                        <a href="{{ currentProductUrl }}/themes.html" target="_blank" type="button" class="btn btn-default">Get Themes</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

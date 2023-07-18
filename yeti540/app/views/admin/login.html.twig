@@ -1,0 +1,51 @@
+{% extends "admin/partial/layout_non_login.html.twig" %}
+
+{% block title %}{{ t("admin_login", "admin login")|title }}{% endblock %}
+
+{% block body %}
+    <body class="login">
+    <div>
+        <div class="login_wrapper">
+            <div class="animate form login_form">
+                <section class="login_content">
+                    <form method="POST" action="{{ ADMIN_WEB_ROOT }}/login">
+                        <h1>{{ t("admin_login", "admin login")|title }}</h1>
+
+                        {{ msg_page_notifications|raw }}
+
+                        <div>
+                            <input name="username" type="text" class="form-control" placeholder="{{ t("username", "username")|title }}" required="" autofocus="" value="{{ username }}"/>
+                        </div>
+                        <div>
+                            <input name="password" type="password" class="form-control" placeholder="{{ t("password", "password")|title }}" required="" value="{{ password }}"/>
+                        </div>
+                        {% if SITE_CONFIG_CAPTCHA_LOGIN_SCREEN_ADMIN == 'yes' %}
+                            <div style="padding-left: 21px; padding-bottom: 16px; overflow: hidden;">
+                                {{ CoreHelper.outputCaptcha()|raw }}
+                            </div>
+                        {% endif %}
+
+                        <div>
+                            <a href="{{ WEB_ROOT }}/account/forgot_password">{{ t("forgot_password", "forgot password")|title }}?</a>
+                            <button type="submit" value="{{ t("login", "login") }}" class="btn btn-default submit">{{ t("login", "login")|title }}</button>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                        <div class="separator">
+                            <p class="change_link">{{ t('admin_login_all_logins_records', 'All logins are recorded. Your IP address: [[[IP_ADDRESS]]].', {'IP_ADDRESS': userIpAddress}) }}</p>
+                            <div class="clearfix"></div>
+                            <div>
+                                <p>&copy; {{ "now"|date("Y") }} {{ SITE_CONFIG_SITE_NAME }}. {{ t('admin_login_all_rights_reserved', 'All Rights Reserved') }}.</p>
+                            </div>
+                        </div>
+
+                        <input id="submitme" name="submitme" value="1" type="hidden"/>
+                        <input id="version" name="version" value="{{ scriptVersion }}" type="hidden"/>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

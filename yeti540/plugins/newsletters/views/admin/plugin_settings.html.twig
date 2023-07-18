@@ -1,0 +1,79 @@
+{% extends "@corePath/admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}{{ pluginName }} Settings{% endblock %}
+{% block selected_page %}plugins{% endblock %}
+{% block selected_sub_page %}plugin_manage{% endblock %}
+
+{% block body %}
+<div class="row clearfix right_col" role="main">
+    <div class="col_12">
+        <div class="widget clearfix">
+            <h2>{{ pluginName }} Settings</h2>
+            <div class="widget_inside">
+                {{ msg_page_notifications|raw }}
+                <form method="POST" action="{{ ADMIN_WEB_ROOT }}/plugin/newsletters/settings" name="pluginForm" id="pluginForm" autocomplete="off" enctype="multipart/form-data">
+                    <div class="clearfix col_12">
+                        <div class="col_4">
+                            <h3>Plugin State</h3>
+                            <p>Whether this plugin is enabled.</p>
+                        </div>
+                        <div class="col_8 last">
+                            <div class="form">
+                                <div class="clearfix alt-highlight">
+                                    <label>Plugin Enabled:</label>
+                                    <div class="input">
+                                        <select name="plugin_enabled" id="plugin_enabled" class="medium validate[required]">
+                                            {% for k,yesNoOption in yesNoOptions %}
+                                                <option value="{{ k }}"{% if plugin_enabled == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix col_12">
+                        <div class="col_4">
+                            <h3>Other Settings</h3>
+                            <p>Default test email address, un-subscribe text.</p>
+                        </div>
+                        <div class="col_8 last">
+                            <div class="form">
+                                <div class="clearfix alt-highlight">
+                                    <label>Send From Email:</label>
+                                    <div class="input"><input id="send_email_from_email" name="send_email_from_email" type="text" class="large validate[required]" value="{{ send_email_from_email }}"/></div>
+                                </div>
+                                <div class="clearfix">
+                                    <label>Newsletter Test Email:</label>
+                                    <div class="input"><input id="test_email_address" name="test_email_address" type="text" class="large validate[required]" value="{{ test_email_address }}"/></div>
+                                </div>
+                                <div class="clearfix alt-highlight">
+                                    <label>Unsubscribe Text:</label>
+                                    <div class="input">
+                                        <textarea id="unsubscribe_text" name="unsubscribe_text" class="xxlarge" rows="3">{{ unsubscribe_text }}</textarea>
+                                        <div>This is applied to newsletters only, not service emails. Use <strong>[[[unsubscribe_link]]]</strong> in the text above to automatically have the users unsubscribe link added within each newsletter.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix col_12">
+                        <div class="col_4 adminResponsiveHide">&nbsp;</div>
+                        <div class="col_8 last">
+                            <div class="clearfix">
+                                <div class="input no-label">
+                                    <input name="submitted" type="hidden" value="1"/>
+                                    <input type="submit" value="Submit" class="button blue">
+                                    <input type="reset" value="Cancel" class="button grey" onClick="window.location = '{{ ADMIN_WEB_ROOT }}/plugin_manage';">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>   
+    </div>
+</div>
+{% endblock %}

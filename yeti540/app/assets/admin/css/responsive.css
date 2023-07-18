@@ -1,0 +1,72 @@
+    /* =============   ADMIN PANEL RESPONSIVE CODE   ============= */   
+@media (max-width: 1023px){
+    .adminResponsiveHide {display:none;}
+    .adminResponsiveClear {clear:both;}
+    .mobileAdminResponsiveHide {display:none;}
+    .row h1 {text-align:center;}
+    #logo {display:inline-block; float:none;}
+    .pattern h1, header .left {margin:0px;}
+    header .right {display: inline-block; margin: 0; text-align: center;}
+    header, #faux_header {height:auto;}
+    #toolbar {float:none; padding:0px; width:100%;}
+    .responsiveFooterWrapper {width:100%; text-align:center;}
+    .responsiveHeaderWrapper {width:100%; text-align:center;}
+    .responsiveLoginWrapper {text-align:center !important;} 
+    #login .container {top:50px;}
+    .loginWrapper input[type="text"], .loginWrapper input[type="password"] {width:95% !important;}
+    footer div {display: block; text-align: center; width: 100%;}
+    .widget {text-align:center; margin-bottom: 20px; margin-top: 20px;}
+    h2, .widget .ui-tabs-nav li.ui-state-active h2 {left: 0;}
+    header, #faux_header {background-image:none;}
+    .fileManageActions {width:50% !important;}
+    .fileManageFileName {width:50%;}
+    .dataTables_length {display:none;}
+    .sectionLargeIcon {display:none;}
+    .dataTables_info {width:100%; float:none; text-align:center;}
+    .fg-buttonset .fg-button, .pagination li a {padding:5px;}
+    .dataTable {width:100% !important;}
+    .dataTables_paginate {float:none; text-align:center;}
+    .ui-buttonset {margin:0px;}
+    .dataTables_filter {float: none; text-align: center;width: 100%;}
+    .widget_inside .col_12 {margin-bottom:0px;}
+    .col_1, .col_2, .col_3, .col_4, .col_5, .col_6, .col_7, .col_8, .col_9, .col_10, .col_11, .col_12 {padding:0px; padding-top:10px;}
+    .button.blue {margin-top:20px;}
+    #actualbody .row {padding:0px;}
+    .responsiveTable {padding:0px !important;}
+    .responsiveTable p {padding-right:20px; padding-left:20px;}
+    .input.no-label  {margin:0px !important;}
+    .input.no-label .button:first-child {margin-left:0px;}
+    .buttonFloat {float:none;}
+    .dataTableFix {word-break:normal !important;}
+    .newsletterButton {float:none !important; margin-top:10px !important;}
+    .newsletterButton2 {float:none !important;}
+    .dateField {margin:10px;}
+    input.xxlarge, textarea.xxlarge, select.xxlarge {width:100%;}
+    .formFieldFix {width:100% !important;}
+    .input.medium, textarea.medium, select.medium {width:100%;}
+    .input.large, textarea.large, select.large {width:100%;}
+    .form div.clearfix div.input input[type="text"], .form div.clearfix div.input input[type="password"] {width:100%;}
+    .responsiveTableColumn {width:40% !important;}
+    .formError {display:none !important;}
+    .dataTables_processing {display:none; width:1px;}
+    .activeDownloadsColumn {width:70px !important;}
+    .ui-dialog .ui-dialog-buttonpane {text-align:center;}
+    .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {float:none;}
+    .container h2 {display: block; margin: 0 0;}
+    .translationsForm {width:100% !important;}
+    .formRow {width:100%;}
+    .manage-theme-title {width:100%; float:none; text-align:center;}
+    .manage-theme-buttons {width:100%; margin-bottom:20px; float:none; text-align:center; margin-left:auto; margin-right:auto;}
+    .adminFooterButtons {padding:40px;}
+    .settingsSubHeader {display:none;}
+}
+
+@media (max-width: 497px){
+    .adminMobileResponsiveClear {clear:both;}
+    .responsiveDisplay {display:block;}
+    .adminMobileHide {display:none;}
+}
+
+@media (max-width: 991px){
+    footer {display:none !important;}
+}

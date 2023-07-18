@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>{{ SITE_CONFIG_SITE_NAME }}</title>
+        <meta name="description" content="{{ PAGE_DESCRIPTION }}" />
+        <meta name="keywords" content="{{ PAGE_KEYWORDS }}" />
+        <meta name="copyright" content="Copyright &copy; {{ "now"|date("Y") }} - {{ SITE_CONFIG_SITE_NAME }}" />
+        <meta name="robots" content="all" />
+        <meta http-equiv="Cache-Control" content="no-cache" />
+        <meta http-equiv="Expires" content="-1" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <script src="{{ theme.getAccountJsPath() }}/jquery-1.11.0.min.js"></script>
+        <script>
+            var LOGGED_IN = {% if Auth.loggedIn() == 'true' %}true{% else %}false{% endif %};
+            var IS_EMBED = true;
+        </script>
+        {{ theme.outputHeadJSCode()|raw }}
+    </head>
+
+    <body style="width: {{ EMBED_WIDTH }}px;">
+        <div class="embedded clear-adblock">
+            <div style="width: {{ EMBED_WIDTH }}px;">
+                <iframe src="{{ filePreviewerObj.getDocumentPreviewURL(file)|raw }}" height="{{ EMBED_HEIGHT }}" width="100%" frameborder="0" style="border:1px solid #ddd;"></iframe>
+            </div>
+        </div>
+
+        {% include '@themePath/partial/_ad_block.html.twig' ignore missing %}
+        {{ not SITE_CONFIG_GOOGLE_ANALYTICS_CODE ? "" : SITE_CONFIG_GOOGLE_ANALYTICS_CODE|raw }}
+    </body>
+</html>

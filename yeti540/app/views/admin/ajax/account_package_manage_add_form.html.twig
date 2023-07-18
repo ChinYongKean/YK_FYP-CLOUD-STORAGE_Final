@@ -1,0 +1,363 @@
+<p>Use the form below to {{ formType }} user package details.</p>
+<form id="{{ formName }}" class="user_package_form form-horizontal form-label-left input_mask">
+
+    <div class="form">
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("label", "label")|title }}:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                <input name="label" id="label" type="text" value="{{ label }}" class="form-control"/>
+            </div>
+        </div>
+    </div><br/>
+
+    <div class="" role="tabpanel" data-example-id="togglable-tabs">
+        <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Upload Settings</a>
+            </li>
+            <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Download Settings</a>
+            </li>
+            <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Site Options</a>
+            </li>
+        </ul>
+
+        <div id="myTabContent" class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Users Can Upload:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <select name="can_upload" id="can_upload" class="form-control" onChange="toggleElements(this);
+                                    return false;">
+                                {% for k,yesNoOption in yesNoOptions %}
+                                    <option value="{{ k }}"{% if can_upload == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <p>
+                            Allow users to upload.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group can_upload">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Max Uploads Per Day:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <input name="max_uploads_per_day" id="max_uploads_per_day" type="text" value="{{ max_uploads_per_day }}" class="form-control"/>
+                            <span class="input-group-addon">files</span>
+                        </div>
+                        <p>
+                            Spam protect: Max files a user IP address or account can upload per day. Leave blank for unlimited.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group can_upload">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Concurrent Uploads:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <input name="concurrent_uploads" id="concurrent_uploads" type="text" value="{{ concurrent_uploads }}" class="form-control"  {{ can_upload == 0?'DISABLED':'' }}/>
+                            <span class="input-group-addon">files</span>
+                        </div>
+                        <p>
+                            The maximum amount of files that can be uploaded at the same time for users.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Max Upload Size:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-5 col-sm-7 col-xs-12">
+                            <input name="max_upload_size" id="max_upload_size" type="text" value="{{ max_upload_size }}" class="form-control"/>
+                            <span class="input-group-addon">bytes</span>
+                        </div>
+                        <p>
+                            The max upload filesize for users (in bytes)
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Accepted Upload File Types:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-12 col-sm-12 col-xs-12">
+                            <input name="accepted_file_types" id="accepted_file_types" type="text" value="{{ accepted_file_types }}" class="form-control"/>
+                        </div>
+                        <p>
+                            The file extensions which are permitted. Leave blank for all. Separate by semi-colon. i.e. .jpg;.gif;.doc;
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Blocked Upload File Types:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-12 col-sm-12 col-xs-12">
+                            <input name="blocked_file_types" id="blocked_file_types" type="text" value="{{ blocked_file_types }}" class="form-control"/>
+                        </div>
+                        <p>
+                            The file extensions which are NOT permitted. Leave blank to allow all file types. Separate by semi-colon. i.e. .jpg;.gif;.doc;
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Enable Url Downloading:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <select name="can_remote_download" id="can_remote_download" class="form-control" onChange="toggleElements(this);
+                                    return false;">
+                                {% for k,yesNoOption in yesNoOptions %}
+                                    <option value="{{ k }}"{% if can_remote_download == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <p>
+                            Allow users to use the remote url download feature.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group can_remote_download">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Max Remote Urls:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <input name="max_remote_download_urls" id="max_remote_download_urls" type="text" value="{{ max_remote_download_urls }}" class="form-control" {{ can_remote_download == 0?'DISABLED':'' }}/>
+                            <span class="input-group-addon">urls</span>
+                        </div>
+                        <p>
+                            The maximum remote urls a user can download at once.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group alt-highlight">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Storage Allowance:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-5 col-sm-7 col-xs-12">
+                            <input name="max_storage_bytes" id="max_storage_bytes" type="text" value="{{ max_storage_bytes }}" class="form-control"/>
+                            <span class="input-group-addon">bytes</span>
+                        </div>
+                        <p>
+                            Maximum storage permitted for users, in bytes. Use 0 (zero) for no limits.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Upload Url Slug:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-12 col-sm-12 col-xs-12">
+                            <input name="upload_url_slug" id="upload_url_slug" type="text" value="{{ upload_url_slug }}" class="form-control"/>
+                        </div>
+                        <p>
+                            Optional. If set, upload urls are appended with this path. Can be used to limit upload speed on Nginx for "local" or "direct" storage servers. (<a href="https://support.mfscripts.com/public/kb_view/80/" target="_blank">more information</a>)
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
+                <div class="form-group wait_between_downloads">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Wait Between Downloads:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <input name="wait_between_downloads" id="wait_between_downloads" type="text" value="{{ wait_between_downloads }}" class="form-control"/>
+                            <span class="input-group-addon">seconds</span>
+                        </div>
+                        <p>
+                            How long a user must wait between downloads, in seconds. Set to 0 (zero) to disable. Note: Ensure the \'downloads_track_current_downloads\' is also set to \'yes\' in site settings to enable this.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group download_speed">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Download Speed:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-5 col-sm-7 col-xs-12">
+                            <input name="download_speed" id="download_speed" type="text" value="{{ download_speed }}" class="form-control"/>
+                            <span class="input-group-addon">bytes</span>
+                        </div>
+                        <p>
+                            Maximum download speed for users, in bytes per second. i.e. 50000. Use 0 for unlimited.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group concurrent_downloads">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Concurrent Downloads:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <input name="concurrent_downloads" id="concurrent_downloads" type="text" value="{{ concurrent_downloads }}" class="form-control"/>
+                            <span class="input-group-addon">files</span>
+                        </div>
+                        <p>
+                            The maximum concurrent downloads a user can do at once. Set to 0 (zero) for no limit. Note: Ensure the 'downloads_track_current_downloads' is also set to 'yes' in site settings to enable this.<br/><br/>This option will not work when "Improved Downloads" option is set on the file storage server. In this instance, use the "Download Url Slug" method below.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group downloads_per_day">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Max Daily Download Quantity:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <input name="downloads_per_24_hours" id="downloads_per_24_hours" type="text" value="{{ downloads_per_24_hours }}" class="form-control"/>
+                            <span class="input-group-addon">files</span>
+                        </div>
+                        <p>
+                            The maximum total file count a user can download in a 24-hour period. Set to 0 (zero) to disable.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group downloads_per_day_size">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Max Daily Download Filesize:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-5 col-sm-7 col-xs-12">
+                            <input name="download_size_per_24_hours" id="download_size_per_24_hours" type="text" value="{{ download_size_per_24_hours }}" class="form-control"/>
+                            <span class="input-group-addon">bytes</span>
+                        </div>
+                        <p>
+                            The maximum total filesize a user can download in a 24-hour period. Set to 0 (zero) to disable.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Max Download Size:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-5 col-sm-7 col-xs-12">
+                            <input name="max_download_filesize_allowed" id="max_download_filesize_allowed" type="text" value="{{ max_download_filesize_allowed }}" class="form-control"/>
+                            <span class="input-group-addon">bytes</span>
+                        </div>
+                        <p>
+                            The maximum single filesize a user can download (in bytes). Set to 0 (zero) to ignore.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Download Url Slug:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-12 col-sm-12 col-xs-12">
+                            <input name="download_url_slug" id="download_url_slug" type="text" value="{{ download_url_slug }}" class="form-control"/>
+                        </div>
+                        <p>
+                            Optional. If set, final download urls are appended with this path. Can be used to limit download speed &amp; concurrent downloads on Nginx for "local" or "direct" storage servers. (<a href="https://support.mfscripts.com/public/kb_view/81/" target="_blank">more information</a>)
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
+                <div class="form-group nav_account_packages">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Show Adverts:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <select name="show_site_adverts" id="show_site_adverts" class="form-control">
+                                {% for k,yesNoOption in yesNoOptions %}
+                                    <option value="{{ k }}"{% if show_site_adverts == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <p>
+                            Show adverts for users across the site.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Show Upgrade Page:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <select name="show_upgrade_screen" id="show_upgrade_screen" class="form-control">
+                                {% for k,yesNoOption in yesNoOptions %}
+                                    <option value="{{ k }}"{% if show_upgrade_screen == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <p>
+                            Show the premium account upgrade page for users.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Inactive Files Days:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <input name="days_to_keep_inactive_files" id="days_to_keep_inactive_files" type="text" value="{{ days_to_keep_inactive_files }}" class="form-control"/>
+                            <span class="input-group-addon">days</span>
+                        </div>
+                        <p>
+                            The amount of days after non-active files are removed for users. Non-active = time since last download. Use 0 for unlimited.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Trash Delete Days:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <input name="days_to_keep_trashed_files" id="days_to_keep_trashed_files" type="text" value="{{ days_to_keep_trashed_files }}" class="form-control"/>
+                            <span class="input-group-addon">days</span>
+                        </div>
+                        <p>
+                            File are kept in the users trash for this period, then automatically removed. Use 0 for unlimited.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Package Type:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-12 col-sm-12 col-xs-12">
+                            <select name="level_type" id="level_type" class="form-control">
+                                {% for k,availableAccountType in availableAccountTypes %}
+                                    <option value="{{ k }}"{% if level_type == k %} SELECTED{% endif %}>{{ availableAccountType|title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <p>
+                            The type of account. Note that Moderator &amp; Admin have access to the admin area.
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group nav_account_packages">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">On Upgrade Page:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <select name="on_upgrade_page" id="on_upgrade_page" class="form-control">
+                                {% for k,yesNoOption in yesNoOptions %}
+                                    <option value="{{ k }}"{% if on_upgrade_page == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <p>
+                            Whether to show this package on the upgrade page.
+                        </p>
+                    </div>
+                </div>
+                            
+                <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Auto Expire Account Days:</label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <div class="input-group col-md-3 col-sm-5 col-xs-12">
+                            <input name="delete_account_after_days" id="delete_account_after_days" type="text" value="{{ delete_account_after_days }}" class="form-control"/>
+                            <span class="input-group-addon">days</span>
+                        </div>
+                        <p>
+                            Accounts of this type are set as disabled after this many days. Any files are not deactivated. This option is normally disabled for registered accounts by using 0 to never expire. Set as 0 to ignore.
+                        </p>
+                    </div>
+                </div>
+
+            </div><br/>
+
+        </div>
+    </div>
+
+    {{ PluginHelper.getPluginAdminPackageSettingsFormV2(gEditUserLevelId) }}
+
+</form>

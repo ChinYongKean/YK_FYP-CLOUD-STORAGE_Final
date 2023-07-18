@@ -1,0 +1,58 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Add Theme{% endblock %}
+{% block selected_page %}themes{% endblock %}
+{% block selected_sub_page %}theme_manage_add{% endblock %}
+
+{% block body %}
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>Add Theme</h3>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <form action="theme_manage_add" method="POST" name="themeForm" id="themeForm" enctype="multipart/form-data" class="form-horizontal form-label-left">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Upload Theme Package</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Upload the theme package using the form below. The theme package is supplied by <a href="{{ currentProductUrl }}" target="_blank">{{ currentProductName }}</a> in zip format.</p>
+                                <div class="clearfix col_12">
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix alt-highlight">
+                                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="theme_zip">Theme Zip File:</label>
+                                                <div class="col-md-4 col-sm-4 col-xs-12">
+                                                    <input name="theme_zip" type="file" id="theme_zip" class="form-control"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="ln_solid"></div>
+                                <div class="form-group">
+                                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                        <button type="button" class="btn btn-default" onClick="window.location = 'theme_manage';">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Upload Theme Package</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input name="submitted" type="hidden" value="1"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

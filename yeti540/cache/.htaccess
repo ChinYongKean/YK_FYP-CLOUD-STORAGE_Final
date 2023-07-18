@@ -1,0 +1,3 @@
+# allow access directly to cache
+order allow,deny
+allow from all

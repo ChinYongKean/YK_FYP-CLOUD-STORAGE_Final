@@ -1,0 +1,20 @@
+{% if enabledGateways|length > 0 %}
+    {% for enabledGateway in enabledGateways %}
+        <div style="text-align: center; padding: 3px;">
+            <form id="form{{ days }}" action="{{ WEB_ROOT }}/upgrade_confirmation?cid={{ enabledGateway['config_id'] }}" method="post">
+                <input type="hidden" name="days" value="{{ days }}" />
+                <input type="hidden" name="user_level_pricing_id" value="{{ user_level_pricing_id }}" />
+
+                {% if i|length > 0 %}
+                    <input type="hidden" name="i" value="{{ i }}" />
+                {% endif %}
+
+                {% if f|length > 0 %}
+                    <input type="hidden" name="f" value="{{ f }}" />
+                {% endif %}
+
+                <input type="image" src="{{ PLUGIN_WEB_ROOT }}/{{ folder_name }}/assets/img/gateways/{{ enabledGateway['class_name'] }}/logo.jpg" title="Pay with {{ enabledGateway['label'] }}" alt="Pay with {{ enabledGateway['label'] }}" style="height: 60px; cursor: pointer;"/>
+            </form>
+        </div>
+    {% endfor %}
+{% endif %}

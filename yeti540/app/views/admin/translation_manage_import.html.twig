@@ -1,0 +1,66 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Import Translation File{% endblock %}
+{% block selected_page %}plugins{% endblock %}
+{% block selected_sub_page %}plugins_manage{% endblock %}
+
+{% block body %}
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>Import Translations</h3>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <form method="POST" action="translation_manage_import" name="pluginForm" id="pluginForm" enctype="multipart/form-data" class="form-horizontal form-label-left">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Import From CSV File</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Use this page to import a language file into your site. The format should be CSV, layed out the same as the <a href="translation_manage_export">exported language</a> files.</p>
+                                <p><strong>IMPORTANT:</strong> The import will <strong>NOT</strong> replace the content of any locked translations (i.e. ones you've manually edited). You can use this tool to re-import the csv file for any new translations.</p>
+                                <br/>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Import Language:
+                                    </label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        <select name="languageId" id="languageId" class="form-control">
+                                            {% for language in languages %}
+                                                <option value="{{ language.id }}">{{ language.languageName }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Translations CSV:</label>
+                                    <div class="col-md-4 col-sm-4 col-xs-12">
+                                        <input name="translation_csv" type="file" class="form-control"/>
+                                    </div>
+                                </div>
+
+                                <div class="ln_solid"></div>
+                                <div class="form-group">
+                                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                        <button type="submit" class="btn btn-primary">Import Data</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input name="submitted" type="hidden" value="1"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

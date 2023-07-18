@@ -1,0 +1,52 @@
+<p>Use the form below to add a new page to the download process for an account type.</p>
+<form id="addTranslationForm" class="form-horizontal form-label-left input_mask">
+    <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Download Page:</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+            <select name="download_page" id="download_page" class="form-control">
+                {% for downloadPage in downloadPages %}
+                    <option value="{{ downloadPage }}"{{ downloadPage == download_page?' SELECTED':'' }}>{{ downloadPage }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">User Type:</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+            <select name="user_level_id" id="user_level_id" class="form-control">
+                {% for userLevelId,userLevelLabel in userLevelsArr %}
+                    <option value="{{ userLevelId }}"{{ userLevelId == user_level_id?' SELECTED':'' }}>{{ userLevelLabel|title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Page Order:</label>
+        <div class="col-md-5 col-sm-5 col-xs-12">
+            <input name="page_order" id="page_order" value="{{ page_order }}" type="text" class="form-control"/>
+            <p class="text-muted">If lower than existing pages, these will be automatically increased.</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Optional File Type Limit:</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+            <input name="file_type_limit" id="file_type_limit" value="{{ file_type_limit }}" type="text" class="form-control"/>
+            <p class="text-muted">Optionally set file extensions to only show this page on. Leave blank for all. Separate by semi-colon. i.e. .jpg;.gif;.doc;</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Optional Timer:</label>
+        <div class="col-md-5 col-sm-5 col-xs-12">
+            <input name="optional_timer" id="optional_timer" value="{{ optional_timer }}" type="text" class="form-control"/>
+            <p class="text-muted">Ensure page supports countdowns. If your page is refreshing try clearing this.</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-3 col-sm-3 col-xs-12">Optional JS Code:</label>
+        <div class="col-md-9 col-sm-9 col-xs-12">
+            <textarea name="additional_javascript_code" id="additional_javascript_code" class="form-control">{{ additional_javascript_code }}</textarea>
+            <p class="text-muted">Can be used for pop-unders or other javascript code.</p>
+        </div>
+    </div>
+    <input name="translation_flag_hidden" id="translation_flag_hidden" type="hidden" value=""/>
+</form>

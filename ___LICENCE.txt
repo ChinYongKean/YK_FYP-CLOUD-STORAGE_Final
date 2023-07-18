@@ -1,0 +1,14 @@
+Product licence details.
+
+Full terms and conditions of the script licence can be seen at https://mfscripts.com/terms.html.
+
+A brief overview of the licence is detailed below:
+
+- Each purchase includes 1 licence for a single instance of the script on a single domain name.
+- All scripts include 100% php/html source code.
+- MFScripts.com monitor licences and can revoke them should these terms be breached.
+- A reseller agreement is not included and reselling any of our scripts is not permitted.
+- Please contact support@mfscripts.com if you have any questions.
+- This document must remain un-modified.
+
+Any questions should be sent to support@mfscripts.com

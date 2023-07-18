@@ -1,0 +1,47 @@
+AMENDED FILES:
+___RELEASE_HISTORY.txt
+_account_file_details.php
+_account_home_v2_file_listing.ajax.php
+_download_page_compare_all.inc.php
+_file_manage_bulk_delete.ajax.php
+_indexJS.inc.php
+account_edit.php
+account_home.php
+register.php
+urlUploadHandler.php
+admin/ajax/server_manage_add_form.ajax.php
+admin/ajax/setting_manage.ajax.php
+admin/setting_manage.php
+admin/user_add.php
+admin/user_edit.php
+includes/class.api.php
+includes/class.config.php
+includes/class.dbobject.php
+includes/class.file.php
+includes/class.pluginhelper.php
+includes/class.uploader.php
+includes/email_class/class.phpmailer.php
+includes/functions.inc.php
+offline/database.sql
+themes/blue_v2/styles/jstree.css
+themes/blue_v2/styles/screen.css
+
+
+
+DELETED FILES:
+test_email.php
+
+
+
+NEW FILES:
+_account_move_file_in_folder.ajax.php
+admin/_test_scripts/test_email.php
+admin/_test_scripts/test_email.php
+includes/class.passwordpolicy.php
+offline/upgrade_sql_statements/v3.5.1 - v3.5.2.sql
+
+
+
+NOTES:
+
+Produced with WinMerge

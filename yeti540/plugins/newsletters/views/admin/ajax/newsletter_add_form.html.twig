@@ -1,0 +1,47 @@
+<span id="popupMessageContainer"></span>
+<form id="addNewsletterForm" class="form-horizontal form-label-left input_mask">
+    <p>Use the form below to create a <strong>{{ formType==1?'Newsletter':'Service Email' }}</strong>. As this is a {{ formType==1?'newsletter, only users which have opted into your mailing list can be contacted. The "Send To" list below only contains opted in users.':'service email, all users can be contacted. You should not use this for sending newsletters as some of these users may have opted not to receive these.' }}</p>
+    <div class="form-group">
+        <label>{{ t("newsletter_title", "title")|title }}:</label>
+        <div>
+            <input name="title" id="title" type="text" value="{{ title }}" class="form-control"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>{{ t("newsletter_userGroup", "send to")|title }}:</label>
+        <div>
+            <select name="userGroup" id="userGroup" class="form-control">
+                <option value=""{{ userGroup == '' ? ' SELECTED' : ''}}>All Registered Accounts ({{ allUsersTotal }})</option>
+                {% for accountTypeDetail in accountTypeDetails %}
+                    <option value="{{ accountTypeDetail['id'] }}" {{ userGroup == accountTypeDetail['id']?'SELECTED':'' }}>{{ accountTypeDetail['label']|title }} Accounts Only ({{ accountTypeDetail['_total_users'] }})</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>{{ t("newsletter_subject", "subject")|title }}:</label>
+        <div>
+            <input name="subject" id="subject" type="text" value="{{ subject }}" class="form-control"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label style="width: 13.5em;">{{ (formType==1?t("newsletter_htmlContent", "newsletter content"):t("service_email_htmlContent", "email content"))|title }}:</label><br/>
+        <div>
+            <textarea name="htmlContent" id="htmlContent" class="form-control">{{ htmlContent|raw }}</textarea>
+            <div style="width: 500px; color: #777; font-size: 11px;">Replacements: 
+                <a href="#" onClick="insertReplacement(\'[[[title]]]\'); return false;">title</a>, 
+                <a href="#" onClick="insertReplacement(\'[[[firstname]]]\'); return false;">firstname</a>, 
+                <a href="#" onClick="insertReplacement(\'[[[lastname]]]\'); return false;">lastname</a>, 
+                <a href="#" onClick="insertReplacement(\'[[[username]]]\'); return false;">username</a>, 
+                <a href="#" onClick="insertReplacement(\'[[[level]]]\'); return false;">level</a>, 
+                <a href="#" onClick="insertReplacement(\'[[[current_date]]]\'); return false;">current_date</a>, 
+                <a href="#" onClick="insertReplacement(\'[[[current_time]]]\'); return false;">current_time</a>
+            </div>
+        </div>
+    </div>
+
+    <input name="formType" id="formType" type="hidden" value="{{ formType }}"/>
+</form>

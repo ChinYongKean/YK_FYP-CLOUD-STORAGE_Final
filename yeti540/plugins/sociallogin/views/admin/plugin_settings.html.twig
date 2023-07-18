@@ -1,0 +1,366 @@
+{% extends "@corePath/admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}{{ pluginName }} Settings{% endblock %}
+{% block selected_page %}plugins{% endblock %}
+{% block selected_sub_page %}plugin_manage{% endblock %}
+
+{% block body %}
+    <div class="row clearfix right_col" role="main">
+        <div class="col_12">
+            <div class="clearfix">
+                <div class="page-title">
+                    <div class="title_left">
+                        <h3>{{ pluginName }} Settings</h3>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="widget_inside">
+                    {{ msg_page_notifications|raw }}
+                    <form method="POST" action="{{ ADMIN_WEB_ROOT }}/plugin/sociallogin/settings" name="pluginForm" id="pluginForm" autocomplete="off" enctype="multipart/form-data" class="form-horizontal">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Plugin State</h2>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Whether this plugin is enabled.</p>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Plugin Enabled:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <select name="plugin_enabled" id="plugin_enabled" class="form-control">
+                                            {% for k,yesNoOption in yesNoOptions %}
+                                                <option value="{{ k }}"{% if plugin_enabled == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Facebook</h2>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Whether to allow Facebook logins and your API details.</p>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Enable Facebook:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <select name="facebook_enabled" class="form-control socialToggle">
+                                            {% for k,yesNoOption in yesNoOptions %}
+                                                <option value="{{ k }}"{% if facebook_enabled == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">App ID:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="text" name="facebook_application_id" class="form-control" value="{{ facebook_application_id }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group alt-highlight socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">App Secret:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="text" name="facebook_application_secret" class="form-control" value="{{ facebook_application_secret }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group alt-highlight socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">App Configuration:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12 formTextBlock">
+                                        <ol>
+                                            <li>Go to <a href="https://developers.facebook.com/apps" target="_blank">https://developers.facebook.com/apps</a> and create a new application.</li>
+                                            <li>Select "For Everything Else" in the popup.</li>
+                                            <li>Fill out any required fields such as the application name and description. Click "Create App ID".</li>
+                                            <li>On the new application details page, go to the "Add a Product" section, find "Facebook login" and click "Set Up".</li>
+                                            <li>On the following screen select "www" web.</li>
+                                            <li>Set 'Site Url' as:<br/>
+                                                <code>{{ WEB_ROOT }}</code></li>
+                                            <li>Click "Continue"/"Next" until you get to "Step 5".</li>
+                                            <li>Click "Settings" on the left for "Facebook login". Set the "Valid OAuth Redirect URIs" as below:<br/>
+                                                <code>{{ PLUGIN_WEB_ROOT }}/sociallogin/login/Facebook</code></li>
+                                            <li>Click "Settings" > "Basic" on the left (under "Dashboard". Set the "App Domains" to:<br/>
+                                                <code>{{ _CONFIG_SITE_HOST_URL }}</code></li>
+                                            <li>Set 'Contact Email' as your website email address.</li>
+                                            <li>Set 'Privacy Policy URL' to:<br/>
+                                                <code>{{ WEB_ROOT }}/privacy</code></li>
+                                            <li>Set 'Terms of Service URL' to:<br/>
+                                                <code>{{ WEB_ROOT }}/terms</code></li>
+                                            <li>Once you have finished, save then copy and paste the created application credentials into the fields above.</li>
+                                            <li>Click on 'Status & Review' and set 'Do you want to make this app and all its live features available to the general public?' to 'YES'.</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Twitter</h2>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Whether to allow Twitter logins and your API details.</p>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Enable Twitter:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <select name="twitter_enabled" class="form-control socialToggle">
+                                            {% for k,yesNoOption in yesNoOptions %}
+                                                <option value="{{ k }}"{% if twitter_enabled == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Consumer ID:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="text" name="twitter_application_key" class="form-control" value="{{ twitter_application_key }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group alt-highlight socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Consumer Secret:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="text" name="twitter_application_secret" class="form-control" value="{{ twitter_application_secret }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group alt-highlight socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">App Configuration:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12 formTextBlock">
+                                        <ol>
+                                            <li>Go to <a href="https://dev.twitter.com/apps" target="_blank">https://dev.twitter.com/apps</a> and create a new application.</li>
+                                            <li>If you don't have a developers account, you may need to apply for this before you can create any apps.</li>
+                                            <li>Fill out any required fields such as the application name and description.</li>
+                                            <li>Set the 'Website URL' as:<br/>
+                                                <code>{{ WEB_ROOT }}</code></li>
+                                            <li>Set the 'Callback URL' as:<br/>
+                                                <code>{{ PLUGIN_WEB_ROOT }}/sociallogin/login/Twitter</code></li>
+                                            <li>Set the 'Terms of Service URL' as:<br/>
+                                                <code>{{ WEB_ROOT }}/terms</code></li>
+                                            <li>Set the 'Privacy Policy URL' as:<br/>
+                                                <code>{{ WEB_ROOT }}/privacy</code></li>
+                                            <li>Click the 'Create' button.</li>
+                                            <li>Once created, open the "Permissions" tab. Edit the the permissions and set "Access permission" to read only.</li>
+                                            <li>On the same permissions screen, ensure you check "Request email address from users" in "Additional permissions". Click "Save".</li>
+                                            <li>Open the 'Keys and tokens' tab of the application and copy &amp; paste the application credentials above.</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                            
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Google</h2>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Whether to allow Google logins and your API details.</p>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Enable Google:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <select name="google_enabled" class="form-control socialToggle">
+                                            {% for k,yesNoOption in yesNoOptions %}
+                                                <option value="{{ k }}"{% if google_enabled == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Client ID:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="text" name="google_application_id" class="form-control" value="{{ google_application_id }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group alt-highlight socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Client Secret:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="text" name="google_application_secret" class="form-control" value="{{ google_application_secret }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group alt-highlight socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">App Configuration:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12 formTextBlock">
+                                        <ol>
+                                            <li>Go to <a href="https://code.google.com/apis/console/" target="_blank">https://code.google.com/apis/console/</a> and create a new project.</li>
+                                            <li>Fill out any required fields such as the project name.</li>
+                                            <li>Once created, view the project page.</li>
+                                            <li>Go to the "OAuth consent screen" page linked on the left and select "External". Click "Create".</li>
+                                            <li>Set the application name and a logo.</li>
+                                            <li>Set the following in "Authorised domains":<br/>
+                                                <code>{{ _CONFIG_SITE_HOST_URL }}</code></li>
+                                            <li>Set the following in "Application Homepage link":<br/>
+                                                <code>{{ WEB_ROOT }}</code></li>
+                                            <li>Set the following in "Application Privacy Policy link":<br/>
+                                                <code>{{ WEB_ROOT }}/privacy</code></li>
+                                            <li>Set the following in "Application Terms of Service link":<br/>
+                                                <code>{{ WEB_ROOT }}/terms</code></li>
+                                            <li>On the left menu select "Domain verification" and "Add domain". Enter the domain and click "Add domain":
+                                                <code>{{ _CONFIG_SITE_HOST_URL }}</code></li>
+                                            <li>Once verified, go back to the "Domain verification" page and ensure it's listed.</li>
+                                            <li>In the project click on "Credentials" on the left menu, then "Create Credentials" near the top-middle of the page. Select "OAuth client ID".</li>
+                                            <li>Set the "Application type" as "Web application". Add "Authorised redirect URIs" as below and click "Create":
+                                                <code>{{ PLUGIN_WEB_ROOT }}/sociallogin/login/Google</code></li>
+                                            <li>Copy the client ID and Secret in the fields above.</li>
+                                            <li>You will need to submit your application for approval so it's not limited to 100 logins.</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="x_panel social_login_foursquare">
+                            <div class="x_title">
+                                <h2>Foursquare</h2>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Whether to allow Foursquare logins and your API details.</p>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Enable Foursquare:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <select name="foursquare_enabled" class="form-control socialToggle">
+                                            {% for k,yesNoOption in yesNoOptions %}
+                                                <option value="{{ k }}"{% if foursquare_enabled == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Client ID:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="text" name="foursquare_application_id" class="form-control" value="{{ foursquare_application_id }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group alt-highlight socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Client Secret:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="text" name="foursquare_application_secret" class="form-control" value="{{ foursquare_application_secret }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group alt-highlight socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">App Configuration:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12 formTextBlock">
+                                        <ol>
+                                            <li>Go to <a href="https://foursquare.com/developers/register" target="_blank">https://foursquare.com/developers/register</a> and create a new application.</li>
+                                            <li>Fill out any required fields such as the application name and description.</li>
+                                            <li>Set 'Application URL' as:<br/>
+                                                <code>{{ WEB_ROOT }}</code></li>
+                                            <li>Set 'Privacy Policy URL' as:<br/>
+                                                <code>{{ WEB_ROOT }}/privacy</code></li>
+                                            <li>Set 'Redirect URL' as:<br/>
+                                                <code>{{ PLUGIN_WEB_ROOT }}/sociallogin/login/Foursquare</code></li>
+                                            <li>Save changes. Once you have finished, copy and paste the created application credentials above.</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                       <div class="x_panel social_login_linkedin">
+                            <div class="x_title">
+                                <h2>LinkedIn</h2>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>Whether to allow LinkedIn logins and your API details.</p>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Enable LinkedIn:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <select name="linkedin_enabled" class="form-control socialToggle">
+                                            {% for k,yesNoOption in yesNoOptions %}
+                                                <option value="{{ k }}"{% if linkedin_enabled == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Client ID:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="text" name="linkedin_application_key" class="form-control" value="{{ linkedin_application_key }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group alt-highlight socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Client Secret:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                        <input type="text" name="linkedin_application_secret" class="form-control" value="{{ linkedin_application_secret }}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group alt-highlight socialToggleWrapper">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">App Configuration:</label>
+                                    <div class="col-md-6 col-sm-6 col-xs-12 formTextBlock">
+                                        <ol>
+                                            <li>Go to <a href="https://www.linkedin.com/developers/" target="_blank">https://www.linkedin.com/developers/</a> and create a new application.</li>
+                                            <li>Set 'Privacy Policy URL' to:<br/>
+                                                <code>{{ WEB_ROOT }}/privacy</code></li>
+                                            <li>Fill out any required fields such as the application name and description.</li>
+                                            <li>On the app settings, put the following url in the 'Widgets' > 'Domains' field:<br/>
+                                                <code>{{ WEB_ROOT }}</code></li>
+                                            <li>On the Auth tab, ensure the following url is set in any OAuth redirect urls:<br/>
+                                                <code>{{ PLUGIN_WEB_ROOT }}/sociallogin/login/LinkedIn</code></li>
+                                            <li>On the Products tab, select "Sign In with LinkedIn" and click "Add Product".</li>
+                                            <li>Once you have finished, copy and paste the Client ID & Client Secret into the above fields.</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                            
+                        <div class="x_panel">
+                            <div class="x_content">
+                                <div class="clearfix">
+                                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                        <input type="submit" value="Update Settings" class="btn btn-primary"/>
+                                        <input type="reset" value="Cancel" class="btn btn-default" onclick="window.location = '{{ ADMIN_WEB_ROOT }}/plugin_manage';"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input name="submitted" type="hidden" value="1"/>
+                    </form>
+                </div>
+            </div>   
+        </div>
+    </div>
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        $(document).ready(function () {
+            $(".socialToggle").each(function () {
+                toggleSocial(this);
+            });
+
+            $(".socialToggle").change(function () {
+                toggleSocial(this);
+            });
+        });
+
+        function toggleSocial(ele)
+        {
+            if ($(ele).val() == 1)
+            {
+                $(ele).parents('.x_content').find('.socialToggleWrapper').show();
+            } else
+            {
+                $(ele).parents('.x_content').find('.socialToggleWrapper').hide();
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,68 @@
+<p>Use the form below to {{ formType }} pricing details.</p>
+<form id="addPricingForm" class="form-horizontal form-label-left input_mask">
+
+    <div class="form">
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("package_pricing_label", "package pricing label")|title }}:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                <input name="pricing_label" id="pricing_label" type="text" value="{{ pricing_label }}" class="form-control"/>
+                <p class="text-muted">The description of the pricing shown to the user. i.e. 1 Year Plan or 5GB Download</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("package_type", "package type")|title }}:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                <select name="package_pricing_type" id="package_pricing_type" class="form-control" onChange="updateAddPricingOpt();">
+                    {% for k,pricingPackageTypeOption in pricingPackageTypeOptions %}
+                        <option value="{{ k }}"{% if package_pricing_type == k %} SELECTED{% endif %}>{{ pricingPackageTypeOption }}</option>
+                    {% endfor %}
+                </select>
+                <p class="text-muted">The type of upgrade.</p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("payment_period", "payment period")|title }}:</label>
+            <div class="col-md-5 col-sm-5 col-xs-12">
+                <select name="period" id="period" class="form-control">
+                    {% for k,periodOption in periodOptions %}
+                        <option value="{{ k }}"{% if period == k %} SELECTED{% endif %}>{{ periodOption }}</option>
+                    {% endfor %}
+                </select>
+                <p class="text-muted">The length of the upgraded membership.</p>
+            </div>
+        </div>
+        <div class="form-group bandwidth-class">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("download_allowance", "download allowance")|title }}:</label>
+            <div class="col-md-5 col-sm-5 col-xs-12">
+                <div class="input-group">
+                    <input name="download_allowance" id="download_allowance" type="text" value="{{ download_allowance }}" class="form-control"/>
+                    <span class="input-group-addon">bytes</span>
+                </div>
+                <p class="text-muted">1GB = 1073741824, 25GB = 26843545600, 100GB = 107374182400</p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">User Package:</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+                <select name="user_level_id" id="user_level_id" class="form-control">
+                    {% for userLevelOption in userLevelOptions %}
+                        <option value="{{ userLevelOption['level_id'] }}"{% if user_level_id == userLevelOption['level_id'] %} SELECTED{% endif %}>{{ userLevelOption['label'] }}</option>
+                    {% endfor %}
+                </select>
+                <p class="text-muted">Choose the package this pricing applies to. Only 'paid' packages are shown above.</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("package_price", "package price")|title }}:</label>
+            <div class="col-md-5 col-sm-5 col-xs-12">
+                <div class="input-group">
+                    <span class="input-group-addon">{{ SITE_CONFIG_COST_CURRENCY_SYMBOL }}</span>
+                    <input name="price" id="price" type="text" value="{{ price|number_format(2, '.', ',') }}" class="form-control"/>
+                    <span class="input-group-addon">{{ SITE_CONFIG_COST_CURRENCY_CODE }}</span>
+                </div>
+            </div>
+        </div>
+
+</form>

@@ -1,0 +1,52 @@
+{% extends "@themePath/partial/layout.html.twig" %}
+
+{% block title %}{{ t("newsletter_subscribe_title", "newsletter subscribe") }}{% endblock %}
+{% block description %}{{ t("newsletter_subscribe_description", "Unsubscribe") }}{% endblock %}
+{% block keywords %}{{ t("newsletter_subscribe_meta_keywords", "newsletter, subscribe, file, hosting, site") }}{% endblock %}
+
+{% block body %}
+    <section>
+        <div class="container form-full-width">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>{{ t("newsletter_subscribe", "newsletter subscribe")|title }}</h1>
+                    <hr>
+                </div>
+            </div>
+            <div class="row justify-content-between">
+                <div class="col-md-9">
+                    {% if msg_page_errors is defined %}
+                    <div class="alert bg--error">
+                        <div class="alert__body"><i class="fa fa-exclamation-triangle color--error"></i>&nbsp;&nbsp;{% if msg_page_errors is defined %}{{ msg_page_errors|join }}{% endif %}</div>
+                    </div>
+                    {% elseif msg_page_successes is defined %}
+                    <div class="alert bg--success">
+                        <div class="alert__body"><i class="fa fa-check color--success"></i>&nbsp;&nbsp;{% if msg_page_successes is defined %}{{ msg_page_successes|join }}{% endif %}</div>
+                    </div>
+                    {% endif %}
+                    
+                    <p>{{ t("newsletter_subscribe_intro_text", "Enter your email address below to be added to future newsletters from our site. Note, you must have a registered account to be added to the mailing list.") }}</p>
+                    
+                    <form method="post" role="form" action="{{ CORE_SITE_PATH }}/newsletter_subscribe" autocomplete="off">
+                        <!-- fix for chrome auto complete not working -->
+                        <input style="display:none"><input type="password" style="display:none">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <span>{{ t("email_address", "email address")|title }}:</span>
+                                <input type="text" tabindex="1" value="{{ e }}" id="e" name="e"/>
+                            </div>
+                            
+                            <div class="col-md-5 col-lg-4"><br/>
+                                <button class="btn btn--primary type--uppercase" type="submit">{{ t("subscribe", "subscribe")|title }}</button>
+                            </div>
+                        </div>
+                        <input type="hidden" value="1" name="submitme"/>
+                    </form>
+                </div>
+                <div class="col-md-3">
+                    <img alt="Image" src="{{ theme.getFrontendImagePath() }}/contact-banner.png"/>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

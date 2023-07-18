@@ -1,0 +1,25 @@
+<VAST version="4.0" xmlns:xs="https://www.w3.org/2001/XMLSchema" xmlns="https://www.iab.com/VAST">
+  <Ad id="preroll-1" sequence="1">
+		<InLine>
+		  <AdSystem>Test</AdSystem>
+		  <AdTitle>Title ad</AdTitle>
+		  <Creatives>
+			<Creative>
+			  <Linear skipoffset="00:00:05">
+				<Duration>00:02:15</Duration>
+				<TrackingEvents>
+				</TrackingEvents>
+				<VideoClicks>
+				  <ClickThrough id="scanscout"><![CDATA[https://codecanyon.net/user/_creativemedia_/portfolio]]></ClickThrough>
+				</VideoClicks>
+				<MediaFiles>
+				 <MediaFile id="1" delivery="progressive" type="video/mp4" bitrate="356" width="480" height="260">
+					<![CDATA[assets/vast/videos/VAST-4.0-Short-Intro-mid-resolution.mp4]]>
+				</MediaFile>
+				</MediaFiles>
+			  </Linear>
+			</Creative>
+		</Creatives>
+		</InLine>
+	 </Ad>
+</VAST>

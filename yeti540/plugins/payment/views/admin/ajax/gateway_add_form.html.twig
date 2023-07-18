@@ -1,0 +1,32 @@
+<form id="enableGatewayForm" class="form-horizontal form-label-left input_mask">
+    <div class="x_panel">
+        <div class="x_content">
+            <div class="x_title">
+                <h2>Configure Gateway</h2>
+                <div class="clearfix"></div>
+            </div>
+
+            <p>Use the form below to integrate with a new payment gateway.</p>
+            <div class="form-group">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("select_gateway", "select gateway")|title }}:</label>
+                <div class="col-md-9 col-sm-9 col-xs-12">
+                    <select name="gateway_id" id="gateway_id" class="form-control" onChange="loadGatewayForm();
+                            return false;">
+                        <optgroup label="Third Party Gateway Integration">
+                            {% for availableGateway in availableGateways %}
+                                <option value="{{ availableGateway['id'] }}"{{ gatewayId == availableGateway['id']?" SELECTED":"" }}>{{ availableGateway['label'] }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="gateway-config-wrapper"></div>
+
+    {% if gatewayConfigId != null %}
+        <input type="hidden" name="gateway_config_id" id="gateway_config_id" value="{{ gatewayConfigId }}"/>
+    {% endif %}
+</form>

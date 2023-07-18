@@ -1,0 +1,70 @@
+If you're using NGINX as your webserver, use the rewrite rules below instead of .htaccess.
+
+These will need adding to /etc/nginx/sites-available/default or wherever this file is located on your nginx install.
+
+#######################################################################
+# START NGINX RULES
+#######################################################################
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    location ~ \.php$ {
+        if (!-e $request_filename) { rewrite ^/(.*) /index.php?_page_url=$1 last; }
+    }
+
+    location / {
+        if (!-e $request_filename) {
+                rewrite ^/(.*) /index.php?_page_url=$1 last;
+        }
+    }
+
+    location /files/ {
+        internal;
+    }
+
+    # these locations would be hidden by .htaccess normally
+    location /logs/ {
+        deny all;
+    }
+#######################################################################
+# END NGINX RULES
+#######################################################################
+
+
+#######################################################################
+# Full /etc/nginx/sites-available/default file example below:
+#######################################################################
+server {
+    listen       80;
+    server_name  localhost; # change this for your server
+    root /usr/share/nginx/html;
+    index index.php;
+    client_max_body_size 5G;
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    location ~ \.php$ {
+        if (!-e $request_filename) { rewrite ^/(.*) /index.php?_page_url=$1 last; }
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME   $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+
+    location / {
+        if (!-e $request_filename) {
+                rewrite ^/(.*) /index.php?_page_url=$1 last;
+        }
+    }
+
+    location /files/ {
+        internal;
+    }
+
+    # these locations would be hidden by .htaccess normally
+    location /logs/ {
+        deny all;
+    }
+
+    location ~* "/\.(htaccess|htpasswd)$" {
+        deny    all;
+        return  404;
+    }
+}

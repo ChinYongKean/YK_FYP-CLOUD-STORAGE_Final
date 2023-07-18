@@ -1,0 +1,32 @@
+AMENDED FILES:
+
+_upgradeBoxes.inc.php
+file_download.php
+index.php
+includes\class.database.php
+admin\_header.inc.php
+admin\index.php
+admin\plugin_manage.php
+admin\user_edit.php
+
+NEW FILES:
+
+plugins\paypal
+plugins\paypal\_plugin_config.inc.php
+plugins\paypal\pluginPaypal.class.php
+plugins\paypal\admin
+plugins\paypal\admin\settings.php
+plugins\paypal\assets
+plugins\paypal\assets\css
+plugins\paypal\assets\img
+plugins\paypal\assets\img\payment_button.gif
+plugins\paypal\assets\img\icons
+plugins\paypal\assets\img\icons\128px.png
+plugins\paypal\assets\img\icons\16px.png
+plugins\paypal\assets\js
+plugins\paypal\includes
+plugins\paypal\includes\_append_upgradeBoxes.inc.php
+plugins\paypal\offline
+plugins\paypal\site
+plugins\paypal\site\_pay.php
+plugins\paypal\site\_payment_ipn.php

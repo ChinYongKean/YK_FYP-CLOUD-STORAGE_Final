@@ -1,0 +1,77 @@
+{
+    "name": "hiqdev/omnipay-bitpay",
+    "type": "library",
+    "description": "BitPay driver for Omnipay PHP payment libray",
+    "keywords": [
+        "omnipay",
+        "bitpay",
+        "php",
+        "merchant",
+        "payment"
+    ],
+    "homepage": "https://github.com/hiqdev/omnipay-bitpay",
+    "license": "MIT",
+    "support": {
+        "email": "support@hiqdev.com",
+        "source": "https://github.com/hiqdev/omnipay-bitpay",
+        "issues": "https://github.com/hiqdev/omnipay-bitpay/issues",
+        "wiki": "https://github.com/hiqdev/omnipay-bitpay/wiki",
+        "forum": "http://forum.hiqdev.com/"
+    },
+    "authors": [
+        {
+            "name": "Andrii Vasyliev",
+            "role": "Project lead",
+            "email": "sol@hiqdev.com",
+            "homepage": "http://hipanel.com/"
+        },
+        {
+            "name": "Dmitry Naumenko",
+            "role": "Lead backend developer",
+            "email": "d.naumenko.a@gmail.com",
+            "homepage": "http://silverfire.me/"
+        },
+        {
+            "name": "Andrey Klochok",
+            "role": "Lead frontend developer",
+            "email": "andreyklochok@gmail.com",
+            "homepage": "http://hiqdev.com/"
+        },
+        {
+            "name": "Yuriy Myronchuk",
+            "role": "QA Lead",
+            "email": "bladeroot@gmail.com",
+            "homepage": "http://hiqdev.com/"
+        }
+    ],
+    "require": {
+        "omnipay/common": "^3.0",
+        "bitpay/sdk-light": "^2.0"
+    },
+    "require-dev": {
+        "omnipay/tests": "^4.0",
+        "bitpay/sdk-light": "dev-master as 2.0"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0.x-dev"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Omnipay\\BitPay\\": "src",
+            "Omnipay\\BitPay\\Tests\\": "tests"
+        }
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/SilverFire/php-bitpay-light-client"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "hiqdev/composer-config-plugin": true
+        }
+    }
+}

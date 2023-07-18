@@ -1,0 +1,39 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Database Browser{% endblock %}
+{% block selected_page %}configuration{% endblock %}
+{% block selected_sub_page %}database_browser{% endblock %}
+
+{% block body %}
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>Database Browser</h3><div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    {% if databaseBrowserContent|length > 0 %}
+                        <div class="x_panel">
+                            <div class="x_content" style="overflow-x: auto; overflow-y: hidden;">
+                                <div>
+                                    {{ databaseBrowserContent|raw }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block head_js %}
+    <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/js/adminer.js"></script>
+{% endblock %}

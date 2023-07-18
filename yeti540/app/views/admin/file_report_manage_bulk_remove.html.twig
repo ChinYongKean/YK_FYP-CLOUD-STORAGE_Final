@@ -1,0 +1,96 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Bulk Remove{% endblock %}
+{% block selected_page %}files{% endblock %}
+{% block selected_sub_page %}file_report_manage{% endblock %}
+
+{% block body %}
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3>Bulk Remove</h3>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        {% if deleteRs|length > 0 %}
+            <div class='row'><div class='col-md-12 col-sm-12 col-xs-12'><div class='x_panel'>
+            <div class='x_title'><h2>Result</h2><div class='clearfix'></div></div>
+            <div class='x_content'>{{ deleteRs|join('<br/>')|raw }}</div>
+            </div></div></div>
+        {% endif %}
+
+        {{ msg_page_notifications|raw }}
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <form action="file_report_manage_bulk_remove" method="POST" id="demo-form2" class="form-horizontal form-label-left">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>File Details</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p>To bulk remove files, enter the urls in the textarea below. On submission these urls will be deactivated and files removed. Urls should include the site domain name and start with {{ _CONFIG_SITE_PROTOCOL }}. Only <strong>1 url per line</strong> within the textarea.</p>
+                            <br/>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="file_urls">Download Urls:</span>
+                                </label>
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <textarea name="file_urls" id="file_urls" class="form-control" placeholder="{{ WEB_ROOT }}/xyz&#10;..." required="required" style="height: 200px;">{{ file_urls }}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="confirm_password">Your Account Password:</span>
+                                </label>
+                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                    <input id="confirm_password" name="confirm_password" class="form-control" required="required" type="password"/>
+                                    <p class="text-muted">For security reasons please confirm your account password.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Other Options</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <br/>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="removal_type">Removal Reason:</span>
+                                </label>
+                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                    <select name="removal_type" id="removal_type" class="form-control">
+                                        <option value="3" {{ removal_type == 3?' SELECTED':'' }}>General</option>
+                                        <option value="4" {{ removal_type == 4?' SELECTED':'' }}>Copyright Breach (DMCA)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="admin_notes">Notes:</span>
+                                </label>
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <textarea name="admin_notes" id="admin_notes" class="form-control">{{ admin_notes }}</textarea>
+                                </div>
+                            </div>
+
+                            <div class="ln_solid"></div>
+                            <div class="form-group">
+                                <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                    <button type="submit" class="btn btn-default" onClick="window.location = 'file_report_manage';">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Confirm Removal</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input name="submitted" type="hidden" value="1"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

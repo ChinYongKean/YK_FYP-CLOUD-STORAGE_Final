@@ -1,0 +1,210 @@
+{% extends "partial/layout.html.twig" %}
+
+{% block title %}{{ file.originalFilename }}{% endblock %}
+{% block description %}{{ file.description|length > 0 ? file.description|slice(0, 250) : t("file_download_description", "Download file")~' - '~file.originalFilename }}{% endblock %}
+{% block keywords %}{{ file.getFileKeywords() }}{% endblock %}
+
+{% block body %}
+    <section>
+        <div class="container">
+            <div class="row align-items-center justify-content-around download-page">
+                <div class="col-md-12 text-center">
+                    <h2>
+                        {{ file.originalFilename }}
+                    </h2>
+                </div>
+                    
+                {% if UserHelper.showSiteAdverts() %}
+                    <div class="col-md-12 text-center advert-wrapper top-advert">
+                        {{ file.shouldShowAdultAdvert() == true ? SITE_CONFIG_ADULT_ADVERT_DELAYED_REDIRECT_TOP|raw : SITE_CONFIG_ADVERT_DELAYED_REDIRECT_TOP|raw }}
+                    </div>
+                {% endif %}
+
+                <div class="col-md-12">
+                    <table class="border--round table--alternate-row download-page-compare">
+                        <tbody>
+                            <tr>
+                                <th class="responsiveInfoTable">
+                                    <strong>
+                                        {{ file.originalFilename }} ({{ file.getFormattedFilesize() }})
+                                    </strong>
+                                    <p>{{ t('choose_free_or_premium_download', 'Choose free or premium download') }}</p>
+                                </th>
+                                <th>
+                                    <div class="btn-free-element">
+                                        <a href="#" onclick="triggerFreeDownload(); return false;" class="btn btn-subtle">
+                                            <span class="btn__text">
+                                                <i class="fas fa-stopwatch"></i>
+                                                {{ t('slow_download', 'slow download')|upper }}
+                                            </span>
+                                        </a>
+                                    </div>
+                                    <div class="download-timer" style="display:none;">
+                                        <a href="#" onclick="return false;" class="btn btn-subtle">
+                                            <span class="btn__text">
+                                                <i class="fas fa-spinner fa-pulse"></i>
+                                                {{ t('wait', 'wait')|upper }} <span class="download-timer-seconds"></span>&nbsp;{{ t('sec', 'sec')|upper }}.
+                                            </span>
+                                        </a>
+                                    </div>
+                                </th>
+                                <th>
+                                    <a class="btn btn--primary" href="{{ upgradeUrl }}">
+                                        <span class="btn__text">
+                                            <i class="fas fa-bolt"></i>
+                                            {{ t('fast_instant_download', 'FAST INSTANT DOWNLOAD')|upper }}
+                                        </span>
+                                    </a>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ t('download_type', 'download type')|title }}:
+                                </td>
+                                <td>{{ t('free', 'free')|title }}</td>
+                                <td>
+                                    <strong>
+                                        {{ t('premium', 'premium')|title }}
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ t('download_speed', 'download speed')|title }}:
+                                </td>
+                                <td>
+                                    {{ UserHelper.getMaxDownloadSpeed(1) > 0 ? ( CoreHelper.formatSize(UserHelper.getMaxDownloadSpeed(1)) ~ 'ps') : t('limited', 'limited')|title }}
+                                </td>
+                                <td>
+                                    <strong>
+                                        {{ t('maximum', 'maximum')|title }}
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ t('waiting_time', 'waiting time')|title }}:
+                                </td>
+                                <td>{{ additionalSettings['download_wait'] > 0 ? ( additionalSettings['download_wait'] ~ ' ' ~ t('seconds', 'seconds')|title) : t('instant', 'instant')|title }}</td>
+                                <td>
+                                    <strong>
+                                        {{ t('instant', 'instant')|title }}
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ t('site_advertising', 'site advertising')|title }}:
+                                </td>
+                                <td>
+                                    {{ t('yes', 'yes')|title }}                            
+                                </td>
+                                <td>
+                                    <strong>
+                                        {{ t('none', 'none')|title }}
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ t('how_long_to_keep_files', 'how long to keep files')|title }}:
+                                </td>
+                                <td>
+                                    {{ UserHelper.getDaysToKeepInactiveFiles(1) == 0 ? t('forever', 'forever')|title : (UserHelper.getDaysToKeepInactiveFiles(1) ~ ' ' ~ t('days', 'days')|title) }}
+                                </td>
+                                <td>
+                                    {{ UserHelper.getDaysToKeepInactiveFiles(2) == 0 ? t('forever', 'forever')|title : (UserHelper.getDaysToKeepInactiveFiles(2) ~ ' ' ~ t('days', 'days')|title) }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ t('maximum_file_upload_size', 'Maximum file upload size')|title }}:
+                                </td>
+                                <td>{{ UserHelper.getMaxUploadFilesize(1) > 0 ? CoreHelper.formatSize(UserHelper.getMaxUploadFilesize(1)) : t('unlimited', 'unlimited')|title }}</td>
+                                <td>{{ UserHelper.getMaxUploadFilesize(2) > 0 ? CoreHelper.formatSize(UserHelper.getMaxUploadFilesize(2)) : t('unlimited', 'unlimited')|title }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ t('interface_to_manage_uploaded_files', 'interface to manage uploaded files')|title }}:
+                                </td>
+                                <td>{{ t('not_available', 'not available')|title }}</td>
+                                <td>{{ t('available', 'available')|title }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ t('fast_download_even_when_servers_are_busy', 'fast download even when servers are busy') }}:
+                                </td>
+                                <td>{{ t('not_available', 'not available')|title }}</td>
+                                <td>{{ t('available', 'available')|title }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ t('estimated_download_time', 'estimated Download time')|title }}:
+                                </td>
+                                <td>
+                                    <a href="#" onClick="triggerFreeDownload();
+                                            return false;">
+                                        {{ CoreHelper.calculateDownloadSpeedFormatted(file.getPrimaryFileSize(), UserHelper.getMaxDownloadSpeed(1)) }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="link premiumBtn" href="{{ upgradeUrl }}">
+                                        {{ CoreHelper.calculateDownloadSpeedFormatted(file.getPrimaryFileSize(), 0) }}
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if UserHelper.showSiteAdverts() %}
+                    <div class="col-md-12 text-center advert-wrapper bottom-advert">
+                        {{ file.shouldShowAdultAdvert() == true ? SITE_CONFIG_ADULT_ADVERT_DELAYED_REDIRECT_BOTTOM|raw : SITE_CONFIG_ADVERT_DELAYED_REDIRECT_BOTTOM|raw }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    {% include '@themePath/partial/_premium_benefits.html.twig' %}
+{% endblock %}
+
+{% block footerjs %}
+<script>
+    var seconds = {{ additionalSettings['download_wait']|number_format }};
+    var started = false;
+    function display()
+    {
+        $('.btn-free-element').hide();
+        $('.download-timer').show();
+        if (seconds == 0)
+        {
+            $('.download-timer').html("<a class='btn' href='{{ file.getNextDownloadPageLink() }}'><span class='btn__text'>{{ t("download_or_view_now", "download / view now")|upper }}</span></a>");
+        } else
+        {
+            $('.download-timer-seconds').html(seconds);
+        }
+        seconds--;
+    }
+    
+    function triggerFreeDownload() {
+        if(started === true) {
+            return;
+        }
+        
+        started = true;
+        display();
+        countdownTimer = setInterval('display()', 1000);
+    }
+
+    //$(document).ready(function () {
+    //    display();
+    //    $('.download-timer-seconds').html({{ additionalSettings['download_wait']|number_format }});
+    //    countdownTimer = setInterval('display()', 1000);
+    //});
+</script>
+
+{% if downloadPageData['additional_javascript_code'] is defined %}
+    {{ downloadPageData['additional_javascript_code']|raw }}
+{% endif %}
+{% endblock %}

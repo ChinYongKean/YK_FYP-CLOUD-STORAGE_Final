@@ -1,0 +1,45 @@
+<div class="pluginSocialMainLoginWrapper">
+    <div class="pluginSocialLoginDivider">
+        &nbsp;
+    </div>
+    <div class="clear"><!-- --></div>
+
+    <div id="pageHeader">
+        <h2>{{ t("plugin_sociallogin_social_login", "Social Login") }}</h2>
+    </div>
+    <div>
+        <p class="introText">
+            {{ t("plugin_sociallogin_social_login_intro_text", "Use your existing social network account to login securely below.") }}
+        </p>
+
+        <div class="pluginSocialLoginSignin">
+            <span class="fieldWrapper">
+                <span class="field-name">&nbsp;</span>
+                <div class="clear"><!-- --></div>
+                <div class="pluginSocialLoginButtons">
+                    {% if pluginSettings['facebook_enabled'] == 1 %}
+                        <a href="{{ PLUGIN_WEB_ROOT }}/{{ pluginConfig['folder_name'] }}/login/Facebook" class="zocial facebook"><span>Sign in with Facebook</span></a>
+                    {% endif %}
+                    
+                    {% if pluginSettings['twitter_enabled'] == 1 %}
+                        <a href="{{ PLUGIN_WEB_ROOT }}/{{ pluginConfig['folder_name'] }}/login/Twitter" class="zocial twitter"><span>Sign in with Twitter</span></a>
+                    {% endif %}
+                    
+                    {% if pluginSettings['google_enabled'] == 1 %}
+                        <a href="{{ PLUGIN_WEB_ROOT }}/{{ pluginConfig['folder_name'] }}/login/Google" class="zocial google"><span>Sign in with Google</span></a>
+                    {% endif %}
+                    
+                    {% if pluginSettings['foursquare_enabled'] == 1 %}
+                        <a href="{{ PLUGIN_WEB_ROOT }}/{{ pluginConfig['folder_name'] }}/login/Foursquare" class="zocial foursquare"><span>Sign in with Foursquare</span></a>
+                    {% endif %}
+                    
+                    {% if pluginSettings['linkedin_enabled'] == 1 %}
+                        <a href="{{ PLUGIN_WEB_ROOT }}/{{ pluginConfig['folder_name'] }}/login/LinkedIn" class="zocial linkedin"><span>Sign in with LinkedIn</span></a>
+                    {% endif %}
+                    <div class="clear"><!-- --></div>
+                </div>
+            </span>
+            <div class="clear"><!-- --></div>
+        </div>
+    </div>
+</div>

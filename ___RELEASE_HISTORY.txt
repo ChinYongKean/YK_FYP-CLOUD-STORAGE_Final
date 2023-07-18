@@ -1,0 +1,1367 @@
+v5.4.0
+
+- PHP v8.2 support
+- LiteSpeed webserver support
+  - X-Litespeed-Location improved downloads option on LiteSpeed file servers
+- Performance improvements:
+  - Improved core framework load times by reducing database queries on each load
+  - Removed IP ban for 'Whole Site' option to improve core load times. These should be managed via your web server going forward
+  - Additional database indexes based on SQL queries within the core framework
+  - Improved user session timeout handling
+- File Manager:
+  - Added user action logging on all file manager actions, additions and edits
+  - Added checkboxes on files and folders for multi-select
+  - Added file history audit popup on file details page to view every relating action, only available to file owners
+  - Added unique file hash for file manager direct download links to ensure they can't be easily guessed
+  - Added total sub-folder count next to file count in folder listings
+  - Added option to download selected files/folder as zip, rather than just the entire folder
+  - Added support for copying folders on the right-click folder menu
+  - Added option to move files & folders on the right-click menu
+  - Ensured intermediate download pages are shown to users when files are requested via shared folders (if set)
+  - Added new right-click menu when multiple items selected
+  - Added account upgrade boxes to the "You must be a paid user to download this file" screen
+  - Fixed alert which sometimes incorrectly informed the user they'd selected the maximum concurrent uploads
+- Admin Area:
+  - Added user action logging on all admin actions, additions and edits
+  - Added quick search widget to make navigating and finding admin area items more intuitive
+  - Moved add/edit file server pages into a dedicated page instead of popup
+  - Redesigned layout of add/edit file server pages
+  - Added resource usage stats for "local" and "direct" servers (see release notes below to enable):
+    - Captures usage of HD space, memory, CPU load and network connections
+    - Shown on:
+      - Manage file server list
+      - Edit file server
+  - Added option to toggle resource usage stats on add/edit file server
+  - Added 'direct' storage availability checker:
+    - Pings each 'direct' server at regular intervals to ensure it's online
+    - Offline servers are temporarily removed from the available upload server pool
+    - Added option to toggle availability checker on add/edit file server
+    - Status shown within the admin area on server listing and edit file server screens
+  - Added user action logs page - view an audit of all user actions, file changes and admin updates
+  - Added link to filtered user action logs on existing user & file management pages
+  - Added support for renaming "Local Default" file server
+  - Added option to store files in the format /user_id/original_filename instead of the hashed filename version (disables dedupe storage)
+  - Added option to purge download stats when editing a file
+  - Added option to limit total daily download filesize by account package
+  - Added site setting to disable or enable access for users to purge trash cans
+  - Added the ability to delete files within user trash cans via the file listing
+  - Added view of file artifacts and their storage location on edit file modal
+  - Updated File Import Plugin so it now only scans and creates file entries in the database. Files should now be manually moved into storage after importing. Improves performance on large directory structures
+  - Ensured any files moved between servers via the internal API are not counted towards file download stats
+  - Resolved issue where file image cache deletion in the file action queue, sometimes isn't linked to the correct 'direct' file server
+  - Improved error checking and logging when moving files between local and 'direct' servers
+- API:
+  - Added option to use short URL when requesting file download link (/files/download endpoint)
+  - Fixed permissions issue with /account/info endpoint which sometimes allowed access to non-admin users
+- Artifact Storage:
+  - Significant rework of how files are stored within the script to allow for storage mirroring in a future release
+  - Support in the data structure for multiple copies of a file to exist on multiple servers
+- Added support for multiple IP addresses in HTTP_X_FORWARDED_FOR
+- In the document previewer, Microsoft Office file types are now previewed using the Office Web Viewer (.doc, .docx, .xls, .xlsx, .ppt, .pptx)
+- Resolved issue were certain non-public files could be copied from other accounts using the "copyExternalFileIntoAccount()" function in the browser console
+- Updated Omnipay payment gateway library to v3.2
+- Upgraded composer dependencies to the latest available releases
+
+Plugins:
+
+- Amazon S3 Storage
+  - Removed third party class and integrated official SDK
+  - Added support for direct downloads using secure pre-signed URLs
+  - Improved memory handling during uploads
+- WebDav
+  - Added support to include shared files & folders via WebDav (currently read only access)
+  - Added option within plugin settings to set the name of the shared folder
+- Coinbase Commerce
+  - New plugin
+- Filebase Storage
+  - New plugin
+- Wasabi Storage
+  - Removed third party class and integrated official SDK
+  - Added support for direct downloads using secure pre-signed URLs
+  - Improved memory handling during uploads
+  - Added recently released region endpoints
+- Contabo & Minio Storage
+  - Removed third party class and integrated official SDK
+  - Added support for direct downloads using secure pre-signed URLs
+  - Improved memory handling during uploads
+
+Release Notes for v5.4.0:
+
+- This release increases the minimum required PHP version to v7.3. Please ensure you're using this version before upgrading an existing install
+- There are database changes with this release. Please backup your current database, then apply the SQL in /install/resources/upgrade_sql_statements/v5.4.0.sql
+- To enable file server resource usage stats and server availability checker, 2 new cron tasks have been added, see https://support.mfscripts.com/public/kb_view/26/
+
+
+v5.3.1
+
+- Fix to downgrade_accounts.cron.php cron task.
+- Fix to avoid new geoip functions breaking when there's no IP passed.
+- Fix to internal API delete file endpoint.
+- Other minor improvements and fixes.
+
+Plugins:
+
+- Minio File Storage:
+  - New plugin.
+  - Store your files on Minio based S3 storage.
+  - Direct download using pre-signed URLs supported.
+- Wasabi File Storage:
+  - Added missing S3 endpoints.
+
+Release notes: To apply the update from v5.3.0, simply upload the following files to your install:
+
+- /app/controllers/AccountDownloadController.class.php
+- /app/controllers/AccountFileController.class.php
+- /app/core/Framework.class.php
+- /app/helpers/AdminApiHelper.class.php
+- /app/helpers/StatsHelper.class.php
+- /app/helpers/UserHelper.class.php
+- /themes/spirit/assets/js/evolution.js
+- /themes/spirit/controllers/IndexController.class.php
+- /themes/spirit/views/account/partial/_preview_download.html.twig
+- /themes/spirit/views/index.html.twig
+
+
+v5.3.0
+
+- New Advertising Module:
+  - Dedicated admin section for managing site advertising.
+  - Support for video adverts using VAST or Google IMA urls.
+  - Option to set different banner advert for adult and non adult content throughout the site.
+  - Admin area setting to define adult keywords.
+- New video player integrated into the file preview plugin to support video adverts.
+- Target uploads to file storage servers depending on account type. For example, send paid account uploads to faster servers.
+- Added cancel upload option within file manager. Options to cancel any pending file or the entire upload.
+- Limit upload speed by account package using Nginx. You can now set an "Upload Url Slug" via the account package settings. When using Nginx, you can configure this to be speed limited.
+- Limit concurrent downloads better in Nginx. You can now set a "Download Url Slug" via the account package settings. On Nginx this can be configured to limit connections or download speed.
+- Improvement to the document viewer so it continues to work even when downloads are locked down by IP address.
+- Fixed issue with zipping files when downloads are locked down by IP address.
+- Added site settings to disable chunked uploads and the chunked upload file size. (recommend for advanced setups only)
+- Added option within the file edit popup in the file manager, to set minimum required account level to download. For example, paid accounts only.
+- Added subtitle proxy script to resolve browser CORS issue when subtitles are stored on remote file servers.
+- Ensured the local server is listed in the admin purge cache pages, when set as disabled.
+- Added option for lifetime premium accounts.
+- Added admin site setting to block non-login uploads. Enables blocking of non-login uploads from third party desktop apps.
+- Upgraded core GeoIP library to use GeoLite2 by Maxmind. IP database updated to the latest.
+- Resolved issue with crypto functions where data sometimes fails to encrypt fully.
+- Removed unused plugin_tasks.cron.php file and reference in admin background tasks.
+- Improvements to ipv6 validation and login logs.
+- Fix to concurrent upload account package limits sometimes not working as it should.
+- Improvement to make downloads per 24 hours limit based on download stats, so they're no longer dependent on download tracking option.
+- Fix to file manager right-click on a Mac triggering the file details view instead of showing the context menu.
+- Fix to captcha error on login form when using 2FA with captcha enabled.
+- Fix to url downloads when using a different domain on the file server. Now uses postMessage to communicate between iframes.
+- Fix to internal and email notifications cron tasks.
+- Fix to ensure direct links to videos play inline rather than force download. Applied when xSendFile or xAccelRedirect enabled.
+- Fix to incorrect deletion reason being shown on admin bulk file removal tool.
+- Fix to file uploads on direct file servers sometimes not linking to a users account when 2FA enabled.
+- Various minor fixes and improvements.
+
+Plugins:
+
+- Stripe:
+  - Minor wording change on checkout process.
+- Media Converter:
+  - Ensured folder size is recalculated after video converted.
+- WebDav:
+  - Ensured folder size is recalculated after file move.
+- Rewards:
+  - Added an option to limit logging PPD by downloading account type.
+  - Clarified option to limit access to earn PPD by account type.
+  - Blocked actual logging of PPD earnings if account type not enabled in plugin settings, rather than just hide reward pages from the UI.
+  - Added link to detailed PPD logs in rewards admin menu.
+  - Other minor fixes and improvements.
+
+Release notes: There are database changes with this release. Please apply the SQL in 
+/install/resources/upgrade_sql_statements/v5.3.0.sql.
+
+
+v5.2.0
+
+- PHP v8.0 support.
+- 2FA integration for site login.
+  - New admin site settings option to enable the feature.
+  - User can enable/disable 2FA via account settings.
+  - Admin area option to reset 2FA by user.
+  - User login process updated to prompt for 2FA, if enabled.
+  - Admin login has separate prompt for 2FA, if enabled.
+- Social login updated to request 2FA, if enabled.
+- Admin option to purge application cache on file servers aswell as the main local server.
+- File referrer lock. Added optional account setting to whitelist referring domains on file download links. If set, only the set domains can link to files outside of the site.
+- Added API documentation page on the front-end of the site. Option to disable via admin site settings.
+- Added "duplicate file to account" button on file preview page so files can be easily copied.
+- Performance improvement to md5 hash generation for large files.
+- Admin area site setting option to disable md5 file hashing over certain file sizes. Resolves md5_file() performance issues on low resource hosts.
+- Added reason for file removal on delete. For example, admin/user removed, copyright claim or system expired. Shown when trying to access the download url.
+- Added option to set download pages by file type aswell as account type.
+- Improved system logging within the upload process.
+- Improved file manager "Copy Urls to Clipboard" to include all selected folders rather than just the current.
+- Added UID to each log session to simplify reviewing log history.
+- Minor file manager UI improvements. Including left-clicking to clear selected, context menu & drag start location tidy ups and selected folder reload on paging.
+- Various Spirit theme responsive view improvements.
+- Improvement to layout when viewing the register page on smaller height resolutions.
+- Improved file meta description and keywords tags for SEO.
+- Moved caching of used server storage space value into cron task, rather than each file upload, for better performance.
+- Updated loading of file by shortUrl so it is case sensitive.
+- Added support for SSH keys aswell as passwords, in file server SSH connection details.
+- Updated token download urls for media so they always includes the filename, for third party player compatibility.
+- Added catch in core database class for "SQLSTATE[HY000]: General error: 2006 MySQL server has gone away" errors. Attempts to reconnect rather than exiting.
+- Fix to video playback on Safari when not using XSendFile or XAccelRedirect.
+- Fix to enforce UTF8 character encoding on email sending.
+- Fixed issue which caused some cache files to not be queued for deletion on 'direct' file servers.
+- Fixed logo within emails so it's replaced with the one set via the theme settings.
+- Fixed issue with admin area delete user function, which sometimes caused uploaded files not to be removed.
+- Fixed double icon issue when file preview "Show Thumbnails" option disabled.
+- Fixed issue with erroneous HTML being output on uploader when file previewer plugin disabled.
+- Fixed issue with "download as zip" to ensure the zip file name on the server is always unique.
+- Ensured folderHash is set on folder creation within the file import plugin.
+- Fix to "Query Type" wording on contact email notification.
+- Fix to paid account expiry date not working on API account edit.
+
+Plugins:
+
+- Stripe:
+  - Upgraded to offsite payment API.
+- Rewards:
+  - Improvement to cookie clearing on affiliate tracking.
+  - Fix to unique index on 'plugin_reward_aggregated' which may cause DB errors.
+  - Note DB changes for this plugin release in:
+    - \plugins\rewards\offline\upgrade_sql_statements\v21 - v22.sql
+- File Leech:
+  - Migrated to v5.
+- Archive Manager:
+  - Added detailed logging.
+  - Added options to set full zip/rar binary paths in plugin settings. Solves some cron task issues in certain environments.
+  - Added support for connecting to file servers using SSH keys aswell as passwords.
+- File Previewer:
+  - Performance improvement on thumbnail generation cron.
+- Media Converter:
+  - Added support for connecting to file servers using SSH keys aswell as passwords.
+- FTP Plugin:
+  - Added passive mode admin option.
+  - Fixed CORS issue on import, when using an external file server as the FTP host.
+- S3 Storage:
+  - Moved actual S3 file deletes into the file action queue to improve performance.
+- Wasabi Storage:
+  - Moved actual Wasabi file deletes into the file action queue to improve performance.
+
+Release notes: There are database changes with this release. Please apply the SQL in 
+/install/resources/upgrade_sql_statements/v5.2.0.sql. Upload the following folder 
+contents to apply the code changes:
+
+/app
+/plugins
+/themes
+
+Please see the script documentation for other upgrade guidance.
+
+
+v5.1.1
+
+- Fix to Server-Side Request Forgery on remote url download.
+
+Release notes: To apply the update from v5.1.0, simply upload the following files to your install:
+
+/app/services/Uploader.class.php
+/app/core/Framework.class.php
+
+
+v5.1.0
+
+- Support for previewing text based files. Including syntax highlighting on code such as JS, CSS, HTML and PHP.
+- Support for subtitles on videos (srt, vtt and txt). Ensure subtitle file named the same and in the same folder to use.
+- Improved adblock detection, including an admin option to set the advert detection code JS filename.
+- Added admin email notification when accounts pending approval.
+- Added support for multiple paid packages on the upgrade page.
+- Added optional captcha on report file form.
+- Re-enabled progress upload on "remote url download".
+- Added popup to select destination folder in file manager copy files.
+- Ensured all "direct" file servers route file urls via the main site url.
+- Fixed issue where file preview cache files sometimes not being scheduled for removal within the file action queue.
+- Fixed incorrect "Unlimited" available storage label on account edit page when over storage limit.
+- Improved memory usage on banned ip data purge.
+- Added fileHash and whether a file is a duplicate on admin, edit file popup.
+- Added option in file preview settings to not show the details page when not logged in. i.e. file urls will trigger a download.
+- Blocked autocomplete input on uploader 'additional options'. i.e. email and password input.
+- Theme settings - additional error checking on file system permissions for logo upload. Removal of exif_imagetype dependency.
+- Fix to ensure when admin previews any file, the download button is shown.
+- Fix to hide trial user upload button on the homepage if account registration is disabled in site settings.
+- Fix to "Mark all read" link on internal account notifications.
+- Fix to block future uploads feature not setting the blocked file hash.
+- Fix to file server .htaccess download when adding new file server.
+
+Plugins:
+
+- S3 Storage:
+  - Support for range header. Enables media skipping and better download manager support.
+- Wasabi Storage:
+  - Support for range header. Enables media skipping and better download manager support.
+  - Direct download support (pre-signed urls).
+- Torrent Download:
+  - Minor bug fixes and improvements.
+- Skrill Plugin:
+  - Migrated to v5.
+
+Release notes: There are minor database changes with this release. Please apply the SQL in 
+/install/resources/upgrade_sql_statements/v5.1.0.sql. Upload
+the following folder contents to apply the code changes:
+
+/app
+/plugins
+/themes
+
+Please see the script documentation for other upgrade guidance.
+
+
+v5.0.2
+
+- Fixed javascript issue when restricting uploads by file type.
+- Fixed issue with the delete redundant files task.
+- Added better logging in background processes.
+
+Release notes: There are no database changes in this release. To apply the update
+from the last release, simply upload the following files:
+
+- /app/controllers/FileController.class.php
+- /app/core/Framework.class.php
+- /app/helpers/FileHelper.class.php
+- /app/helpers/FileActionHelper.class.php
+- /app/models/File.class.php
+- /themes/spirit/views/account/partial/_uploader_javascript.html.twig
+
+
+v5.0.1
+
+- Added total file downloads to file manager list view.
+- Added "Copy Links" button after file upload complete.
+- Made hiding the uploader popup after uploading complete an admin option.
+- Added service email sending to Newsletter Plugin.
+- Fix to PayPal IPN callback sometimes not working. Better logging added.
+- Fix to PayPal subscription redirect issue.
+- Fix to SolveMedia captcha not rendering.
+- Fix to temp accounts not upgrading when logged in via social authentication.
+- Fix to analytics code on video/audio embed pages.
+- Css fix to per page menu on mobile view.
+- Added plugin menus to account top-right menu so they're visible on mobile.
+- Fix to show custom package names on the top-right of the file manager.
+
+Release notes: There are minor database changes with this release. Please apply the SQL in 
+/install/resources/upgrade_sql_statements/v5.0.1.sql. The list of changes code is in 
+/install/resources/upgrade_file_diffs/v5.0.0_to_v5.0.1_DIFF.txt, although uploading
+the following folder contents will also apply the code changes:
+
+/app (all content apart from 'libraries' folder)
+/plugins
+/themes
+
+Please see the script documentation for other upgrade guidance.
+
+
+v5.0.0
+
+- Complete core rewrite:
+  - New MVC script framework.
+  - Separation of business logic (PHP) and views.
+  - Custom page url routing.
+  - Friendly urls throughout main site and admin area.
+  - Twig templating engine - True separation of PHP logic and views.
+  - Javascript translations moved to external JS file rather than embedded in the page source.
+  - Application cache for increased performance - Routing Cache & Twig Template Cache.
+  - New MVC structure for both plugins and themes.
+  - Controllers and templates and be overridden at plugin and theme level.
+  - Added support for transparent pngs on avatars.
+  - Friendlier urls on direct file links. (removal of .php/.html)
+  - Moved towards object based data updates (ORM).
+  - Theme template inheritance. Override views at template or plugin level.
+  - Admin test tools.
+- Flow & blue_v2 themes replaced with the new Spirit theme using Bootstrap 4.
+- Document, Image, Video & Audio Viewer plugins replaced with the File Previewer plugin.
+- File manager refresh, including updates to the uploader.
+  - Support for uploading additional files without reloading the browser.
+  - Non-account upload replaced with "Trial accounts".
+  - Geo-targeting for file servers. Direct traffic from countries to specific storage servers.
+  - Removed local server fallback when no storage servers available on upload. The user now sees an error message and uploading is blocked.
+  - Added admin option to enable concurrent uploads to improve upload performance.
+  - Added admin option to set how many concurrent uploads to process at the same time.
+  - Improvements to the remote url upload popup so it matches the main uploader styling.
+  - Better error responses on screen on failed uploads.
+- Backblaze cloud file storage support.
+- Social login plugin upgrade, including refreshing guidance.
+- Improved Sharing Functionality:
+  - Share files aswell as folders now.
+  - Select multiple files/folders to share at once, rather than folder only level.
+  - Admin manage sharing pages.
+  - Globally shared folders - admin can set folders to be accessed by all accounts.
+  - Moved shared folders/files into dedicated left navigation item.
+  - Email notification added on internal sharing.
+- More advert spots added to the front-end, easily set via the admin site settings.
+- Added option to set keywords and description on files.
+  - Keywords displayed on file details view, linked to search.
+  - Search feature now includes keywords and description.
+- Added option to send email confirmation on processing abuse report.
+- Fix to adblock detection script.
+- Added support for adblock in embedded videos, audio and documents.
+- Improvements to drop & drop uploads directly into file manager without loading the uploader popup.
+- Site setting option to use local sessions rather than database based sessions.
+- Site settings to control min/max length of account usernames.
+- Site setting to enable download tokens to be limited by IP address.
+- Changes to file details page, now full page and larger preview.
+- Added sharing page and trash page links on mobile view.
+- Enabled 'enter' key submission on add/edit file/folder popups.
+- Minor fix to avoid reloading page if upload completes when viewing file details.
+- Minor fix to script update notification checker.
+- Update to use random hashes in folder sharing urls instead of the incremental folder id.
+- Better support for offsite payment gateways within the payments plugin. Specifically Mollie and TargetPay Ideal.
+- Option to set admin account approvals on all registrations.
+- File manager view type and per page setting now persisted by account. Future logins will reload the same settings.
+- Improvements to upgrade checker & guidance.
+- Fix to file action queue handling on Flysystem storage points.
+- Fix to watermark quality within the core image resizing library.
+- Minor fix to ensure the batch import plugin is enabled if an import is triggered. Avoid fatal error.
+- Support for all UTF8 characters within import plugin.
+
+New Plugins:
+
+- Added Wasabi Storage.
+
+Existing Plugins:
+
+- S3 Storage:
+  - Support for v4 of the S3 API.
+  - Support to set API version via admin plugin settings.
+  - Support to set region via admin plugin settings.
+- WebDav:
+  - Updated access url to more friendly url (removed .php reference)
+  - Folder last modified dates will now be shown.
+  - Fixed file last modified dates so they're used instead of creation date, if available.
+- Media Converter:
+  - Added support for experimental codecs via an option in the plugin settings.
+- FTP Upload:
+  - Improvements to the FTP upload popup so it matches the main uploader styling.
+  - Moved uploader tab content to ajax request to limit browser hanging if FTP host has gone away.
+- Rewards:
+  - Improvements to affiliate link cookie tracking.
+  - Added option to log PPD on viewing of files aswell as downloading.
+- BitPay Payment Plugin:
+  - Upgraded to no longer use legacy API.
+  - Admin plugin setting to use sandbox or live BitPay platform.
+- Geoupload Plugin:
+  - Deprecated in place of new geo-targeting options in the core script.
+- Image Viewer, Media Player & Document Viewer Plugins deprecated in favour of File Previewer Plugin.
+
+Release notes: This release is a major upgrade to the codebase. To upgrade existing installs,
+please see the "Upgrade from v4.x" tab in the /install/ folder.
+
+
+v4.5.4
+
+- Fix for remote download vulnerability when gopher protocol installed.
+
+Release notes: There are no database changes in this release. Changed file:
+
+/core/includes/uploader.class.php
+
+
+v4.5.2
+
+- Minor XSS fixes.
+
+Release notes: There are no database changes in this release. Changed files:
+
+/themes/flow/js/global.js
+/themes/flow/templates/partial/_account_home_javascript.inc.php
+/themes/flow/templates/delete_file.html
+/themes/blue_v2/templates/delete_file.html
+/core/includes/uploader.class.php
+
+
+v4.5.1
+
+- General Data Protection Regulation (GDPR):
+  - Added checkbox onto registration page to confirm acceptance of terms.
+  - Added privacy policy and linked it into the site footer.
+  - Added optional cookie notice to front-end pages. Enabled by default, control via the admin area, site settings.
+  - Added checkbox on account edit page to unsubscribe from site mailing list.
+  - Set all users to be unsubscribed by default, as per GDPR requirements. Users must opt in to subscribe.
+
+Release Notes: There are database changes within this release. See /install/resources/upgrade_sql_statements/v4.5 - v4.5.1.sql. To patch only changed files, see \install\resources\upgrade_file_diffs\V4-5_to_V4-5-1_DIFF.txt.
+
+
+v4.5
+
+- Bundled payment gateway API with support for over 50 gateways using Omnipay. Includes:
+  - Stripe, BitPay, PaySera, WebMoney, Coinbase & lots more.
+- Replacement of mcrypt functions with OpenSSL for PHP7.2+.
+- API changes - New admin only endpoints:
+  - /account/create
+  - /account/edit
+  - /account/delete
+  - /package/listing
+- Added optional CDN support for image previews and thumbnails. (via file server management)
+- Added optional captcha to user login screen.
+- Added optional captcha to admin login screen.
+- Big changes to how the delete file process works within the code:
+  - All deletes are now scheduled within the file action queue, including FTP, S3 and Flysystem adapters.
+  - Better management of file server paths - stored against the file server in the admin area.
+  - Removal of ajax calls to remote storage server on delete, significant performance improvement.
+- User file manager changes:
+  - Added folder ordering.
+  - Added select folder option, support for multiple as per files.
+  - Added multi folder delete & drag and drop to move.
+  - Added empty trash button to trash toolbar.
+  - Hold ctrl+click to select folders.
+- Admin area changes:
+  - Moved "Max File Uploads Per Day" into account packages.
+  - Moved "Accepted Upload File Types" into account packages.
+  - Moved "Blocked Upload File Types" into account packages.
+  - Addedn option to auto clear trash items older than x days in account packages.
+- Better feedback on login failures for the admin area.
+- Added privacy option on file edit.
+- Better handling of core FTP storage when passive mode is enabled.
+- Improvements to how the account avatar is loaded to avoid restrictions on certain servers.
+- Fix to Amazon S3 storage configuration issue.
+- File server option to download over different protocol compared with main site.
+- Moved the local storage path from _config.inc.php into the file server admin.
+- All database tables changed to 'InnoDB' & 'utf8mb4_general_ci' to allow for MySQL clustering support.
+
+- FTP Upload Plugin:
+  - Automatic import of FTP uploaded files.
+  - Admin user interface to view and delete FTP credentials.
+- Social Login:
+  - Updated LinkedIn integration due to changes on their site.
+- Media Player:
+  - Added option to show direct link to video file.
+- Media Converter:
+  - Added option to prioritise conversions on paid users.
+  - Added option to choose when to capture the video screenshot, either in seconds or % of the video.
+
+Release Notes: There are database changes within this release. See /install/resources/upgrade_sql_statements/v4.4.1 - v4.5.sql.
+
+
+v4.4.1
+
+- Updated social login plugin - Fixed Facebook not working due to API changes.
+- Minor fixes to file manager breadcrumbs & folder reloading.
+- Facebook login - removed the request for date or birth, town and about me, in permissions.
+- Added additional database indexes to improve performance.
+- Fixed session notice in later versions of PHP - session_write_close(): Failed to write session data (user).
+- Fixed SMTP sending issues caused by debug being enabled within email sending library.
+- Fixed issue with folder zip download not being fully recursive.
+
+Release Notes: There are database changes within this release. See /install/resources/upgrade_sql_statements/v4.4 - v4.4.1.sql.
+
+
+v4.4
+
+- Flysystem integration. Core script initial support for file storage on:
+--- SFTP
+--- Amazon S3
+--- Rackspace Cloud Files
+--- FTP (via Flysystem, possible future replacement of core FTP storage)
+- File Upload API:
+--- Account Operations: Get account info, get account package info (max upload size, account limits etc).
+--- File Operations: Upload, Download, Get info, Edit meta data, Delete, Move, Copy.
+--- Folder Operations: Create, List (Files and Folders), Get info, Edit meta data, Delete, Move.
+- PayPal subscriptions support. Optional within PayPal plugin settings, default disabled. If enabled the user will automatically be setup with a subscription and rebilled when their account is due to expire.
+- 3 additional plugins now included as standard with the core script:
+--- Social Login
+--- Document Viewer
+--- Newsletter Manager
+- Admin Area:
+--- Admin area interface rewrite so it's now using Bootstrap 3. Compatibility library added to aid with migration of older plugins.
+--- Bulk import tool. Within the admin area bulk import files into an account from on a folder on your server.
+--- Added update checker to plugin listing page. Any new releases to plugins are immediately shown on this page.
+--- Added option to bulk remove files by copying and pasting a list of urls.
+--- Added user avatar to manage users page.
+--- Added option to remove or set avatar on add/edit user.
+--- Fix to add/edit user password setting. Now uses the global password rules.
+--- Added check for minimum required version number when adding a plugin.
+--- Added clean up of any failed tasks in the remote download queue. Limits issues with the queue getting full and new items not working.
+--- Added support for default folders on new account creation/registration. Can be set via the admin, site settings.
+- Support for SolveMedia captcha.
+- Improvements to stats logging performance and sync between the stats count and file.visits value.
+- Fixed issue with jwplayer fullscreen mode in Chrome.
+- Added upgrade page package names into translations.
+- Improvement to ipToCountry checking for larger IP ranges.
+- Better support for prepared arguments in the database layer.
+- File download pages / upgrade pages now show the file description and keywords, if set.
+- Update of PHPMailer to fix recently announced security issue - https://github.com/PHPMailer/PHPMailer/releases/tag/v5.2.22
+- Integration of composer for ease of management of third party libraries.
+- Minor improvements to RTL layout.
+
+- Rewards:
+--- Improvement to PPD logging when using Nginx and download managers.
+--- New advice for PPD complete download log for Nginx and CloudFlare.
+- Media Converter:
+--- Improved concurrent conversions option to work per server.
+--- Removed use of ereg function for PHP7.
+- Media Player:
+--- Added JWPlayer 7 as an available media player.
+
+Release Notes: There are database changes within this release. See /install/resources/upgrade_sql_statements/v4.3 - v4.4.sql. To enable the API you will need to apply the new rewrite rules to Nginx or .htaccess, if you're using Apache. This script now requires minimum PHP v5.5.
+
+
+v4.3
+
+- PHP7 support.
+- Automatic language translations via Google Translate API. Translate the entire site content to another language by clicking a button. Note: Requires a Google API key. Menually edited translations can be marked as 'locked' so they're not overwritten.
+- Improved folder sharing. Optionally share a private folder with someone by generating a unique hashed access url.
+- Adblocker detection to limit access to the site when adblocker is installed. Optionally block users from the whole site or just downloading. Only enabled if the user account type is set to see advertising.
+- Added support for username and password protected http & ftp urls. In the format ftp://user:pass@host.com/filename.txt.
+- Improved session handling and how regularly the sessions are cleared from the database.
+- Reduced the amount of data stored in each session from (up to) 65k to just over 1k.
+- Updated IP to Country data and added admin script to update the data as needed. (see the top of /core/includes/ip2Country.class.php)
+- Flow Theme:
+--- Duplicate/copy files function.
+--- Enabled use of browser 'back' and 'forward' history buttons when browsing files & folders.
+--- Improved file manager default styles.
+--- Integrated file stats into it's own popup within the file manager, rather than redirecting to the front-end stats page.
+--- Right-click menu on main folder icons.
+--- Icons added to file manager menu options.
+--- Removed treeview folder listing from mobile view as it's no longer needed.
+--- Improved remove file function on file uploader.
+--- Added link to admin area within the file manager, if admin user and viewing on mobile.
+--- Within the file manager folder names are shown in the browser title view navigating folders.
+--- When adding a folder, the new folder is loaded for easier uploading.
+--- Lefthand treeview folders expand as the main folders are clicked on.
+--- Increased animation speed and removed slide-ins on front-end pages to make the site more snappy.
+--- Changed the download button on image thumbnails to prompt the right-click menu.
+--- File details popup active tab remembered between browsing, including using the left/right arrow keys. Improves navigation of file previews.
+--- Added optional download page so file details can be shown during the download process.
+--- Blocked autocomplete input on uploader 'additional options'. i.e. email and password input.
+--- Persistent toolbar in users file manager. The toolbar with 'upload', 'filter', 'per page' etc will always show onscreen when the user scrolls.
+--- Improved the copy to clipboard functionality and reduced reliance on Flash.
+--- Reply email address on contact form & abuse report now set to the customers rather than site 'from' address. (if using smtp sending)
+--- Added close button on file upload popup for mobile & desktop views.
+- Admin Area:
+--- Admin area settings for 'Flow' theme. These changes are now kept between releases. Easily set:
+----- Site logo.
+----- Homepage background video/image.
+----- Site skin.
+----- Additional CSS code.
+--- Added option in admin to block the same file from being re-uploaded. Optional on file remove and automatic after removal on abuse reports.
+--- Added admin "impersonate user" option, so admin users can login as any other user account.
+--- Added new admin page for backing up the database and codebase. Functionality also built in preparation for automatic upgrades at a later date.
+--- Added email notification to original reporter after removing a file via admin, abuse reports.
+--- Admin option to set blocked keywords within the filename on file uploads.
+--- Added option to temporarily disable file uploads globally via the admin area, site settings. Uploads will still function for admin accounts.
+--- Added option to temporarily disable file downloads globally via the admin area, site settings. Downloads will still function for admin accounts.
+--- Faster loading of the admin dashboard. Charts are loaded via ajax now to improve access speeds to admin.
+--- Added plugin version number within the admin, manage plugins, in preparation for auto-updating.
+--- Allowed for read only file servers in the 'move files' functionality, so files can be moved away from a read only server.
+- Fixed issue with multiple urls when using background remote url uploads.
+- Fixed issue with file move between external file servers.
+- Fixed issue with expiry date not updating after upgrade on account_edit page.
+
+Plugin Changes:
+- Newsletter:
+--- Fix to show any newly added user packages as groups when creating a newsletter.
+- Stripe Payment Gateway:
+--- Added auto filling of email address to checkout process.
+--- Supplied email on payment charge to Stripe so the user receives a payment receipt.
+- PayPal:
+--- Added sandbox option aswell as details of the callback url.
+- CoinPayments:
+--- Allowed for merchant ids and api keys with uppercase characters.
+- Media Player:
+--- Added video.js as a media player option. Updates player on public video page, file details popup and video embed iframe.
+--- Optional basic VAST support using video.js. Pre-roll videos only for now, although more support to be added later.
+--- Added embed video code to the file details popup in the members area, if enabled by admin.
+- Media Converter:
+--- New option within the plugin settings to capture only video screenshots.
+--- Added option to manually schedule 1 or more videos to be converted. New form on the bottom of the queue listing page. Optionally choose to capture only the screenshot or convert the video.
+--- Updated convert.php to use the core SSH server settings (new option in edit file server) rather than having to rely on setting them in the code.
+--- Removed the SSH form on the admin, site settings page for screenshots. Now uses the SSH server details stored against the file server.
+- FTP Upload:
+--- Added close button to clear popup dialog after FTP import.
+- File Leech:
+--- Plowdown path moved from the top of "_append_url_upload_handler.php" into the plugin settings, to make upgrading the plugin easier.
+--- Updated the Plowshare install guidance on the plugin settings page.
+- Social Login:
+--- Updated to the latest copy of HybridAuth.
+--- Added block of any social accounts which we can't get the email address.
+--- Account avatar is re-cached on login to allow for profile image updates.
+- Image Viewer:
+--- Added embed image, direct link & forum code to the file details popup in the members area, if enabled by admin.
+- Document Viewer:
+--- Added embed document code to the file details popup in the members area, if enabled by admin.
+- Archive Manager:
+--- Updated process_archive_queue.cron.php to use the core SSH server settings (new option in edit file server) rather than having to rely on setting them in the code.
+- Torrent Download:
+--- Only update the status of any pending torrents when the upload popup is shown. Limits unnecessary ajax requests when browsing the file manager.
+
+Release Notes: There are database changes within this release. See /install/resources/upgrade_sql_statements/v4.2 - v4.3.sql. Users of the media player will need to migrate their server SSH into the new area with the admin, file servers section. You no longer need to set these within convert.php.
+
+
+v4.2
+
+- Huge performance improvements, over 220% increase in script load times and database load. See our blog for the full info - https://mfscripts.com/blog.html
+- Powerful new search tool within the Flow theme. Enable your users to quickly search and download publicly shared files. Optional via the admin area.
+- Built in link checker for checking whether multiple downloads links are active at the same time.
+- Admin area icon view for file management. Site settings option to set default view.
+- Logged in user details and subject added to contact form email notification.
+- Improvements to filename retrieval on remote url download.
+- Increased the maximum auto deletes on the nightly file removals.
+- Performance improvements to translations.
+- Various bug fixes and other minor improvements.
+
+Plugin Changes:
+- Image Viewer:
+--- Fixed embed links when using external file server storage.
+- Rewards Program:
+--- Added tracking of PPS by cookies for better handling of return visits.
+--- Resolved some minor issues with PPS logging on some payment gateways.
+--- Added option to cancel withdrawal request in the admin area.
+
+
+v4.1.1
+
+- Various fixes.
+
+
+v4.1
+
+- Added file privacy options at various levels. Site wide, account level, folders (inc sub-folders) & on specific files. Private settings inherit down onto all folders/files if set by site/account.
+- Added the option to allow users to choose their own password when registering an account.
+- Added Account locking feature which, when enabled, locks the account details from being changed, users will not be able to edit, move or delete files whilst the account lock is enabled. 
+- Updated reCaptcha to the newer reCaptcha2.
+- Added sub-folders to the main file manager window rather than just showing the files.
+- Added ability to block file types from being uploaded.
+- Payment complete page, after payment, user session is reloaded to reflect the upgrade.
+- Added ability to ban files by extension (.exe;.jpg;.docx;.etc) and file md5 hash/filesize.
+- Added a delete button / option for themes & plugins
+- Added a comprehensive admin support page which will help with support requests.
+- Added a function to detect 32bit or 64bit operating system.
+- Added account expiry details to account edit page.
+- Replaced user drop-downs in the admin area with text entry/auto suggest for better scalability.
+- Moved xAccelRedirect & xSendFile options into the file server configuration & removed from the old global settings from the site_config table.
+- Allowed the remote downloader to follow 301 redirects, limited to 5 redirects.
+- Admins can set files to be restored from the pending deletion queue on the next task run (process_file_queue.cron.php).
+- Admins can now limit the hourly amount of emails sent by the 'send via email' form by user.
+- Fix to file removal on FTP/S3.
+- Added support for theme settings and admin navigation items via theme config.
+- Support for file keywords.
+- Fixed issue with possible site url injection into the translations.
+- Various other minor fixes.
+
+New Plugins:
+- WebDav plugin
+
+Plugin Changes:
+- Rewards:
+--- New overview page showing total earnings by user and overall system stats.
+--- Option to limit PPD access by account type (free or paid accounts).
+--- Fix to capture PPD data only when PPD is enabled in plugin settings.
+--- Log PPD after x percentage on watching videos/audio.
+--- Updated code to process the new individual X-Accel-Redirect & XSendFile configurations in the individual server configs.
+- Torrent Download Plugin (v3):
+--- Use Transmission instead of uTorrent as the torrent engine.
+--- Link for user to cancel downloading torrent.
+--- Link for user to clear completed torrent.
+--- Limitations of account max storage and max upload size now apply to torrents.
+--- Added peer information to users torrent download page.
+--- Cron script changed to command line rather than wget to improve performance.
+--- Fix to allow for users downloading the same torrent at the same time.
+- Document Viewer Plugin (v5):
+--- Support added for thumbnail previews of PDF files. (requires imagick within PHP)
+- Image Viewer Plugin:
+--- Better handling of image thumbnails. Links directly to cached version and only routes via PHP on first server cache request.
+--- Option to set preview image quality.
+--- Option to automatically rotate images on upload, based on EXIF data.
+- Media Converter (v8):
+--- Added option to keep the originally uploaded file. Converted file will be stored as a new file and linked to the original.
+- Media Player (v9):
+--- If using the media converter to keep the original file, the converted copy will play directly in the browser whereas the download link will provide the original.
+- Social Login Plugin (v2):
+--- Integration of social network profile picture to Flow theme.
+--- Update to fix Foursquare login process.
+--- Updated Facebook login to use new Facebook API permission set.
+--- Added social login to site registration page.
+- CoinPayments Plugin
+--- Added IPN URL to the plugin settings page.
+
+
+v4.0.1
+
+- Added Google Analytics tracking code option in admin, site settings.
+- Background task manager and log viewer in admin area to aid with the configuration of cron tasks.
+- Allowed for remote file server uploads for admin when in maintenance mode.
+- The ability to drag & drop anywhere in the file manager to prompt an upload to the current folder.
+- Flow theme file manager retains current page on file delete.
+- Flow theme file manager added ctrl-a shortcut to select all files.
+- Added check for mcrypt on installation process.
+- Support for xAccelRedirect when using multiple mounted drives on the same file server.
+- Fixed responsive download table being cut off on smaller screen sizes.
+- Fixed possible storage issue on remote file servers when using relative paths.
+- Fixed possible cross site session issue with remote upload.
+- Fixed drag and drop sometimes not working correctly in Flow theme.
+- Fixed password validation when min and max password length requirement the same.
+- Fixed issue with skipping video when using Apache XSendFile.
+- Better resizing of file listing in the file manager within the Flow template, list view.
+- Storage of server doc roots in the database to fix some cross file server delete issues.
+- Fixed issue with recipient email used on 'send via email' template rather than senders email.
+- Fixed support for unlimited storage override by user. (when set to zero)
+- Fix to show username in forgot password email.
+- Fix to allow cross site file removal via abuse reports pages.
+- Fix to file move paths for local and direct server storage.
+- Fixed formatting of html & forum embed code when using RTL.
+- Responsive pie charts in file stats pages.
+- Fixed issue with zip file creation when using 'direct' server storage.
+- Removed check for CLI mode on cron scripts. Not all servers provide the same interface name when in using CLI.
+- Improved Nginx rewrite rules.
+- Other minor tweaks and improvements.
+
+Plugin Changes:
+- Image Viewer:
+--- Updated to use consistent method to loading plugin settings. Resolves reliance on session store and possible cross site image preview issues.
+- Newsletter:
+--- Removed status bar on email content editor.
+- Media Converter:
+--- Resolved issue with media over 2GB on remote storage not converting.
+- File Leech:
+--- Better randomise for selection of paid account details on leeching.
+
+
+v4.0
+
+- New 'Flow' Theme:
+--- Responsive - Mobile, tablet and desktop versions included.
+--- Built in uploader instead of going to the homepage to upload.
+--- Minimise uploader popup during upload. Continue to use your account, browse & download files etc, while uploads are being processed in the background.
+--- Written with Bootstrap v3.
+--- Full support for RTL languages.
+--- List view column headers with total downloads shown.
+--- Add/edit file in ajax popup.
+--- Add/edit folder in ajax popup.
+--- Send file via email tab on file info popup.
+--- User can upload an avatar.
+--- Account settings page with overall stats shown. Available storage, used storage, active files and total downloads.
+--- Account notification widget for alerts on to users. i.e. premium expiry, offers etc.
+--- Single click on download links to highlight and copy.
+--- Filter by uploaded date range option.
+--- Filter in current folder or all folders option.
+--- File manager, added direct link to download file. Avoids the preview page if using media player, image and document viewer plugins.
+--- Option to download all files in a folder within the file manager as a zip archive.
+--- Delete keyboard key shortcut added to file manager, delete files.
+- Blue V2 Theme:
+--- Responsive - Mobile, tablet and desktop versions added.
+--- File manager, added direct link to download file. Avoids the preview page if using media player, image and document viewer plugins.
+--- Option to download all files in a folder within the file manager as a zip archive.
+- Admin Area:
+--- Responsive - Mobile, tablet and desktop versions added.
+--- Add links to plugin settings in admin, site settings.
+--- Admin configuration option to adjust the time to keep files in /files/_deleted/. Set to 24 hours by default.
+--- Set file as premium only via the admin area. Also restrict by other account levels, i.e. only registered users, moderator or admin users.
+--- Added option to set upload server for a specific user in admin, edit user. Useful for testing new file servers without disrupting other users.
+--- Disabled mod security in admin area if available. Solves some issues with updating site settings or setting advert code.
+--- Admin area edit file popup. Edit filename, owner, short url, access password, mime type and admin file notes.
+--- Admin add/edit user. Set default paid expiry date to 1 year when creating a paid user. Avoids issues with automatic account downgrades if no date set.
+--- Set HTML header and footer on emails. Enabled by default.
+--- Admin option to set text direction when adding a new language for template (RTL or LTR).
+--- Admin CLI script to sanity check file storage on main server and external file servers. Checks stored files exist as active entries in the database and removes files which shouldn't be there. Script located in /admin/_test_scripts/
+--- Admin area manage file action queue. View raw file deletes and moves. Cancel actions and trigger the cron script to process pending actions.
+--- Admin area updated to use new cross server session management.
+--- Fixed admin option to scan for new text translations.
+- Core Code:
+--- Better management of templates within the codebase. Template html files now moved into /themes/ along with the css, js etc.
+--- New template management pages in the admin area. Upload template zip package, view template details, preview, activate etc.
+--- On upload, if file already exists in folder, rename to (2), (3) etc. Blocked renaming of files with the same name within the same folder.
+--- File action queue for managing deletes, moves etc.
+--- Huge improvement on cross server session management. User session transfered to external file servers as needed, per server, rather than via the homepage for all servers. Performance increase as a result.
+--- Added support for X-SendFile to improve performance on downloading with Apache. Option to enable in admin area.
+--- Added support for X-Accel-Redirect to improve performance on downloading with Nginx. Option to enable in admin area.
+--- Cloudflare support for increased site performance and load times.
+--- Increased upload chunk size from 5MB to 100MB to improve upload speed.
+--- Change to file delete process on local or direct file storage. Files are now moved into /files/_deleted/ for 24 hours, then removed automatically. Allows for recovery time if needed.
+--- Full support for IPv6.
+--- Fix to send utf-8 encoded email when using PHP mail() sending method.
+--- Fix to clearing of cross site session transfer tokens.
+--- Fixed intermittent block size issue when using mcrypt on the download pages.
+--- Fixed bug with deleteRedundantFiles() not working as expected on direct file servers.
+--- Decoded filenames when using remote file download.
+- Security:
+--- Huge improvement on storage method for passwords. Now using SHA256 with key stretching via PBKDF2. Existing passwords converted on login.
+--- Option to block IP address for 24 hours after x failed logins. (default 5 attempts)
+--- Option to send email notification to user when their account email address or password is changed.
+--- Account login IP and country history logged for the last month. Viewable via manage users in the admin area.
+--- Total login stats within last month, including from different IPs and countries shown by user. Helps reduce account sharing.
+--- Ability to set list of email domains to block from registration.
+--- Set banned ip expiry date to ban for limited time.
+--- Option to ban ip address from logging in.
+--- Fixed issues with blocking account sharing. Users will be logged out of their account if another person logs into it. Option in admin area.
+--- Minor bug fixes and general performance improvements.
+- Cron Tasks: (new in v4.0)
+--- Auto prune cron task to clear old database data for better performance.
+--- Moved previous executeBatchTasks() on the index page into cron task (delete redundant files and downgrade accounts).
+--- Generate internal notifications cron when account due to expire.
+
+New Plugins: (see yetishare.com for pricing)
+- File Leech
+- File Import Plugin - Scans for files to import into your account, retaining the folder structure. (free plugin)
+- Stripe Payment Gateway
+
+Plugin Changes:
+- Media Player:
+--- Added support for subtitles when using JWPlayer. Auto loaded when subtitle file named the same as video file. Multiple languages supported. Supports srt, vtt, xml, dfxp.
+--- Support for responsive templates in JWPlayer on video playback.
+--- Preview of video/audio embedded into 'Flow' file manager on file details popup.
+--- Added video screenshot to JWPlayer if available. (via media converter plugin)
+--- Fixed issue with video not showing correctly on https.
+--- Opengraph preview icon added so icon shows when posting to Facebook. Screenshot is also used if created via the media converter.
+- Media Converter:
+--- Added support for video conversion to webm.
+--- Added framerate option to convert.php to speed up conversions. Default set to 30fps.
+--- Added guidelines on how to install ffmpeg with ffmpeginstaller.com.
+--- View current converter queue stats and queue items via converter plugin page.
+--- Cancel or redo a conversion via admin area plugin.
+--- Automatically fail any conversions which have been in processing stats for more than 1 day. Resolves occasional timeout issues.
+--- Cancellation of any pending conversions if file deleted.
+--- Improved storage of screenshots. Moved into global cache folder in core.
+--- Auto removal of any cache (screenshots) on deletion of media.
+- Image Viewer:
+--- Capture of EXIF data on upload and displayed in the 'Flow' theme image popup, in the file manager.
+--- Larger image preview added to 'Flow' file manager on file details popup.
+--- Admin option to show a direct link to the image for users. Images can be directly hot-linked, if the option is enabled.
+--- Support for responsive templates on image preview.
+--- Opengraph preview image added so thumbnail shows when posting to Facebook.
+--- Auto removal of any image cache on deletion of media.
+--- Improved storage of resized images and thumbnails. Moved into global cache folder in core.
+- Document Viewer:
+--- Preview of document embedded into 'Flow' file manager on file details popup.
+--- Opengraph preview icon added so document icon shows when posting to Facebook.
+- FTP Upload:
+--- Added support for ProFTPD. Runs in virtual mode using the main database. Need access to server to configure.
+--- Staggered each upload 1 at a time rather than all at once to improve performance on large volume uploads.
+--- Added link to FTP upload tab to recheck for pending transfers.
+- Rewards:
+--- Added download complete log for NGINX users. PPD downloads are only logged when a download is entirely downloaded when using X-Accel-Redirect. Included in the plugin at no extra cost.
+--- Added PPD groups by filesize. Set payment rate based on filesize aswell as country.
+--- Added total paid figure on customer account rewards page.
+--- Add option to set other outpayment methods for withdrawals. i.e. bank transfer, cheque. Easily add new ones like bitcoin, stripe etc.
+--- Option to set maximum total daily earnings by downloader IP.
+--- Option to set maximum total daily earnings by file.
+--- Option to set maximum total daily earnings by file owner/user.
+--- Link in admin, 'payment requests' page to pay outpayment via PayPal. Auto-fills the amount, description, currency, users PayPal email address etc.
+- File Leech:
+--- Added percentage progress indicator onscreen when leeching, same as remote url download.
+
+
+v3.5.3
+
+- Removal of potentially unsafe uploadify code. See /offline/upgrade_file_diffs/V3-5_2_to_V3-5-3_DIFF.txt
+
+
+v3.5.2
+
+- Fix to server select method when when using direct file server storage. (class.uploader.php)
+- Improvement to bulk file deletes across remote file servers.
+- Detection of visitors correct IP address if using Cloudflare.
+- Added password policy options for accounts. Min/max length, include uppercase, numbers and special characters options.
+- Batch drag & drop file move in file manager.
+- Right-click context menu on files in file manager & 'select all' menu.
+- Delete file in file manager now uses ajax remove process.
+- Fixed account max upload limit on remote uploader.
+
+Plugin Changes:
+- FTP Plugin:
+--- Added option to override cPanel host for FTP accounts. Use if using ftp.yourhost.com.
+--- Better support for non-utf8 characters in filenames.
+- Rewards Plugin:
+--- Update to add all text content to translations.
+- Media Player Plugin:
+--- Removal of old token usage for downloads.
+- Document Viewer Plugin:
+--- Removal of old token usage for downloads.
+
+
+v3.5.1
+
+Version Notes: Please see /offline/upgrade_file_diffs/ for the full list of changed files. This release is a minor release
+fixing a number of issues in the previous v3.5 release. Ensure you apply the database changes from /offline/upgrade_sql_statements/ when
+upgrading. There's limited impact on templates this release, most is core code changes. For custom download pages, note additional text in
+admin area, download pages section for creating 'next' page links.
+
+- Additional headers in file download process for better support on partial content requests. Fixes seeking in media player.
+- Improvements to download speed restriction code to remove output buffering. Performance increase.
+- Fixes to download process when using multiple download pages. Note additional text in admin area, download pages section for creating 'next' page links.
+- Download threads limitation bug via download managers resolved.
+- Support for directly adding download urls in file managers with username & password. Resolves FDM issues.
+- Ability to change file password on file edit page.
+- More flexible options for different FTP server types in FTP file servers.
+- Added file management class to centralise removal of actual file distributed on multiple file servers.
+- Fix to seek failure when playing movies in Chrome.
+- Other minor fixes.
+
+Plugin Changes:
+- Media Player Plugin:
+--- Improved media seeking.
+--- Fixed download not working after playing movie.
+--- Added option to ignore download pages for media file types.
+- Media Converter:
+--- Fixed bug when full stop character used in server path.
+- Image Viewer Script:
+--- Removal of thumbnail cache on delete of an image.
+--- Fix background colour of transparent image thumbnails to white.
+--- Fix to resize of image fail for non-cache thumbs or blank custom image size.
+--- Detection and display of animated gifs on image viewer page.
+- FTP Plugin:
+--- Increased generated password sensitivity for better compatibility with all cPanel configurations.
+--- Added option to set hostname on username. Certain cPanel servers require login in the format username@domain.com.
+
+
+
+v3.5
+
+- Added new button to file manager to bulk delete files.
+- Drag to select multiple files in front-end file manager. (or use ctrl click)
+- In file manager, added option to change selected file popup by using the right & left cursor keys.
+- Support for download managers for non/free users, including resume support.
+- Option to set 'direct' file servers to produce download urls using the main site url. Final download is processed with file server.
+- Members area option to keep all file statistics private. Statistics urls will not work unless they're logged into their account.
+- New admin area section to set multiple download pages based on user type. Users can be shown any amount of intermediate pages before being provided the download. Easily add custom download pages.
+- Admin area added option to remove multiple files at once.
+- Admin area option to delete user account and associated files.
+- Admin area option to delete file/stats database records.
+- Admin area split option to toggle adverts by non, free and paid users.
+- Admin area option to disable uploading by non, free and paid users.
+- Contact form added to front-end. Includes optional captcha.
+- Sharing folders publicly will also now list sub-folders. Sub-folders need to be set as publicly accessible via the file manager.
+- Added additional mimetypes for remote downloads.
+- Added option in admin area to set the default view of the file manager to icon or list.
+- In admin area file manager, added link in own column to quickly filter files by IP or account.
+- Prefilling of abuse report file urls if linked from file download page.
+- File stats no longer require Flash, pure html5 implementation. Viewable across all devices now.
+- Added more system logging to aid debugging.
+- Import and export CSV option within admin area manage translations.
+- Admin option to scan codebase for missing translations to ensure translations data is up to date.
+- jQuery updated to jquery-1.11.0.min.js.
+- Minor bug fix for file manager when moving files into sub-folders. Root folder no longer shows all files.
+- Overall reduction on memory usage by 25%.
+- Overall reduction in the amount of queries run on each page load.
+- Performance improvement when loading translations.
+- Performance improvement with file statistics.
+- Added automatic JavaScript merging and minifying. Reduction in overall page size and total requests on page.
+- Removal of old YUI javascript library, yui_combo.js.
+- Fix to max concurrent file uploads setting for non/free users.
+- Other minor bug fixes.
+
+New Plugins: (see yetishare.com for pricing)
+- Document Viewer Plugin
+- BitPay Plugin
+Plugin Changes:
+- Media Player Plugin:
+--- Added support for JWPlayer. (commercial sites require license from JWPlayer.com)
+--- Support for 'lights out' when using JWPlayer.
+- Image Viewer Plugin:
+--- Option to hide file countdown for all user types on images.
+--- Performance improvement on image thumbnails.
+
+
+
+v3.4
+
+- New file management area for users:
+--- Merging of folder and file management.
+--- Multi-level folders.
+--- New quicker icon based interface.
+--- Ajax popup on each file for quick access to file information.
+--- Image previews if used with image plugin.
+--- Upload directly to a folder.
+--- Fullscreen mode for file management.
+--- Alternative listview mode.
+--- Ctrl click multiple select to copy & paste all links, forum bbcode or html code at once.
+--- Quick access to recent uploads.
+--- Trash can for deleted files. Empty trash option to permanently remove file stats & information.
+- Ability to limit the maximum files which can be downloaded for free user in a 24 hour period.
+- Progress indicators on remote file upload.
+- Logging of md5 file hashes on upload.
+- Support for chunked uploads if supported by browser. Bypasses PHP limits and any tmp folder size restrictions.
+- Duplicate files are no longer stored, so the same file will only ever be kept in storage once. Unique download urls are still generated on each upload for stats, privacy etc.
+- Added option to set session expiry period via the admin area.
+- Improved cross site session token clearing when PHP & MySQL times are out of sync.
+- Improvements with possible conflicts on PHP class auto-loader.
+- Added system log class for better error handling.
+- Admin area log file viewer.
+- Fixed various notices in log files.
+- Improvement to tab rendering on index page.
+- Added option to hide adverts for paid/admin users.
+- Updated IP address to country data.
+- Added database browsing tool to aid debugging.
+- Option to set the load order of plugins via the plugin database table.
+- Added 'forgot password' link to main login page rather than just the login popup.
+- Added payment page in admin area to search and browse received payments.
+- New 'add payment' popup to manually log payments. Useful for manual upgrades, bank transfers, cash payments etc.
+- Separated free user configuration options from non-logged in users.
+- Added account storage limit options for free and paid users.
+- Added account storage limit override by account on edit/add user.
+- Added admin option to block paid account sharing. On login, it'll clear sessions for any other users logged in with the same account.
+- Added admin option to use different site images and css styles dependant on language.
+- Added improved file type icons with a wider selection of formats.
+- Better report copyright abuse integration. Front-end form to capture details including validation of active file. Admin area screens to review and easily remove files. Admin dashboard change to show how many pending review.
+- New moderator user type to provide limited access for reviewing copyright reports. User type can access the file management and reported abuse pages in the admin area.
+- Improvements to better get mime type when finfo not available within PHP. Resolves possible streaming issues on media player for files added using remote upload or FTP upload.
+- Added admin area notice when script upgrades are available.
+- Added option within account settings to enable users to select their default account language. Option in admin area to enable/disable.
+- Admin option to put website into maintenance mode. Disables front-end website with a message. Admin area access still available.
+- Fixed bug on remote url upload which caused an error if the url contained brackets.
+- On the uploader, added option to select folder before uploading (in 'options'). Option pre-selected if upload prompted from 'your files'.
+- Admin option to disable user registration.
+- Added option to copy file into your account on the file details page (~i page). Can not be used for password protected files.
+- Added fix to session so user is remembered after returning to the site.
+- Option to set maximum storage limit for file servers.
+- Option to use a file server until it's full, then use the next. File server priority must be set and 'until full' chosen for the 'server selection method'.
+
+
+Plugin Changes:
+- Image Viewer Plugin:
+--- Change to display preview thumb on scroll down upload result.
+--- Added embed code to upload result.
+--- Removed link to info page on upload result.
+--- Added logging of width/height of image and shown on upload result page.
+--- Added image size on image preview page.
+--- Added option to download a resized version of the image.
+--- Added option to set custom resized image size.
+- Media Player Plugin:
+--- Embed video or audio option for external sites.
+--- Full screen support for FF & Chrome on embedded videos.
+--- Proper full screen mode for browsers which support it.
+--- Fixed preloading of media time on certain videos/audio.
+--- Improved issue with progress bar not working on certain videos/audio.
+- Rewards Plugin:
+--- PPD options:
+  --- Pay users per 1000 downloads of files.
+  --- Different payment group rates.
+  --- Payment groups based on downloaders country.
+  --- Option to only count above certain file sizes.
+  --- Only counts by daily unique IP addresses.
+  --- Admin interface to view downloads and manage settings.
+  --- UPDATED: PPD earnings now clear each night. Clearer feedback on screen for PPD balances.
+- Media Converter Plugin
+--- Added notice in media player screen for any pending/processing conversions.
+--- Allowed processing of mp4s so they're converted to streamable versions.
+--- Attempts to grab a screenshot of the video 15 seconds in and uses as thumbnail in users account/account sharing page.
+
+New Plugins: (see yetishare.com for pricing)
+- Media Converter Plugin
+- Social Network Login Plugin
+
+
+
+v3.3
+
+- Support for direct uploads and downloads to external file servers using the file uploader.
+- Support for url uploads direct to external file servers.
+- Migrated from old mysql_query functions to PDO in database layer.
+- Moved to database based sessions to allow for cross server session support.
+- Cross site user login sessions. Run the script across domains, sharing the database, distributing the load & storage.
+- Added ability to disable default local file storage via admin area.
+- Added PayPal callback in PayPal payment gateway plugin to validate IPN call.
+- Added installer script.
+- Improvements to remote upload functionality and error handling.
+- Internal rework on uploader code to move the result drop-down from JS into the uploader class in PHP. Content can also be overwritten via plugins.
+- Support for upload progress in IE added with general IE improvements.
+- Added ability to send download links via email on upload. (see new 'options' link)
+- Added ability to set password for files on upload. (see new 'options' link)
+- Support for currencies with comma in amount.
+- Limit on length of filename displayed within the file details page to fix formatting issue.
+- Added logged in username to current download list in admin area.
+- Added option in admin area to limit maximum files that can be uploaded at the same time. Default is set to 50. Split by free/paid users.
+- Added auto redirect to www/non-www version of the site depending on the _config.inc.php setting. Resolves some ajax issues.
+- Added optional captcha for account registration page.
+- Added option to enable or disable logging of current downloads in the admin area.
+- Added option in admin area to limit total concurrent connections for paid users. Also limits connections using download managers.
+- Removal of reliance on hard-coded admin folder path in plugins. Now relies on path set in includes/master.inc.php.
+- Added option in admin area to set a waiting time between downloads for free users.
+- Fix for banned ip checking on upload.
+- Fix for max files a users IP can upload per day.
+- Change to plugin code to allow for parameters to be passed.
+- Delete links amended across the site & admin area to allow for direct file server deletes.
+- Moved datatable labels on account_home to translations.
+- Fix for possible XSS issue on file details page.
+- Fix to wrap filename on download delay page.
+- Fixed file type icons not showing if file extension in uppercase.
+- Fix for PHP Notice on line 1234 in includes/functions.inc.php
+- Improvements to allow for double request for download when using Android. Fixes download from for free users on Android.
+
+Release Notes:
+- The core database layer has moved from using the old mysql_query functions to PDO. You will need to ensure you have the MySQL PDO module enabled before upgrading.
+- Many plugins, including the FTP plugin, have been updated for this release so they work with the new uploader code. If you use them, ensure you've updated your code to the latest version. You can do this by downloading the zip from our site and uploading the files to your plugin folder via FTP.
+
+New Plugins: (see yetishare.com for pricing)
+- Image Viewer Plugin
+- Authorize.net Payment Gateway
+- First Data Payment Gateway
+- OKPay Payment Gateway
+- Payza Payment Gateway
+
+v3.2
+
+- Moved PayPal gateway to plugin architecture so it can be disabled if needed.
+- Minor change to wrap long file names within 'your files'.
+- Changes to allow for FTP Upload Plugin.
+
+New Plugins: (see yetishare.com for pricing)
+- FTP Upload Plugin
+
+v3.11
+
+- Minor file change to allow for media streaming plugin.
+- Only the following files have been changed on this release:
+--- includes/class.file.php
+--- file_download.php
+
+New Plugins: (see yetishare.com for pricing)
+- Media Player Plugin
+
+v3.1
+
+- Remote url upload functionality added to home page. Supports http, https and ftp urls.
+- Minor change to not count admin area file downloads in stats.
+- Allowed 'delayed redirect seconds' to be zero so free users can be configured for direct downloads.
+- Option in admin area to require users to register before uploading.
+- Option in admin area to require users to register before downloading.
+- Option in admin area to set the type of file url to create on upload. Shortest or long random hash.
+- Option in admin area to set maximum file download size for free/non users.
+- Option in admin area to set maximum concurrent downloads for free/non users.
+- Admin area option to delete a file server and all associated files.
+- Display 404 page instead of redirecting to index page when a file url is invalid.
+- Minor improvement on live download tracking under heavy traffic loads. No longer keeps database connections open during downloads.
+- Minor bug fix on current downloads page in admin area.
+- Added IP address of uploader to admin file manage screen for non-logged in users.
+- Minor fix in admin area to correctly display TB sizes on file server manager.
+- Minor change to public folder listing. If owner of folder is logged in, the password prompt is not displayed.
+- Added better support for plugin zip extract via admin area using pclzip. Resolves occasional 500 error.
+- Better formatting in Chrome for dialog popups in the admin area.
+
+New Plugins: (see yetishare.com for pricing)
+- Newsletter Plugin
+
+v3.02
+
+- Fix in class.file.php for ftp/remote file servers.
+
+New Plugins: (see yetishare.com for pricing)
+
+- Skrill Payment Gateway.
+
+v3.01
+
+- Minor fix to fully support utf-8 character encoding within the admin area.
+
+v3.0
+
+- Admin area redesign.
+- Plugin architecture added to the admin area and core codebase.
+- In the admin area, it now displays which user uploaded the file.
+- Better flow from file countdown, to register, payment & upgrade.
+- Added HTTP auth support for download managers.
+- Better support for resuming downloads using both local and ftp storage.
+- Support for chunking in download managers.
+- New admin area page to view currently active downloads.
+- Site language chooser. Option in admin 'site settings' to show or hide.
+- Improved admin functions to manage translations.
+- Site email content moved into translations. i.e. registration, forgot password & report file notifications.
+- Database indexes set to improve performance with larger datasets.
+- Database logging of which files result in paid upgrades. Available within the 'premium_order' table.
+- Logging into a premium account when on the file countdown page redirects back to the file page. Results in immediate download for premium accounts or upgrade for other.
+- Better error reporting on multi uploader.
+- Admin area check & notification for tmp folder size.
+- Admin area option to set reason for file removal and logging of original DMCA removal request text.
+- Minor bug fix with payment process to PayPal when using other currencies.
+- Converted members area file listing to ajax for better performance.
+- Additional filters added to members area file listing (folder & status). Default file listing status is now 'active'.
+- The right-hand 'your files' widget now only displays non-account files by the same IP if the user isn't logged in.
+- Bug fix which permitted usernames with spaces.
+- Sanity checked and added a number of missing text translations.
+
+New Plugins: (see yetishare.com for pricing)
+
+- Rewards Program.
+
+v2.1
+
+- Added folder management.
+- After file upload, option to set folder.
+- Set folder public or private.
+- Set password on folder.
+- Show files in folder listing page. (for public folders)
+- Added edit file details page.
+- Reset forgotten password pages.
+- Edit account email, name & password page.
+- Optional captcha after download counter for free users.
+- Improved download streaming when using remote ftp file servers.
+- Removed inaccurate upload progress text when using IE.
+- Moved homepage 'benefits' text into translations.
+- On homepage upload, prevented the results box from being closed when clicking any of the rows.
+- Added docx icon into file upload types.
+- Added secure phpinfo page within admin area to aid with debugging.
+- Removed admin area navigation if not logged in.
+- Improved admin login form style.
+- Fixed issue with editing ftp port on file server management.
+- Minor bug fix. In some instances, uploaded files might not be completely removed when deleted by admin.
+- Added check for php ftp functions within admin 'test ftp' page.
+- Fix on "Admin Users" & "File Servers" for the sorting of "total space used" and "total files".
+
+v2.01
+
+- Removed database password from displaying if there's an error with database connectivity.
+- Fixed filtering within admin area.
+- Fixed csv export within admin area.
+- Minor bug fix with account expiry date not updating via admin edit user.
+
+v2.0
+
+- View/amend account paid expiry date within admin area.
+- Added filesize when browsing files admin area.
+- Added filesize in user file manager.
+- More detail on file uploader. Percentage progress, filesize progress, upload speed and time remaining. (Chrome & Firefox only)
+- Option in admin area to show original filename on end of file url.
+- Option to set different download site address to main site. Set downloads from a different domain.
+- Support for https.
+- Improved countdown timer page. More information about the benefits of registering for a paid account inc estimated download time.
+- Support for multiple file servers via FTP.
+- New admin page to configure file servers.
+- Test file server page.
+- Admin area option to use a specific file server or automatically select the one with least space used.
+- Added 'filter by server' option on 'manage files' in admin area.
+- Added 'filter by user' option on 'manage files' in admin area.
+- Added link to 'manage users' to view user uploaded files.
+- Added total space used and total active files to 'manage users' in admin area.
+- Added link to admin area on main site if logged in as admin user.
+
+v1.06
+
+- Removed the ability to bypass the countdown by refreshing on the countdown timer page.
+- Fixed minor character issues within the admin settings page.
+
+v1.05
+
+- Fixed issue which could mean paid users see the countdown timer when downloading a file.
+- Fixed issue which meant the countdown wasn't displayed for free users when clicking on links in the 'your files' section.
+
+v1.04
+
+- Added the ability to specify smtp settings for sending site emails.
+- Fixed filesize bug using IE to upload.
+- Fixed issue where entries are sometimes created in the database on upload failure.
+- Better compatibility with Safari browser.
+
+v1.03
+
+- On some servers larger downloads could produce 500 errors. Resolved in this release.
+
+v1.02
+
+- Minor bug fix to limit maximum days value for redundant file deletion.
+- Missing 'unknown' translation on stats pages.
+- Minor bug fix to block file upload attempts without names and with zero size.
+- Added check for referrer on file upload script.
+
+v1.01
+
+- Minor XXS bug fixes to login/registration pages.
+- Minor spelling fixes.
+
+v1.0
+
+- Initial release.

@@ -1,0 +1,54 @@
+<script>
+    $(function () {
+        var data1c = [
+            {{ dataFree|join(', ')|raw }}
+        ];
+        var data2c = [
+            {{ dataPaid|join(', ')|raw }}
+        ];
+        $("#canvas_dahs3").length && $.plot($("#canvas_dahs3"), [
+            data1c, data2c
+        ], {
+            series: {
+                lines: {
+                    show: false,
+                    fill: false,
+                    steps: false
+                },
+                bars: {show: true, barWidth: 0.9, align: 'center'},
+                points: {
+                    radius: 0,
+                    show: true
+                },
+                shadowSize: 2
+            },
+            grid: {
+                verticalLines: true,
+                hoverable: true,
+                clickable: true,
+                tickColor: "#d5d5d5",
+                borderWidth: 1,
+                color: '#fff'
+            },
+            colors: ["rgba(38, 185, 154, 0.38)", "rgba(3, 88, 106, 0.38)"],
+            xaxis: {
+                tickColor: "rgba(51, 51, 51, 0.06)",
+                mode: "time",
+                tickSize: [1, "day"],
+                axisLabel: "Date",
+                axisLabelUseCanvas: true,
+                axisLabelFontSizePixels: 12,
+                axisLabelFontFamily: 'Verdana, Arial',
+                axisLabelPadding: 10,
+                ticks: [{{ label|join(', ')|raw }}]
+            },
+            yaxis: {
+                ticks: 8,
+                tickColor: "rgba(51, 51, 51, 0.06)",
+            },
+            tooltip: true
+        });
+        
+        $('#wrapper_14_day_users .background-loading').removeClass('background-loading');
+    });
+</script>

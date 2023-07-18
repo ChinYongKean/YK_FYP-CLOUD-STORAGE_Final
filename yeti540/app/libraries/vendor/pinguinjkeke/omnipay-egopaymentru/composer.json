@@ -1,0 +1,35 @@
+{
+    "name": "pinguinjkeke/omnipay-egopaymentru",
+    "type": "library",
+    "description": "Egopay.ru support for Omnipay payment processing library",
+    "keywords": [
+        "egopayru",
+        "gateway",
+        "merchant",
+        "omnipay",
+        "pay",
+        "payment",
+        "purchase",
+        "soap",
+        "ucs"
+    ],
+    "homepage": "https://github.com/pinguinjkeke/omnipay-egopaymentru",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander Avakov",
+            "email": "yaavakov@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Omnipay\\EgopayRu\\": "src/"
+        }
+    },
+    "require": {
+        "omnipay/common": "^2.3"
+    },
+    "require-dev": {
+        "omnipay/tests": "^2.1"
+    }
+}

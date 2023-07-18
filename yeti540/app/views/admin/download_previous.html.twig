@@ -1,0 +1,94 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Downloads for {{ file.originalFilename|slice(0, 50) }}{% endblock %}
+{% block selected_page %}files{% endblock %}
+{% block selected_sub_page %}file_manage{% endblock %}
+
+{% block body %}
+    <script>
+        oTable = null;
+        oTableRefreshTimer = null;
+        $(document).ready(function () {
+            // datatable
+            oTable = $('#previousDownloadsTable').dataTable({
+                "sPaginationType": "full_numbers",
+                "bServerSide": true,
+                "bProcessing": true,
+                "sAjaxSource": 'ajax/download_previous?fileId={{ file.id }}',
+                "iDisplayLength": 100,
+                "aaSorting": [[1, "desc"]],
+                "bFilter": false,
+                "bLengthChange": false,
+                "aoColumns": [
+                    {bSortable: false, sWidth: '3%', sName: 'file_icon', sClass: "center adminResponsiveHide"},
+                    {sName: 'date_started', sWidth: '15%', sClass: "activeDownloadsColumn"},
+                    {sName: 'ip_address', sWidth: '12%', sClass: "center adminResponsiveHide"},
+                    {sName: 'username'}
+                ],
+                "fnServerData": function (sSource, aoData, fnCallback, oSettings) {
+                    setTableLoading();
+                    $.ajax({
+                        "dataType": 'json',
+                        "type": "GET",
+                        "url": sSource,
+                        "data": aoData,
+                        "success": fnCallback
+                    });
+                },
+                "fnDrawCallback": function (oSettings) {
+                    postDatatableRender();
+                },
+                "oLanguage": {
+                    "sEmptyTable": "There are no previous downloads."
+                }
+            });
+        });
+
+        function reloadTable()
+        {
+            oTable.fnDraw();
+        }
+    </script>
+
+    <!-- page content -->
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>{{ block('title') }}</h3>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>File Downloads</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <table id="previousDownloadsTable" class="table table-striped table-only-border dtLoading bulk_action">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>{{ t("download_date", "download date")|title }}</th>
+                                        <th>{{ t("ip_address", "ip address")|title }}</th>
+                                        <th>{{ t("username", "username")|title }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="20">{{ t('admin_loading_data', 'Loading data...') }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

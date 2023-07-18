@@ -1,0 +1,30 @@
+<form action="#" autocomplete="off">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">{{ t("move_items", "Move Items") }} ({{ totalItems }} {{ t("items", "items") }})</h4>
+    </div>
+
+    <div class="modal-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="moveFolderId" class="control-label">{{ t("move_to_folder", "move to folder")|title }}</label>
+                        <select class="form-control" name="moveFolderId" id="moveFolderId">
+                            <option value="">/</option>
+                            {% for k,folderListingItem in folderListing %}
+                                <option value="{{ k }}"{{ currentFolderId==k?" selected":"" }}>
+                                    {{ folderListingItem }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <div class="modal-footer">
+        <input type="hidden" name="submitme" id="submitme" value="1"/>
+        <input type="hidden" value="{{ safeFileIds|join(',') }}" name="fileIds"/>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{ t("cancel", "cancel") }}</button>
+        <button type="button" class="btn btn-info" onClick="processMoveFilesSelectedFolder(); $('.modal').modal('hide'); return false;">{{ t("move", "Move")|title }} <i class="entypo-check"></i></button>
+    </div>
+</form>

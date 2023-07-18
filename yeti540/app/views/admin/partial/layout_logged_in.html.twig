@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <!-- Meta, title, CSS, favicons, etc. -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>{{ block('title') }} - Admin</title>
+
+        <!-- Bootstrap -->
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+        <!-- Font Awesome -->
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet"/>
+        <!-- NProgress -->
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/nprogress/nprogress.css" rel="stylesheet"/>
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css" rel="stylesheet" />
+        <!-- iCheck -->
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/iCheck/skins/flat/green.css" rel="stylesheet"/>
+        <!-- bootstrap-wysiwyg -->
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/google-code-prettify/bin/prettify.min.css" rel="stylesheet"/>
+        <!-- Select2 -->
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/select2/dist/css/select2.min.css" rel="stylesheet"/>
+        <!-- Switchery -->
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/switchery/dist/switchery.min.css" rel="stylesheet"/>
+        <!-- starrr -->
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/starrr/dist/starrr.css" rel="stylesheet"/>
+        <!-- bootstrap-daterangepicker -->
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet"/>
+        <!-- Datatables -->
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet"/>
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet"/>
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet"/>
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet"/>
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet"/>
+        <!-- PNotify -->
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/pnotify/dist/pnotify.css" rel="stylesheet"/>
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet"/>
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet"/>
+
+        <!-- Custom Theme Styles -->
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/css/responsive.css" rel="stylesheet"/>
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/css/custom.css" rel="stylesheet"/>
+        <link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/css/pre_v44_compat.css" rel="stylesheet"/>
+
+        <!-- Colour Skin -->
+        <!--<link href="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/css/skins/brown.css" rel="stylesheet"/>-->
+
+        <!-- append any theme admin css -->
+        {% if adminThemeCss|length > 0 %}
+            <link rel="stylesheet" href="{{ adminThemeCss }}" type="text/css" media="screen" />
+        {% endif %}
+        
+        {% block head_css %}{% endblock %}
+
+        <script type="text/javascript">
+            var ADMIN_WEB_ROOT = "{{ ADMIN_WEB_ROOT }}";
+            var CORE_ASSETS_ADMIN_WEB_ROOT = "{{ CORE_ASSETS_ADMIN_WEB_ROOT }}";
+        </script>
+
+        <!-- jQuery -->
+        <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/jquery/dist/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+        <!-- Pre v4.4 compatibility, i.e. third party plugins -->
+        <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/js/pre_v44_compat.js"></script>
+        
+        {% block head_js %}{% endblock %}
+    </head>
+
+    <body class="nav-md">
+        <div class="container body">
+            <div class="main_container">
+                <div class="col-md-3 left_col menu_fixed">
+                    <div class="left_col scroll-view" style="width: 100%;">
+                        <div class="navbar nav_title" style="border: 0;">
+                            <a href="{{ ADMIN_WEB_ROOT }}" class="site_title"><i class="fa fa-cogs"></i> <span>{{ t("site_admin", "site admin")|title }}</span></a>
+                        </div>
+                        <div class="clearfix"></div>
+
+                        <div class="nav header_search">
+                            <input name="quick_search" id="quick_search" type="text" class="form-control" placeholder="Quick search... (Ctrl Q)"/>
+                            <div id="quick_search_results" class="quick_search_results" style="display: none;">
+                                <span id="quick_search_results_menu">
+                                    <div class="title x_title"></div>
+                                    <div class="results"></div>
+                                </span>
+                                <div class="clearfix"></div>
+
+                                <span id="quick_search_results_site_settings">
+                                    <div class="title x_title"></div>
+                                    <div class="results"></div>
+                                </span>
+                                <div class="clearfix"></div>
+
+                                <div class="quick_links_wrapper">
+                                    <div class="title x_title">
+                                        Quick Search Links
+                                    </div>
+                                    <div class="results">
+                                        <ul class="row">
+                                            <li class="col-xs-4">
+                                                <a id="quick_links_files" href="#">
+                                                    <i class="fa fa-cloud-upload"></i>&nbsp;&nbsp;Files
+                                                </a>
+                                            </li>
+                                            <li class="col-xs-4">
+                                                <a id="quick_links_users" href="#">
+                                                    <i class="fa fa-users"></i>&nbsp;&nbsp;Users
+                                                </a>
+                                            </li>
+                                            <li class="col-xs-4">
+                                                <a id="quick_links_servers" href="#">
+                                                    <i class="fa fa-hdd-o"></i>&nbsp;&nbsp;Servers
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="quick_search_results_backdrop" class="modal-backdrop fade in" style="display: none;"></div>
+                        </div>
+
+                        <br />
+
+                        <!-- sidebar menu -->
+                        <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                            <div class="menu_section">
+                                <ul id="navigation-main" class="nav side-menu">
+                                    <li class="{{ block('selected_page') == 'dashboard'?'active':'' }}">
+                                        <a href="{{ ADMIN_WEB_ROOT }}/"><i class="fa fa-home"></i> {{ t('dashboard', 'dashboard')|lower|title }}</a>
+                                    </li>
+                                    <li class="{{ (block('selected_page') == 'files') or (block('selected_page') == 'downloads')?'active':'' }}">
+                                        <a><i class="fa fa-cloud-upload"></i> {{ t('files', 'files')|lower|title }} <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li><a href="{{ ADMIN_WEB_ROOT }}/file_manage">{{ t('manage_files', 'manage files')|lower|title }}</a></li>
+                                                {% if Auth.hasAccessLevel(20) == true %}
+                                                    {% if currentProductType == 'file_hosting' %}
+                                                        <li class="nav_active_downloads"><a href="{{ ADMIN_WEB_ROOT }}/download_current">{{ t('active_downloads', 'active downloads')|lower|title }}</a></li>
+                                                    {% endif %}
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/file_manage_action_queue">{{ t('action_queue', 'action queue')|lower|title }} ({{ totalPendingFileActions }})</a></li>
+                                                {% endif %}
+
+                                                {% if currentProductType == 'file_hosting' %}
+                                                    <li class="nav_abuse_reports">
+                                                        <a>{{ t('abuse_reports', 'abuse reports')|lower|title }}{% if totalReports > 0 %} ({{ totalReports }}){% endif %}<span class="fa fa-chevron-down"></span></a>
+                                                        <ul class="nav child_menu">
+                                                            <li><a href="{{ ADMIN_WEB_ROOT }}/file_report_manage">{{ t('manage_reports', 'manage reports')|lower|title }}{% if totalReports > 0 %} ({{ totalReports }}){% endif %}</a></li>
+                                                            <li><a href="{{ ADMIN_WEB_ROOT }}/file_report_manage_bulk_remove">{{ t('bulk_remove_abuse_reports', 'bulk remove')|lower|title }}</a></li>
+                                                        </ul>
+                                                    </li>
+                                                {% endif %}
+
+                                            {% if Auth.hasAccessLevel(20) == true %} 
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/plugin/fileimport/settings">{{ t('bulk_import', 'bulk import')|lower|title }}</a></li>
+                                                {% endif %}
+                                        </ul>
+                                    </li>
+                                    {% if Auth.hasAccessLevel(20) == true %}
+                                        <li class="{{ (block('selected_page') == 'users')?'active':'' }}">
+                                            <a><i class="fa fa-users"></i> {{ t('users', 'users')|lower|title }} <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/user_manage">{{ t('manage_users', 'manage users')|lower|title }}</a></li>
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/user_add">{{ t('add_user', 'add user')|lower|title }}</a></li>
+                                                {% if currentProductType == 'file_hosting' %}
+                                                <li class="nav_received_payments">
+                                                    <a>{{ t('received_payments', 'received payments')|lower|title }}<span class="fa fa-chevron-down"></span></a>
+                                                    <ul class="nav child_menu">
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/payment_manage">{{ t('list_payments', 'list payments')|lower|title }}</a></li>
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/payment_manage?log=1">{{ t('log_payment', 'log payment')|lower|title }}</a></li>
+                                                    </ul>
+                                                </li>
+                                                    <li class="nav_subscriptions"><a href="{{ ADMIN_WEB_ROOT }}/payment_subscription_manage">{{ t('manage_subscriptions', 'manage subscriptions')|lower|title }}</a></li>
+                                                    <li class="nav_subscriptions"><a href="{{ ADMIN_WEB_ROOT }}/user_action_log">{{ t('user_action_logs', 'User Action Logs') }}</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </li>
+                                    {% endif %}
+                                    
+                                    <li class="{{ (block('selected_page') == 'sharing')?'active':'' }}">
+                                        <a><i class="fa fa-share-alt"></i> {{ t('sharing', 'sharing')|lower|title }} <span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li><a href="{{ ADMIN_WEB_ROOT }}/sharing_manage">{{ t('manage_sharing', 'manage sharing')|lower|title }}</a></li>
+                                            <li><a href="{{ ADMIN_WEB_ROOT }}/sharing_manage?add=1">{{ t('create_share', 'create share')|lower|title }}</a></li>
+                                        </ul>
+                                    </li>
+                                    
+                                    {% if Auth.hasAccessLevel(20) == true %}
+                                        <li class="{{ (block('selected_page') == 'file_servers')?'active':'' }}">
+                                            <a><i class="fa fa-hdd-o"></i> {{ t('file_servers', 'file servers')|lower|title }} <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/server_manage">{{ t('manage_file_servers', 'manage file servers')|lower|title }}</a></li>
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/server_add_edit">{{ t('add_file_server', 'add file server')|lower|title }}</a></li>
+                                            </ul>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if Auth.hasAccessLevel(20) == true %}
+                                        {% if currentProductType == 'file_hosting' %}
+                                            <li class="nav_advertising {{ (block('selected_page') == 'advertising')?'active':'' }}">
+                                                <a><i class="fa fa-bullhorn"></i> {{ t('advertising', 'advertising')|lower|title }} <span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li><a href="{{ ADMIN_WEB_ROOT }}/advertising/settings">{{ t('advertising_settings', 'advertising settings')|lower|title }}</a></li>
+                                                </ul>
+                                            </li>
+                                        {% endif %}
+                                        
+                                        <li class="{{ (block('selected_page') == 'plugins')?'active':'' }} nav_plugins">
+                                            <a><i class="fa fa-plug"></i> {{ t("plugins", "Plugins") }} <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li>
+                                                    <a href="{{ ADMIN_WEB_ROOT }}/plugin_manage">{{ t('manage_plugins', 'manage plugins')|lower|title }}</a>
+                                                </li>
+                                                <li>
+                                                    <a>{{ t('plugin_settings', 'plugin settings')|lower|title }} <span class="fa fa-chevron-down"></span></a>
+                                                    {% if navPluginList|length > 0 %}
+                                                        <ul class="nav child_menu">
+                                                            {% for pluginItem in navPluginList %}
+                                                                {% if loop.index < 10 %}
+                                                                    <li class="ignore-quick-search"><a href="{{ ADMIN_WEB_ROOT }}/plugin/{{ pluginItem['folder_name'] }}/settings">{{ pluginItem['plugin_name'] }}</a></li>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                            <li class="ignore-quick-search"><a href="{{ ADMIN_WEB_ROOT }}/plugin_manage">{{ t("more", "more....") }}</a></li>
+                                                        </ul>
+                                                    {% endif %}
+                                                </li>
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/plugin_manage_add">{{ t('add_plugin', 'add plugin')|lower|title }}</a></li>
+                                                <li><a href="{{ currentProductUrl }}/plugins.html" target="_blank">{{ t('get_plugin', 'get plugins')|lower|title }}</a></li>
+                                            </ul>
+                                        </li>
+
+                                        <li class="{{ (block('selected_page') == 'themes')?'active':'' }}">
+                                            <a><i class="fa fa-photo"></i> {{ t('themes', 'themes')|lower|title }} <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/theme_settings/{{ SITE_CONFIG_SITE_THEME }}">{{ currentThemeName }}</a></li>
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/theme_manage">{{ t('manage_themes', 'manage themes')|lower|title }}</a></li>
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/theme_manage_add">{{ t('add_theme', 'add theme')|lower|title }}</a></li>
+                                                <li><a href="{{ currentProductUrl }}/themes.html" target="_blank">{{ t('get_themes', 'get themes')|lower|title }}</a></li>
+                                            </ul>
+                                        </li>
+
+                                        <li class="{{ (block('selected_page') == 'api')?'active':'' }}">
+                                            <a><i class="fa fa-database"></i> {{ t('api', 'api')|upper }} <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/setting_manage?filterByGroup=API">{{ t('api_settings', 'settings')|lower|title }}</a></li>
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/api_documentation">{{ t('api_documentation', 'documentation')|lower|title }}</a></li>
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/api_test_framework">{{ t('api_test_framework', 'testing tool')|lower|title }}</a></li>
+                                            </ul>
+                                        </li>
+
+                                        <li class="{{ (block('selected_page') == 'configuration')?'active':'' }}">
+                                            <a><i class="fa fa-cog"></i> {{ t("site_configuration", "Site Configuration") }} <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                <li>
+                                                    <a>{{ t('site_settings', 'site settings')|lower|title }} <span class="fa fa-chevron-down"></span></a>
+                                                    <ul class="nav child_menu">
+                                                        {% for navGroupDetail in navGroupDetails %}
+                                                            <li><a href="{{ ADMIN_WEB_ROOT }}/setting_manage?filterByGroup={{ navGroupDetail['config_group']|url_encode }}">{{ navGroupDetail['config_group'] }}</a></li>
+                                                            {% endfor %}
+                                                    </ul>
+                                                </li>
+                                                <li>
+                                                    <a>{{ t('user_settings', 'user settings')|lower|title }} <span class="fa fa-chevron-down"></span></a>
+                                                    <ul class="nav child_menu">
+                                                        {% if currentProductType == 'file_hosting' %}
+                                                            <li class="nav_manage_download_pages"><a href="{{ ADMIN_WEB_ROOT }}/download_page_manage">{{ t('download_pages', 'download pages')|lower|title }}</a></li>
+                                                        {% endif %}
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/account_package_manage">{{ t('account_packages', 'account packages')|lower|title }}</a></li>
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/banned_ip_manage">{{ t('banned_ips', 'banned ips')|lower|title }}</a></li>
+                                                    </ul>
+                                                </li>
+
+                                                <li><a href="{{ ADMIN_WEB_ROOT }}/translation_manage">{{ t('translations', 'translations')|lower|title }}</a></li>
+
+                                                <li>
+                                                    <a>{{ t('system_tools', 'system tools')|lower|title }} <span class="fa fa-chevron-down"></span></a>
+                                                    <ul class="nav child_menu">
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/log_file_viewer">{{ t('system_logs', 'system logs')|lower|title }}</a></li>
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/background_task_manage">{{ t('background_task_logs', 'background task logs')|lower|title }}</a></li>
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/database_browser?username=&db={{ _CONFIG_DB_NAME }}">{{ t('database_browser', 'database browser')|lower|title }}</a></li>
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/test_tools">{{ t('test_tools', 'test tools')|lower|title }}</a></li>
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/backup_manage">{{ t('backups', 'backups')|lower|title }}</a></li>
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/server_info">{{ t('php_info', 'php info')|lower|title }}</a></li>
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/support_info">{{ t('support_info', 'support info')|lower|title }}</a></li>
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/purge_application_cache">{{ t('purge_cache', 'purge cache')|lower|title }}</a></li>
+                                                        <li><a href="{{ ADMIN_WEB_ROOT }}/system_update">{{ t('system_update', 'system update')|lower|title }}</a></li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                            {% if Auth.hasAccessLevel(20) == true %}
+                                {% set pluginNavigation = PluginHelper.callHookRecursive('adminPluginNav') %}
+                                {% if pluginNavigation|length > 0 %}
+                                    <div class="menu_section">
+                                        <h3>{{ t('admin_plugin_pages', 'Plugin Pages') }}</h3>
+                                        <ul id="navigation-plugins" class="nav side-menu">
+                                            {% for pluginKey,pluginNavigationItems in pluginNavigation|sort %}
+                                                {% for pluginNavigationItem in pluginNavigationItems %}
+                                                <li class="{{ (block('selected_page') == pluginNavigationItem['link_key'])?'active':'' }}">
+                                                    <a href="{{ pluginNavigationItem['link_url'] }}"><i class="{{ pluginNavigationItem['icon_class'] }}"></i> {{ t(pluginNavigationItem['link_text'], pluginNavigationItem['link_text'])|title }}{% if pluginNavigationItem['children']|length > 0 %} <span class="fa fa-chevron-down"></span>{% endif %}</a>
+                                                    {% if pluginNavigationItem['children']|length > 0 %}
+                                                        <ul class="nav child_menu">
+                                                            {% for pluginNavigationChildItem in pluginNavigationItem['children'] %}
+                                                                <li><a href="{{ WEB_ROOT }}/{{ pluginNavigationChildItem['link_url'] }}">{{ t(pluginNavigationChildItem['link_text'], pluginNavigationChildItem['link_text'])|lower|title }}</a></li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    {% endif %}
+                                                </li>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <!-- /sidebar menu -->
+
+                        <!-- /menu footer buttons -->
+                        <div class="sidebar-footer hidden-small">
+                            <a href="{{ ADMIN_WEB_ROOT }}/setting_manage" data-toggle="tooltip" data-placement="top" title="Site Settings">
+                                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                            </a>
+                            <a href="#" data-toggle="tooltip" data-placement="top" title="Toggle FullScreen" onClick="toggleFullScreen();
+                return false;">
+                                <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+                            </a>
+                            <a href="{{ ADMIN_WEB_ROOT }}/user_edit/{{ Auth.id }}" data-toggle="tooltip" data-placement="top" title="Manage Your Account">
+                                <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+                            </a>
+                            <a href="{{ ADMIN_WEB_ROOT }}/logout" data-toggle="tooltip" data-placement="top" title="{{ t('logout', 'logout')|lower|title }}">
+                                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                        <!-- /menu footer buttons -->
+                    </div>
+                </div>
+
+                <!-- top navigation -->
+                <div class="top_nav">
+                    <div class="nav_menu">
+                        <nav>
+                            <div class="nav toggle">
+                                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                            </div>
+
+                            <ul class="nav navbar-nav navbar-right">
+                                <li class="">
+                                    <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                        <img src="{{ ADMIN_WEB_ROOT }}/ajax/account_view_avatar?userId={{ Auth.id }}&width=44&height=44" alt="">{{ Auth.getAccountScreenName() }}
+                                        <span class=" fa fa-angle-down"></span>
+                                    </a>
+                                    <ul id="dropdown-usermenu" class="dropdown-menu dropdown-usermenu pull-right">
+                                        <li><a href="{{ ADMIN_WEB_ROOT }}/user_edit/{{ Auth.id }}">{{ t('your_account_settings', 'your account settings')|lower|title }}</a></li>
+                                        <li><a href="https://forum.mfscripts.com" target="_blank">{{ t('support', 'support')|lower|title }}</a></li>
+                                        <li><a href="{{ ADMIN_WEB_ROOT }}/logout"><i class="fa fa-sign-out pull-right"></i> {{ t('logout', 'logout')|lower|title }}</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <!-- /top navigation -->
+
+            {% block body %}{% endblock %}
+
+            <footer>
+                <div class="pull-right">
+                    Created by <a href="{{ currentProductUrl }}" target="_blank">{{ currentProductName }}</a>, a <a href="https://mfscripts.com" target="_blank">MFScripts</a> company&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{{ ADMIN_WEB_ROOT }}/system_update">v{{ scriptVersion }}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="https://forum.mfscripts.com" target="_blank">{{ t("support")|title }}</a>
+                </div>
+                <div class="pull-left">
+                    {{ t("copyright")|title }} &copy; {{ "now"|date("Y") }} {{ SITE_CONFIG_SITE_NAME }}
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+
+            <div id="genericModalContainer" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button></div>
+                        <div class="modal-body"></div>
+                        <div class="modal-footer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- header search widget -->
+            <script>
+                var quickSearchMenuItems = null;
+                var quickSearchSiteSettingItems = {{ siteSettings|json_encode|raw }};
+                var currentLI = null;
+                $(document).ready(function() {
+                    $('#quick_search').focus(function() {
+                        $('.header_search').addClass('focus');
+                        triggerQuickSearch();
+                    });
+
+                    $('#quick_search').focusout(function() {
+                        setTimeout(function() {
+                            $('.header_search').removeClass('focus');
+                            cancelSearch();
+                        }, 250);
+                    });
+
+                    $('#quick_search').keyup(function(event) {
+                        triggerQuickSearch(event);
+                        assignQuickSearchShortcuts(event);
+                    });
+
+                    setupShortcuts();
+                });
+
+                function triggerQuickSearch(event) {
+                    if($('#quick_search').val().length == 0) {
+                        cancelSearch();
+
+                        return false;
+                    }
+
+                    // ignore reserved characters
+                    if(typeof(event) !== 'undefined') {
+                        if(event.keyCode == 38 || event.keyCode == 40 || event.keyCode == 13 || event.keyCode == 27
+                            || event.keyCode == 39 || event.keyCode == 37) {
+                            return false;
+                        }
+                    }
+
+                    // do search
+                    $('#quick_search_results, #quick_search_results_backdrop').show();
+                    $('#quick_search').addClass('searched');
+                    doQuickSearch();
+                }
+
+                function cancelSearch() {
+                    $('#quick_search_results, #quick_search_results_backdrop').hide();
+                    $('#quick_search').removeClass('searched');
+                }
+
+                function doQuickSearch() {
+                    // validate submissions
+                    var searchFilter = $.trim($('#quick_search').val()).toLowerCase();
+                    if(searchFilter.length == 0) {
+                        return false;
+                    }
+
+                    // filter menu items
+                    var filteredMenuItems = [];
+                    var menuItems = getMenuItemData();
+
+                    // loop menu items and check for matches
+                    for (var i = 0; i < menuItems.length; i++) {
+                        // allow for max 5 results
+                        if(filteredMenuItems.length >= 8) {
+                            break;
+                        }
+
+                        // filter only matched items
+                        if(menuItems[i]['label'].toLowerCase().replace(/ > /g, ' ').includes(searchFilter)) {
+                            filteredMenuItems.push(menuItems[i]);
+                        }
+                    }
+
+                    // build result
+                    buildResult('Admin Area Pages', 'menu', filteredMenuItems);
+
+                    // filter site settings items
+                    var filteredSiteSettingstems = [];
+
+                    // loop site settings and check for matches
+                    for (var i = 0; i < quickSearchSiteSettingItems.length; i++) {
+                        // allow for max 5 results
+                        if(filteredSiteSettingstems.length >= 8) {
+                            break;
+                        }
+
+                        // filter only matched items
+                        if(quickSearchSiteSettingItems[i]['label'].toLowerCase().replace(/ > /g, ' ').includes(searchFilter)) {
+                            filteredSiteSettingstems.push(quickSearchSiteSettingItems[i]);
+                        }
+                    }
+
+                    // build result
+                    buildResult('Site Settings', 'site_settings', filteredSiteSettingstems);
+
+                    // ensure the shortcut tracker is reset for the arrow keys
+                    resetShortcutTracker();
+
+                    // update quick links
+                    $('#quick_links_files').attr('href', '{{ ADMIN_WEB_ROOT }}/file_manage?filterText='+encodeURIComponent(searchFilter));
+                    $('#quick_links_users').attr('href', '{{ ADMIN_WEB_ROOT }}/user_manage?filterText='+encodeURIComponent(searchFilter));
+                    $('#quick_links_servers').attr('href', '{{ ADMIN_WEB_ROOT }}/server_manage?filterText='+encodeURIComponent(searchFilter));
+                }
+
+                function buildResult(title, wrapper, result) {
+                    // handle no results
+                    if(result.length == 0) {
+                        $('#quick_search_results_'+wrapper).hide();
+                        $('#quick_search_results_'+wrapper).find('.results').html('');
+
+                        return false;
+                    }
+
+                    // set title
+                    $('#quick_search_results_'+wrapper).find('.title').html(title);
+
+                    // build and set result
+                    var html = '<ul>';
+                    for (var i = 0; i < result.length; i++) {
+                        html += '<li>' +
+                            '<a href="'+result[i]['url']+'">'+result[i]['label']+'</a>' +
+                            '</li>';
+                    }
+                    html += '</ul>';
+                    $('#quick_search_results_'+wrapper).find('.results').html(html);
+
+                    // show section
+                    $('#quick_search_results_'+wrapper).show();
+                }
+
+                function getMenuItemData() {
+                    if(quickSearchMenuItems !== null) {
+                        return quickSearchMenuItems;
+                    }
+
+                    // prepare menu items
+                    quickSearchMenuItems = [];
+
+                    // main nav & plugin items
+                    $('#navigation-main > li:not(.ignore-quick-search), #navigation-plugins > li:not(.ignore-quick-search)').each(function() {
+                        var parentLabel= $.trim($(this).children('a').text());
+                        var parentURL = $.trim($(this).children('a').attr('href'));
+
+                        // check for children
+                        if($(this).children('.child_menu').length > 0) {
+                            $(this).children('.child_menu').children('li:not(.ignore-quick-search)').each(function() {
+                                var subLabel = parentLabel+" > "+$.trim($(this).children('a').text());
+                                var subURL = $.trim($(this).children('a').attr('href'));
+
+                                // check for final level of children
+                                if($(this).children('.child_menu').length > 0) {
+                                    $(this).children('.child_menu').children('li:not(.ignore-quick-search)').each(function() {
+                                        var subFinalLabel = subLabel+" > "+$.trim($(this).children('a').text());
+                                        var subFinalURL = $.trim($(this).children('a').attr('href'));
+
+                                        quickSearchMenuItems.push({'label': subFinalLabel, 'url': subFinalURL});
+                                    });
+                                }
+                                else {
+                                    quickSearchMenuItems.push({'label': subLabel, 'url': subURL});
+                                }
+                            });
+                        }
+                        else {
+                            quickSearchMenuItems.push({'label': parentLabel, 'url': parentURL});
+                        }
+                    });
+
+                    // user account menu
+                    $('#dropdown-usermenu > li').each(function() {
+                        var parentLabel= $.trim($(this).children('a').text());
+                        var parentURL = $.trim($(this).children('a').attr('href'));
+
+                        quickSearchMenuItems.push({'label': parentLabel, 'url': parentURL});
+                    });
+
+                    // custom menu items
+                    quickSearchMenuItems.push({'label': 'Change Password', 'url': ADMIN_WEB_ROOT+'/user_edit/{{ Auth.id }}'});
+
+                    // add plugin links
+                    {% if Auth.hasAccessLevel(20) == true and navPluginList|length > 0 %}
+                        {% for pluginItem in navPluginList %}
+                            quickSearchMenuItems.push({'label': 'Plugins > Plugin Settings > {{ pluginItem['plugin_name'] }}', 'url': ADMIN_WEB_ROOT+'/plugin/{{ pluginItem['folder_name'] }}/settings'});
+                        {% endfor %}
+                    {% endif %}
+
+                    return quickSearchMenuItems;
+                }
+
+                function setupShortcuts() {
+                    $(document).keydown(function(event) {
+                        // ctrl + q
+                        if (event.ctrlKey && event.which === 81)
+                        {
+                            event.preventDefault();
+                            $('#quick_search').focus();
+                        }
+                    });
+                }
+
+                var listItems = null;
+                function resetShortcutTracker() {
+                    // set up a counter to keep track of which <li> is selected
+                    currentLI = -1;
+                }
+
+                function assignQuickSearchShortcuts(event) {
+                    // get all the <li> elements into a collection
+                    listItems = document.querySelectorAll(".results li");
+                    if(listItems.length === 0) {
+                        return false;
+                    }
+
+                    // check for up/down key presses
+                    switch(event.keyCode) {
+                        // up arrow
+                        case 38:
+                            // remove the highlighting from the previous element
+                            $('.results li.highlight').removeClass("highlight");
+
+                            // decrease the counter
+                            currentLI = currentLI > 0 ? --currentLI : 0;
+
+                            // highlight the new element
+                            $(listItems[currentLI]).addClass("highlight");
+                            break;
+                        // down arrow
+                        case 40:
+                            // remove the highlighting from the previous element
+                            $('.results li.highlight').removeClass("highlight");
+
+                            // increase counter
+                            currentLI = currentLI < listItems.length-1 ? ++currentLI : listItems.length-1;
+
+                            // highlight the new element
+                            $(listItems[currentLI]).addClass("highlight");
+                            break;
+                        // enter key
+                        case 13:
+                            // get selected item URL
+                            var url = $(listItems[currentLI]).find('a').attr('href');
+                            if(typeof(url) == 'undefined') {
+                                return false;
+                            }
+
+                            // redirect
+                            window.location.href = url;
+                            break;
+                        // escape key
+                        case 27:
+                            // close the search
+                            cancelSearch();
+                            break;
+                    }
+                }
+            </script>
+
+            <!-- FastClick -->
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/fastclick/lib/fastclick.js"></script>
+
+            <!-- NProgress -->
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/nprogress/nprogress.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+
+            <!-- iCheck -->
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/iCheck/icheck.min.js"></script>
+
+            <!-- PNotify -->
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/pnotify/dist/pnotify.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/pnotify/dist/pnotify.buttons.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/pnotify/dist/pnotify.nonblock.js"></script>
+
+            <!-- Datatables -->
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/jszip/dist/jszip.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/pdfmake/build/pdfmake.min.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/pdfmake/build/vfs_fonts.js"></script>
+
+            <!-- jQuery Tags Input -->
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/jquery.tagsinput/src/jquery.tagsinput.js"></script>
+
+            <!-- Typeahead/autocomplete -->
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/typeahead/bootstrap3-typeahead.min.js"></script>
+
+            <!-- bootstrap-daterangepicker -->
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/moment/moment.js"></script>
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+            <!-- Custom Theme Scripts -->
+            <script src="{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/js/custom.js"></script>
+
+        </div>
+    </div>
+</body>
+</html>

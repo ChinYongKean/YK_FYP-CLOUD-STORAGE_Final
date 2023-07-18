@@ -1,0 +1,63 @@
+<div class="x_panel">
+    <div class="x_title">
+        <h2>View Report</h2>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+        <p>Full details of the abuse report are below:</p>
+
+        <table class="table table-data-list">
+            <tr>
+                <td style="width: 110px;">File Url:</td>
+                <td><a href="{{ file.getFullShortUrl() }}" target="_blank">{{ file.getFullShortUrl() }}</a></td>
+            </tr>
+
+            <tr>
+                <td>Reported Date:</td>
+                <td>{{ reportDateFormatted }}</td>
+            </tr>
+
+            <tr>
+                <td>Status:</td>
+                <td><span class="{{ statusCssClass }}">{{ reportDetail['report_status']|title }}</span></td>
+            </tr>
+
+            <tr>
+                <td>Name:</td>
+                <td>{{ reportDetail['reported_by_name'] }}</td>
+            </tr>
+
+            <tr>
+                <td>Email:</td>
+                <td>{{ reportDetail['reported_by_email'] }}</td>
+            </tr>
+
+            <tr>
+                <td>Address:</td>
+                <td>{{ reportDetail['reported_by_address'] }}</td>
+            </tr>
+
+            <tr>
+                <td>Telephone:</td>
+                <td>{{ reportDetail['reported_by_telephone_number'] }}</td>
+            </tr>
+
+            <tr>
+                <td>Digital Signature:</td>
+                <td>{{ reportDetail['digital_signature'] }}</td>
+            </tr>
+
+            <tr>
+                <td>Reported By IP:</td>
+                <td>{{ reportDetail['reported_by_ip'] }}</td>
+            </tr>
+
+            <tr>
+                <td>Other Information:</td>
+                <td>{{ reportDetail['other_information'] }}</td>
+            </tr>
+
+        </table>
+
+    </div>
+</div>

@@ -1,0 +1,184 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Support Information{% endblock %}
+{% block selected_page %}configuration{% endblock %}
+{% block selected_sub_page %}support_info{% endblock %}
+
+{% block body %}
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>Support Information</h3><div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            {% if msg_page_notifications|length == 0 %}
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Support File</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <p>When requiring support, please click the "Download" button below and attach it to your support ticket.</p>
+                                <table class="table table-data-list"><tbody>
+                                        <tr>
+                                            <td>Support File:</td>
+                                            <td><a href="support_info_download" name="supportInfo" class="btn btn-primary" style="margin-bottom: 0px;">Download</button></td>
+                                        </tr>                            
+                                    </tbody></table>
+                            </div>                       
+                        </div> 
+
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Server Information</h2><div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <table class="table table-data-list">
+                                    <tbody>
+                                        <tr>
+                                            <td>Operating System:</td>
+                                            <td>{{ operatingSystem }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Web Server:</td>
+                                            <td>{{ server['SERVER_SIGNATURE'] ? server['SERVER_SIGNATURE'] : server['SERVER_SOFTWARE'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Server Hostname:</td>
+                                            <td>{{ server['HTTP_HOST'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Server IP Address:</td>
+                                            <td>{{ server['SERVER_ADDR'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Server Time:</td>
+                                            <td>{{ dt.format('d-m-Y H:i:s') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Document Root:</td>
+                                            <td>{{ server['DOCUMENT_ROOT'] }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>                        
+                        </div>
+
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>MySQL Information</h2><div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <table class="table table-data-list"><tbody>
+                                        <tr>
+                                            <td>MySQL Client Version:</td>
+                                            <td>{{ phparr['mysqli']['Client API library version'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MySQL Server Version:</td>
+                                            <td>{{ mysqlServerVersion }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MySQL Server Time:</td>
+                                            <td>{{ mysqlServerTime }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>PDO Installed:</td>
+                                            <td>{{ phparr['PDO']['PDO drivers'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>PDO Version:</td>
+                                            <td>{{ phparr['pdo_mysql']['Client API version'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MySQL Server Timezone:</td>
+                                            <td>{{ mysqlServerTimezone }}</td>
+                                        </tr>
+                                    </tbody></table>
+                            </div>                        
+                        </div>  
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>PHP Information</h2><div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <table class="table table-data-list"><tbody>
+                                        <tr>
+                                            <td>PHP Version:</td>
+                                            <td>{{ phpVersion }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>php.ini Location:</td>
+                                            <td>{{ phpLoadedIniFile }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Current PHP Time:</td>
+                                            <td>{{ phpCurrentTime }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Max Execution Time:</td>
+                                            <td>{{ phparr['Core']['max_execution_time'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Max Input Time:</td>
+                                            <td>{{ phparr['Core']['max_input_time'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Memory Limit:</td>
+                                            <td>{{ phparr['Core']['memory_limit'][0] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Post Max Size:</td>
+                                            <td>{{ phparr['Core']['post_max_size'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Upload Max Filesize:</td>
+                                            <td>{{ phparr['Core']['upload_max_filesize'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>cURL Enabled:</td>
+                                            <td>{{ phparr['curl']['cURL support']|title }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>cURL Version:</td>
+                                            <td>{{ phparr['curl']['cURL Information'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Default Timezone:</td>
+                                            <td>{{ phparr['date']['Default timezone'] }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>GD Enabled:</td>
+                                            <td>{{ phparr['gd']['GD Support']|title }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>OpenSSL Details:</td>
+                                            <td>{{ openSSLDetails }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Loaded Extensions:</td>
+                                            <td>
+                                                <select name="" id="" class="form-control" MULTIPLE>
+                                                    {% for loadedExtension in loadedExtensions %}
+                                                        <option value="">{{ loadedExtension }}</option>
+                                                    {% endfor %}
+                                                </select>                                    
+                                            </td>
+                                        </tr>                              
+                                    </tbody>
+                                </table>
+                            </div> 
+                        </div>
+                    </div>
+                </div>   
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

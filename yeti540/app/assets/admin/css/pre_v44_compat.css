@@ -1,0 +1,33 @@
+/* 
+ * For compatibility with pre Yetishare v4.4 pages, such as third party plugins.
+ */
+
+.main_container > div.row
+{
+    padding: 10px 20px 0;
+    margin-left: 230px;
+    background: #F7F7F7;
+}
+
+.main_container > div.row .sectionLargeIcon
+{
+    display: none;
+}
+
+.main_container .col_12 .widget_inside .report
+{
+    width: 100%;
+}
+.main_container .col_12 .widget_inside .report .button
+{
+    width: 16%;
+    display: inline-block;
+    padding: 12px;
+    border-bottom: 1px solid #CFD5D9;
+}
+
+.main_container .col_12 .widget_inside .report .button .value
+{
+    display: block;
+    font-size: 26px;
+}

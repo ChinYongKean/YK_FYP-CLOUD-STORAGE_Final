@@ -1,0 +1,13 @@
+CHANGED OR ADDED FILES:
+
+\install_yetishare\resources\upgrade_sql_statements\v4.5.1.sql
+\themes\flow\frontend_assets\css\stylesheet.css
+\themes\flow\js\cookieconsent.min.js
+\themes\flow\styles\cookieconsent.min.css
+\themes\flow\templates\partial\_footer.inc.php
+\themes\flow\templates\partial\_header.inc.php
+\themes\flow\templates\privacy.html
+\themes\flow\templates\register.html
+\themes\flow\templates\account_edit.html
+\plugins\newsletters\offline\database.sql
+\core\includes\userPeer.class.php

@@ -1,0 +1,28 @@
+{% extends "partial/layout.html.twig" %}
+
+{% block title %}{{ t("error_page_name", "Error") }}{% endblock %}
+{% block description %}{{ t("error_meta_description", "Error") }}{% endblock %}
+{% block keywords %}{{ t("error_meta_keywords", "error, image, picture, pic, img, hosting, sharing, upload, storage, site, website") }}{% endblock %}
+
+{% block body %}
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>{{ t("error_page_name", "Error") }}</h1>
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="alert bg--error">
+                        <div class="alert__body">
+                            {{ error_msg }}
+                        </div>
+                    </div>
+                    <a href="{{ CORE_SITE_PATH }}">« {{ t('go_back_to_home', 'Go back to home') }}</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

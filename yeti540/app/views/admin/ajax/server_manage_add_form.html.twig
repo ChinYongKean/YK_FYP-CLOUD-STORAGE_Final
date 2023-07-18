@@ -1,0 +1,446 @@
+<form id="addFileServerForm" class="form-horizontal form-label-left input_mask">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>{{ server_label|length > 0?('Manage '~server_label):'Add Storage Server' }}</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Server Details</a>
+                    </li>
+                    <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">CDN Support</a>
+                    </li>
+                    <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Storage Options</a>
+                    </li>
+                    <li role="presentation" class=""><a href="#tab_content4" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Geo Targeting</a>
+                    </li>
+                    <li role="presentation" class=""><a href="#tab_content5" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Account Type Targeting</a>
+                    </li>
+                </ul>
+                <div id="myTabContent" class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
+                        <div class="x_title">
+                            <h2>Server Details:</h2>
+                            <div class="clearfix"></div>
+                        </div>
+
+                        <p>Use the form below to {{ formType }} file server details.<br/><br/></p>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("server_label", "server label")|title }}:</label>
+                            <div class="col-md-5 col-sm-5 col-xs-12">
+                                <input name="server_label" id="server_label" placeholder="i.e. File Server 1" type="text" class="form-control" value="{{ server_label }}" class="xlarge"/>
+                                <p class="text-muted">For your own internal reference only.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("status", "status")|title }}:</label>
+                            <div class="col-md-5 col-sm-5 col-xs-12">
+                                <select name="status_id" id="status_id" class="form-control">
+                                    {% for statusDetail in statusDetails %}
+                                        <option value="{{ statusDetail['id'] }}"{{ status_id == statusDetail['id']?' SELECTED':'' }}>{{ statusDetail['label']|title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("server_type", "server type")|title }}:</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <select name="server_type" id="server_type" class="form-control" onChange="showHideFTPElements();
+                                        return false;" {{ isDefaultServer ? 'DISABLED' : '' }}>
+                                    <optgroup label="Storage Options">
+                                        <option value="local"{{ server_type == 'local' ? ' SELECTED' : '' }}>Local (storage located on the same server as your site - if you don't need external storage)</option>
+                                        <option value="direct"{{ server_type == 'direct' ? ' SELECTED' : '' }}>Remote Direct (files are upload and download directly with the remote file server - for large filesizes and busy sites)</option>
+                                        <option value="ftp"{{ server_type == 'ftp' ? ' SELECTED' : '' }}>FTP (uses FTP via PHP to upload files into storage - for smaller filesizes or personal sites)</option>
+                                        {% for additionalServerType in additionalServerTypes %}
+                                            <option value="{{ additionalServerType['filestore_key'] }}"{{ server_type == additionalServerType['filestore_key']?' SELECTED':'' }}>{{ additionalServerType['filestore_label'] }}</option>
+                                        {% endfor %}
+                                    </optgroup>
+                                    {{ flysystemFileServerTypesOptionsHtml|raw }}
+                                </select>
+                            </div>
+                        </div>
+
+                        <span class="localElements" style="display: none;">
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("file_server_direct_server_path_to_install", "server path to install")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input name="script_root_path" id="local_script_root_path" placeholder="/home/admin/public_html" type="text" value="{{ script_root_path }}" class="form-control" DISABLED/>
+                                    <p class="text-muted">The full server path to your install. If you're unsure, leave empty and it'll be auto generated.</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("file_storage_path", "file storage path")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input name="storage_path" id="local_storage_path" type="text" value="{{ storage_path }}" class="form-control" {{ isDefaultServer ? 'DISABLED' : '' }}/>
+                                    <p class="text-muted">Which folder to store files in on the server, relating to the script root. Normally files/</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("improved_download_management", "Improved Downloads")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <select name="dlAccelerator" id="dlAccelerator1" class="form-control">
+                                        {% for k,dlAcceleratorOption in dlAcceleratorOptions %}
+                                            <option value="{{ k }}"{{ download_accelerator == k?' SELECTED':'' }}>{{ dlAcceleratorOption|title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <p>This dramatically increases server performance for busy sites by handing the process away from PHP to Apache, Nginx or LiteSspeed. <strong>Important: </strong>You must make the server changes listed in the relevant link below for this to work.</p>
+                                    <ul>
+                                        <li><a href="https://support.mfscripts.com/public/kb_view/1/" target="_blank" style="text-decoration: underline;">Enable XSendFile for Apache</a>.</li>
+                                        <li><a href="https://support.mfscripts.com/public/kb_view/2/" target="_blank" style="text-decoration: underline;">Enable X-Accel-Redirect for Nginx</a>.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </span>
+
+                        <span class="ftpElements" style="display: none;">
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("ftp_host", "ftp host")|title }}:</label>
+                                <div class="col-md-5 col-sm-5 col-xs-12">
+                                    <input name="ftp_host" id="ftp_host" type="text" class="form-control" value="{{ ftp_host }}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("ftp_port", "ftp port")|title }}:</label>
+                                <div class="col-md-5 col-sm-5 col-xs-12">
+                                    <input name="ftp_port" id="ftp_port" type="text" class="form-control" value="{{ ftp_port }}" class="small"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("ftp_username", "ftp username")|title }}:</label>
+                                <div class="col-md-5 col-sm-5 col-xs-12">
+                                    <input name="ftp_username" id="ftp_username" type="text" class="form-control" value="{{ ftp_username }}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("ftp_password", "ftp password")|title }}:</label>
+                                <div class="col-md-5 col-sm-5 col-xs-12">
+                                    <input name="ftp_password" id="ftp_password" type="password" class="form-control" value="{{ ftp_password }}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("file_storage_path", "file storage path")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input name="storage_path" id="ftp_storage_path" type="text" class="form-control" value="{{ storage_path }}" class="large"/>
+                                    <p class="text-muted">As the FTP user would see it. Login with this FTP user using an FTP client to confirm<br/>the path to use.</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("ftp_server_type", "ftp server type")|title }}:</label>
+                                <div class="col-md-5 col-sm-5 col-xs-12">
+                                    <select name="ftp_server_type" id="ftp_server_type" class="form-control">
+                                        {% for k,ftpServerType in ftpServerTypes %}
+                                            <option value="{{ k }}"{{ ftp_server_type == k?' SELECTED':'' }}>{{ ftpServerType|title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("ftp_enable_passive_mode", "enable passive mode")|title }}:</label>
+                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                    <select name="ftp_passive_mode" id="ftp_passive_mode" class="form-control">
+                                        {% for k,serverPassiveOption in serverPassiveOptions %}
+                                            <option value="{{ k }}"{{ ftp_passive_mode == k?' SELECTED':'' }}>{{ serverPassiveOption|title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </span>
+
+                        <span class="directElements" style="display: none;">
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("file_server_domain_name", "file server domain name")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">{{ _CONFIG_SITE_PROTOCOL }}://</span>
+                                        <input name="file_server_domain_name" id="file_server_domain_name" class="form-control" placeholder="i.e. fs1.{{ _CONFIG_SITE_HOST_URL }}" type="text" value="{{ file_server_domain_name }}" onKeyUp="updateUrlParams();" class="large"/>
+                                    </div>
+                                    <p class="text-muted">Uploads must use the same protocol as this site ({{ _CONFIG_SITE_PROTOCOL }}) due to browser security restrictions.</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("file_server_direct_server_path_to_install", "server path to install")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input name="script_root_path" id="direct_script_root_path" placeholder="/home/admin/public_html" type="text" value="{{ script_root_path }}" class="form-control"/>
+                                    <p class="text-muted">The full server path to the script install on your file server. If you're unsure, leave empty and it'll be auto generated.</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("file_storage_path", "file storage path")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input name="storage_path" id="direct_storage_path" type="text" value="{{ storage_path }}" class="form-control"/>
+                                    <p class="text-muted">Which folder to store files in on the file server, relating to the script root. Normally files/</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("url_path", "url path")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <input name="script_path" id="script_path" type="text" placeholder="/ - root, unless you installed into a sub-folder" value="{{ script_path }}" class="form-control" onKeyUp="updateUrlParams();"/>
+                                    <p class="text-muted">Use /, unless you've installed into a sub-folder on the file server domain above.</p>
+                                </div>
+                            </div>
+                            <div class="clearfix alt-highlight" style="display: none;">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("use_main_site_url", "use main site url")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <select name="route_via_main_site" id="route_via_main_site" class="form-control">
+                                        {% for k,routeViaMainSiteOption in routeViaMainSiteOptions %}
+                                            <option value="{{ k }}"{{ route_via_main_site == k?' SELECTED':'' }}>{{ routeViaMainSiteOption|title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <p class="text-muted">If 'yes' {{ _CONFIG_SITE_HOST_URL }} will be used for all download urls generated on the site. Otherwise the above 'File Server Domain Name' will be used. Changing this will not impact any existing download urls.</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("improved_download_management", "Improved Downloads")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <select name="dlAccelerator" id="dlAccelerator2" class="form-control">
+                                        {% for k,dlAcceleratorOption in dlAcceleratorOptions %}
+                                            <option value="{{ k }}"{{ download_accelerator == k?' SELECTED':'' }}>{{ dlAcceleratorOption|title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <p>This dramatically increases server performance for busy sites by handing the process away from PHP to Apache, Nginx or LiteSpeed. <strong>Important: </strong>You must make the server changes listed in the relevant link below for this to work.</p>
+                                    <ul>
+                                        <li><a href="https://support.mfscripts.com/public/kb_view/1/" target="_blank" style="text-decoration: underline;">Enable XSendFile for Apache</a>.</li>
+                                        <li><a href="https://support.mfscripts.com/public/kb_view/2/" target="_blank" style="text-decoration: underline;">Enable X-Accel-Redirect for Nginx</a>.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("file_server_download_proto", "file server download protocol")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <select name="file_server_download_proto" id="file_server_download_proto" class="form-control">
+                                        {% for k,downloadProtocolOption in downloadProtocolOptions %}
+                                            <option value="{{ k }}"{{ file_server_download_proto == k?' SELECTED':'' }}>{{ downloadProtocolOption|title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <p class="text-muted">Generally use the same as this site ({{ _CONFIG_SITE_PROTOCOL }}). Note that this is only for download urls.</p>
+                                </div>
+                            </div>
+                        </span>
+
+
+
+                        <span class="localElements serverAccessWrapper" style="display: none;">
+                            <div class="x_title">
+                                <h2>{{ t("local_server_ssh_details_this_server", "local server SSH details (This Server)")|title }}:</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <p>The following information should be filled in if you're using the media converter plugin or archive manager. If you have openssl_encrypt() functions available within your server PHP setup, these details will be encrypted in your database using AES256. In a future release we'll be able to use these details to automatically update your site.<br/><br/></p>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("local_server_direct_ip_address", "local server ip address")|title }}:</label>
+                                <div class="col-md-4 col-sm-4 col-xs-12">
+                                    <input name="file_server_direct_ip_address" id="file_server_direct_ip_address_2" placeholder="i.e. 124.194.125.34" type="text" value="{{ file_server_direct_ip_address }}" class="form-control"/>
+                                    <p class="text-muted">The servers public IP address.</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("local_server_direct_ssh_port", "local SSH port")|title }}:</label>
+                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                    <input name="file_server_direct_ssh_port" id="file_server_direct_ssh_port_2" type="text" placeholder="22" value="{{ file_server_direct_ssh_port }}" class="form-control"/>
+                                    <p class="text-muted">Normally port 22.</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("local_server_direct_ssh_authentication_type", "Authentication Type")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <select name="file_server_direct_ssh_authentication_type" id="file_server_direct_ssh_authentication_type_2" class="form-control" onchange="toggleSSHAuthType(); return false;">
+                                        {% for k,authenticationTypeOption in authenticationTypeOptions %}
+                                            <option value="{{ k }}"{{ file_server_direct_ssh_authentication_type == k?' SELECTED':'' }}>{{ authenticationTypeOption }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <p class="text-muted">Whether to authenticate using SSH keys or a password.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("local_server_direct_ssh_username", "local SSH username")|title }}:</label>
+                                <div class="col-md-5 col-sm-5 col-xs-12">
+                                    <input name="file_server_direct_ssh_username" id="file_server_direct_ssh_username_2" placeholder="i.e. root" type="text" value="{{ file_server_direct_ssh_username }}" class="form-control"/>
+                                    <p class="text-muted">Root equivalent user.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group ssh-password-wrapper" style="display: none;">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("local_server_direct_ssh_password", "local SSH password")|title }}:</label>
+                                <div class="col-md-5 col-sm-5 col-xs-12">
+                                    <input name="file_server_direct_ssh_password" id="file_server_direct_ssh_password_2" type="password" value="" class="form-control"/>
+                                    <p class="text-muted">Leave blank to keep existing value, if updating.</p>
+                                </div>
+                            </div>
+                            <div class="form-group ssh-key-wrapper" style="display: none;">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("local_server_direct_ssh_key", "Local SSH Private Key")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <textarea name="file_server_direct_ssh_key" id="file_server_direct_ssh_key_2" class="form-control" rows="5" style="font-family: monospace;" placeholder="{{ file_server_direct_ssh_key|length > 0?(file_server_direct_ssh_key|slice(0, 170)~'...\n[CURRENT KEY HIDDEN]\n...'~file_server_direct_ssh_key|slice(file_server_direct_ssh_key|length-170, 170)):'No key set.' }}"></textarea>
+                                    <p class="text-muted">Use a private SSH key (RSA) to authenticate. Leave blank to keep existing, if updating. Guide for setting up SSH keys <a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-2" target="_blank">here</a>.</p>
+                                </div>
+                            </div>
+                        </span>
+
+
+
+                        <span class="directElements serverAccessWrapper" style="display: none;">
+                            <div class="x_title">
+                                <h2>{{ t("file_server_ssh_details", "file server SSH details")|title }}:</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <p>The following information should be filled in if you're using the media converter plugin or archive manager. If you have openssl_encrypt() functions available within your server PHP setup, these details will be encrypted in your database using AES256. In a future release we'll be able to use these details to automatically create and upgrade your file servers.</p>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("file_server_direct_ip_address", "file server ip address")|title }}:</label>
+                                <div class="col-md-4 col-sm-4 col-xs-12">
+                                    <input name="file_server_direct_ip_address" id="file_server_direct_ip_address" placeholder="i.e. 124.194.125.34" type="text" value="{{ file_server_direct_ip_address }}" class="form-control"/>
+                                    <p class="text-muted">The servers public IP address.</p>
+                                </div>
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">{{ t("file_server_direct_ssh_port", "server SSH port")|title }}:</label>
+                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                    <input name="file_server_direct_ssh_port" id="file_server_direct_ssh_port" type="text" placeholder="22" value="{{ file_server_direct_ssh_port }}" class="form-control"/>
+                                    <p class="text-muted">Normally port 22.</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("local_server_direct_ssh_authentication_type", "Authentication Type")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <select name="file_server_direct_ssh_authentication_type" id="file_server_direct_ssh_authentication_type" class="form-control" onchange="toggleSSHAuthType('direct'); return false;">
+                                        {% for k,authenticationTypeOption in authenticationTypeOptions %}
+                                            <option value="{{ k }}"{{ file_server_direct_ssh_authentication_type == k?' SELECTED':'' }}>{{ authenticationTypeOption }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <p class="text-muted">Whether to authenticate using SSH keys or a password.</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("file_server_direct_ssh_username", "server SSH username")|title }}:</label>
+                                <div class="col-md-5 col-sm-5 col-xs-12">
+                                    <input name="file_server_direct_ssh_username" id="file_server_direct_ssh_username" placeholder="i.e. root" type="text" value="{{ file_server_direct_ssh_username }}" class="form-control"/>
+                                    <p class="text-muted">Root equivalent user.</p>
+                                </div>
+                            </div>
+                            <div class="form-group ssh-password-wrapper" style="display: none;">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("file_server_direct_ssh_password", "server SSH password")|title }}:</label>
+                                <div class="col-md-5 col-sm-5 col-xs-12">
+                                    <input name="file_server_direct_ssh_password" id="file_server_direct_ssh_password" type="password" value="" class="form-control"/>
+                                    <p class="text-muted">Leave blank to keep existing value, if updating.</p>
+                                </div>
+                            </div>
+                            <div class="form-group ssh-key-wrapper" style="display: none;">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("server_server_direct_ssh_key", "Server SSH Private Key")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <textarea name="file_server_direct_ssh_key" id="file_server_direct_ssh_key" class="form-control" rows="5" style="font-family: monospace;" placeholder="{{ file_server_direct_ssh_key|length > 0?(file_server_direct_ssh_key|slice(0, 170)~'...\n[CURRENT KEY HIDDEN]\n...'~file_server_direct_ssh_key|slice(file_server_direct_ssh_key|length-170, 170)):'No key set.' }}"></textarea>
+                                    <p class="text-muted">Use a private SSH key (RSA) to authenticate. Leave blank to keep existing, if updating. Guide for setting up SSH keys <a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-2" target="_blank">here</a>.</p>
+                                </div>
+                            </div>
+                        </span>
+
+                        <span class="directElements" style="display: none;">
+                            <div class="x_title">
+                                <h2>{{ t("file_server_direct_install", "Direct File Server Install")|title }}:</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <p>Direct file servers require additional setup on either a VPS or dedicated server.</p>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("file_server_setup", "file server setup")|title }}:</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    Direct file server requirements: PHP7.4+, Apache Mod Rewrite or Nginx, remote access to your MySQL database.<br/><br/>
+                                    So that your direct file server can receive the uploads and process downloads, it needs a copy of the full codebase installed. Upload all the files from your main site ({{ _CONFIG_SITE_HOST_URL }}) to your new file server. This includes any plugin files within the plugin folder.<br/><br/>
+                                    Once uploaded, replace the /_config.inc.php file on the new file server with the one listed below. Set your database password in the file (_CONFIG_DB_PASS). We've removed it for security.<br/><br/>
+                                    <ul class="adminList"><li><a id="configLink" href="server_manage_direct_get_config_file?fileName=_config.inc.php" target="_blank" style="text-decoration: underline;">_config.inc.php</a></li></ul><br/>
+                                    In addition, if you're using Apache, replace the '.htaccess' on the file server with the one listed below.<br/><br/>
+                                    <ul class="adminList"><li><a id="htaccessLink" href="server_manage_direct_get_config_file?fileName=.htaccess&REWRITE_BASE=/" target="_blank" style="text-decoration: underline;">.htaccess</a></li></ul><br/>
+                                    For Nginx users, set your rules to the same as the main server. See /___NGINX_RULES.txt for details.<br/><br/>
+                                    Ensure the following folders are CHMOD 755 (or 777 depending on your host) on this file server:<br/><br/>
+                                    <ul class="adminList">
+                                        <li>/files/</li>
+                                        <li>/cache/</li>
+                                        <li>/logs/</li>
+                                        <li>/plugins/</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </span>
+
+                        <span class="flysystemWrapper" style="display: none;">
+                        </span>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
+                        <div class="x_title">
+                            <h2>CDN Support:</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <p>You can use Content Delivery Networks (CDNs) such as Stackpath or Akamai to handle image previews, file icons and other static assets. File downloads can not be handled by CDNs however users will see a big performance improvement using the file manager if this is set.</p>
+                        <p>CDNs work by caching a copy of the requested file on their own servers, then sending that to the user from a server closer to their physical location.<br/><br/></p>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("cdn_url", "cdn url")|title }}:</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <input name="cdn_url" id="cdn_url" type="text" value="{{ cdn_url }}" class="form-control"/>Ensure you've pointed the CDN url at this file server url. Exclude the https or http in the url. For Flysystem type servers this should be the main domain name of your site. Leave blank to disable.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
+                        <div class="x_title">
+                            <h2>Storage Options:</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("max_storage_bytes", "max storage (bytes)")|title }}:</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <input name="max_storage_space" id="max_storage_space" type="text" value="{{ max_storage_space }}" class="form-control" placeholder="2199023255552 = 2TB"/>&nbsp;bytes. Use zero for unlimited.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ t("server_priority", "server priority")|title }}:</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <input name="server_priority" id="server_priority" type="text" value="{{ server_priority }}" class="form-control"/>&nbsp;A number. In order from lowest. 0 to ignore.<br/><br/>- Use for multiple servers when others are full. So when server with priority of 1 is full, server<br/>with priority of 2 will be used next for new uploads. 3 next and so on. "Server selection method"<br/>must be set to "Until Full" to enable this functionality.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div role="tabpanel" class="tab-pane fade" id="tab_content4" aria-labelledby="profile-tab">
+                        <div class="x_title">
+                            <h2>Geo Targeting:</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <p>Target storage servers for specific countries. Any countries selected below will use this server for uploads. To use this server for all countries, ensure nothing is selected below.</p>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">Countries:</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <select multiple name="geo_upload_countries[]" id="geo_upload_countries" class="form-control" style="height: 250px;">
+                                    {% for countryOption in countryOptions %}
+                                        <option value="{{ countryOption['iso_alpha2'] }}"{{ countryOption['iso_alpha2'] in geo_upload_countries?' SELECTED':'' }}>{{ countryOption['name']|title }}</option>
+                                    {% endfor %}
+                                </select>
+                                <p class="text-muted">Hold ctrl &amp; click to select multiple or <a href="#" onClick="$('#geo_upload_countries option:selected').removeAttr('selected');
+                                    return false;">clear selected</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="profile-tab">
+                        <div class="x_title">
+                            <h2>Account Type Targeting:</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <p>Target storage servers for specific account types. Any account types selected below will use this server for uploads. To use this server for all types, ensure nothing is selected below.</p>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">Account Types:</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <select multiple name="account_upload_types[]" id="account_upload_types" class="form-control" style="height: 250px;">
+                                    {% for accountTypeOption in accountTypeOptions %}
+                                        <option value="{{ accountTypeOption['id'] }}"{{ accountTypeOption['id'] in account_upload_types?' SELECTED':'' }}>{{ accountTypeOption['label']|title }}</option>
+                                    {% endfor %}
+                                </select>
+                                <p class="text-muted">Hold ctrl &amp; click to select multiple or <a href="#" onClick="$('#account_upload_types option:selected').removeAttr('selected');
+                                    return false;">clear selected</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

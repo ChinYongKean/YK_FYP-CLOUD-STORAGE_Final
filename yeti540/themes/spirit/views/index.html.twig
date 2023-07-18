@@ -1,0 +1,132 @@
+{% extends "partial/layout.html.twig" %}
+
+{% block title %}{{ t("index_page_name", "Upload Files") }}{% endblock %}
+{% block description %}{{ t("index_meta_description", "Upload, share, track, manage your files in one simple to use file host.") }}{% endblock %}
+{% block keywords %}{{ t("index_meta_keywords", "upload, share, track, file, hosting, host") }}{% endblock %}
+{% block selected_navigation_link %}home{% endblock %}
+
+{% block body %}
+    <section class="switchable homepage-section">
+        <div class="container">
+            <div class="row align-items-center justify-content-around">
+                <div class="col-md-5 text-right banner-section-part">
+                    <img alt="Image" src="{{ theme.getFrontendImagePath() }}/homepage-banner-1.png"/>
+                </div>
+                <div class="col-md-6 col-12 text-section-part">
+                    <h1>
+                        {{ t('upload_share_and_manage_your_files_for_free', 'Upload, share and manage your files for free.') }}
+                    </h1>
+
+                    {% if Auth.loggedIn() == true %}
+                        <a href="{{ CoreHelper.getCoreSitePath() }}/account?triggerUpload=1" class="btn btn--primary type--uppercase">
+                            <span class="btn__text">
+                                {{ t('upload_account', 'Upload') }}
+                            </span>
+                        </a>
+                    {% elseif UserHelper.getAllowedToUpload(0) == true and SITE_CONFIG_ENABLE_USER_REGISTRATION == 'yes' %}
+                        <a href="{{ CoreHelper.getCoreSitePath() }}/register_non_user" class="btn btn--primary type--uppercase">
+                            <span class="btn__text">
+                                {{ t('upload_account', 'Upload') }}
+                            </span>
+                        </a>
+                    {% endif %}
+
+                    {% if Auth.loggedIn() == false and SITE_CONFIG_ENABLE_USER_REGISTRATION == 'yes' %}
+                        <a href="{{ CoreHelper.getCoreSitePath() }}/register" class="btn type--uppercase">
+                            <span class="btn__text">
+                                {{ t('register_index_button', 'Register') }}
+                            </span>
+                        </a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="bg--secondary text-center">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-md-12">
+                    <div class="switchable__text text-center">
+                        <h2>{{ t('store_and_manage_all_your_files', 'Store and manage all your files!') }}</h2>
+                        <p class="lead">
+                            {{ t("upload_multiple_files_at_once_and_keep_them", "Upload multiple files at once and keep them forever on this site. If you're using FireFox or Chrome, you can simply drag &amp; drop your files to begin uploading.")|raw }}
+                        </p>
+                        {% if SITE_CONFIG_ENABLE_USER_REGISTRATION == 'yes' %}
+                        <hr class="short hr-center"/>
+                        <a href="{{ CoreHelper.getCoreSitePath() }}/register">{{ t('register_index_button', 'Register') }} »</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="switchable switchable--switch feature-large homepage-section">
+        <div class="container">
+            <div class="row justify-content-between align-items-center">
+
+                <div class="col-md-6 col-12 text-section-part">
+                    <div class="switchable__text">
+                        <h2>{{ t('share_your_files_with_everyone', 'Share your files with everyone!') }}</h2>
+                        <p class="lead">
+                            {{ t('we_supply_you_with_all_the_tools_necessary_to_easily_share', 'We supply you with all the tools necessary to easily share your files. Use our pre-generated html code to link from your website or post directly to Facebook or Twitter.') }}
+                        </p>
+                        {% if SITE_CONFIG_ENABLE_USER_REGISTRATION == 'yes' %}
+                        <hr class="short"/>
+                        <a href="{{ CoreHelper.getCoreSitePath() }}/register">{{ t('register_index_button', 'Register') }} »</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-5 text-right banner-section-part">
+                    <img alt="Image" src="{{ theme.getFrontendImagePath() }}/homepage-banner-3.png"/>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="text-center bg--secondary">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="feature feature-1">
+                        <div class="feature__body boxed boxed--lg boxed--border">
+                            <h3>{{ t('fast_and_instant_downloading', 'Fast and instant downloading!') }}</h3>
+                            <p class="lead"> {{ t("our_premium_members_benefit_from_no_waiting_time_and_direct", "Our premium members benefit from no waiting time and direct downloads for all of their files. Unlike other file hosts we don't limit the transfer speed of our downloads.") }} </p>
+                            {% if SITE_CONFIG_ENABLE_USER_REGISTRATION == 'yes' %}
+                            <a href="{{ CoreHelper.getCoreSitePath() }}/register">{{ t('register_index_button', 'Register') }} »</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature feature-1">
+                        <div class="feature__body boxed boxed--lg boxed--border">
+                            <h3>{{ t('safe_and_secure', 'Safe and Secure') }}</h3>
+                            <p class="lead"> {{ t('safe_and_secure_description', 'Safely store and backup all your essential files. From family photos & videos to important documents, you can rely on us to store all your media securely and forever.') }} </p>
+                            {% if SITE_CONFIG_ENABLE_USER_REGISTRATION == 'yes' %}
+                            <a href="{{ CoreHelper.getCoreSitePath() }}/register">{{ t('register_index_button', 'Register') }} »</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-lg-6">
+                    <div class="cta">
+                        <h2>{{ t('register_index', 'What are you waiting for?') }}</h2>
+                        {% if SITE_CONFIG_ENABLE_USER_REGISTRATION == 'yes' %}
+                        <a href="{{ CoreHelper.getCoreSitePath() }}/register" class="btn btn--primary type--uppercase"> <span class="btn__text">{{ t('register_index_button', 'Register') }}</span></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

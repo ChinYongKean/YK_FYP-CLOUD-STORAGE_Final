@@ -1,0 +1,26 @@
+<form id="moveFilesForm" class="form-horizontal form-label-left input_mask">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>Move Files:</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <p>Choose which server to move the selected files to. Note that this process adds the item to the file_action queue, so the actual move will happen over the next few minutes. Only 'local' and 'direct' servers are currently supported.</p>
+            <p>If you select the current server the file is stored on, it'll just be ignored.</p>
+
+            <div class="form-group top-buffer-20">
+                <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                    {{ t("file_server", "File Server") }}
+                </label>
+                <div class="col-md-9 col-sm-9 col-xs-12">
+                    <select name="server_ids" id="server_ids" class="form-control">
+                        <option value="">- select file server -</option>
+                        {% for fileServer in fileServers %}
+                            <option value="{{ fileServer['id'] }}">{{ fileServer['serverLabel']|title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

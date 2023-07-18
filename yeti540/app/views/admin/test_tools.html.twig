@@ -1,0 +1,55 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Test Tools{% endblock %}
+{% block selected_page %}configuration{% endblock %}
+{% block selected_sub_page %}test_tools{% endblock %}
+
+{% block body %}
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>Test Tools</h3><div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Choose Tool</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p>These tools can be used to check server settings, debug common configuration issues, test hosting requirements and more. Click any of the buttons below to run the relevant test.</p>
+                            {% for url,label in urls %}
+                                <a href="#" name="supportInfo" class="btn btn-sm btn-primary" onclick="runTest('{{ url }}');">{{ label }}</a>
+                            {% endfor %}
+                        </div>                       
+                    </div> 
+
+                </div>
+            </div>
+
+            <div id="testIframeWrapper" class="row" style="display: none;">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_content">
+                            <iframe id="testIframe" border="0" width="100%" style="border: 0px; width: 100%; height: 300px;"></iframe>
+                        </div>                       
+                    </div> 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function runTest(url) {
+            $('#testIframe').attr('src', url);
+            $('#testIframeWrapper').show();
+        }
+    </script>
+{% endblock %}

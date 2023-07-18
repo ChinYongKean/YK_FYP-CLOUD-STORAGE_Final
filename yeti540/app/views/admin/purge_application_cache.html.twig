@@ -1,0 +1,101 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Purge Application Cache{% endblock %}
+{% block selected_page %}configuration{% endblock %}
+{% block selected_sub_page %}configuration{% endblock %}
+
+{% block body %}
+    <script>
+        function purgeApplicationCache(serverId) {
+            // if button disabled, skip
+            if($('#PurgeBtn'+serverId).attr('disabled') === 'disabled') {
+                return;
+            }
+            
+            // disable button
+            disablePurgeButton(serverId);
+            
+            // send request to purge cache
+            $.ajax({
+                type: "POST",
+                url: "{{ ADMIN_WEB_ROOT }}/ajax/purge_application_cache_process/"+serverId,
+                data: {},
+                dataType: 'json',
+                success: function (json) {
+                    // disable button
+                    enablePurgeButton(json.serverId);
+            
+                    if (json.error == true)
+                    {
+                        showError(json.msg);
+                    } else
+                    {
+                        showSuccess(json.msg);
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    showError(XMLHttpRequest.responseText);
+                }
+            });
+        }
+        
+        function disablePurgeButton(serverId) {
+            $('#PurgeBtn'+serverId).attr('disabled', true);
+        }
+        
+        function enablePurgeButton(serverId) {
+            $('#PurgeBtn'+serverId).attr('disabled', false);
+        }
+    </script>
+
+    <!-- page content -->
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>{{ block('title') }}</h3>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel updateCheckerWrapper">
+                        <div class="x_title">
+                            <h2>Cache</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p>Use this page to purge any application cache from the /cache/ folder. This includes any Twig templating cache (if you're making html changes) and routing cache. You should also purge the cache when uploading new plugins to any file servers.</p>
+                            <p>Application caching will be disabled if the "Enable Application Cache" option in <a href="{{ ADMIN_WEB_ROOT }}/setting_manage?filterByGroup=Site%20Options">site settings</a> is set to "no". (Currently: "{{ SITE_CONFIG_ENABLE_APPLICATION_CACHE }}")</p>
+                        </div>
+
+                        <table class="table table-striped table-only-border">
+                            <thead>
+                                <tr>
+                                    <th>Server Label</th>
+                                    <th>Server Type</th>
+                                    <th>Cache Folder</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for server in servers %}
+                                    <tr>
+                                        <td><strong>{{ server.serverLabel }}</strong></td>
+                                        <td>{{ server.serverType|title }}</td>
+                                        <td>{{ server.getCacheFolderPath() }}</td>
+                                        <td class="text-center"><a id="PurgeBtn{{ server.id }}" href="#" class="btn btn-primary" onclick="purgeApplicationCache({{ server.id }}); return false;">{{ t('purge_application_cache_purge_now', 'Purge Now') }}</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

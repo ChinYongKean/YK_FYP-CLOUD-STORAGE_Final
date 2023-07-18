@@ -1,0 +1,16 @@
+<div style="text-align: center; padding: 3px;">
+    <form id="form{{ days }}" action="{{ WEB_ROOT }}/{{ folder_name }}/pay" method="post">
+        <input type="hidden" name="days" value="{{ days }}" />
+        <input type="hidden" name="user_level_pricing_id" value="{{ user_level_pricing_id }}" />
+        
+        {% if i|length > 0 %}
+            <input type="hidden" name="i" value="{{ i }}" />
+        {% endif %}
+        
+        {% if f|length > 0 %}
+            <input type="hidden" name="f" value="{{ f }}" />
+        {% endif %}
+        
+        <input type="image" src="{{ PLUGIN_WEB_ROOT }}/{{ folder_name }}/assets/img/payment_button.gif" title="Pay with {{ gateway_label }}" alt="Pay with {{ gateway_label }}" width="158" height="51" style="margin-left: -4px;"/>
+    </form>
+</div>

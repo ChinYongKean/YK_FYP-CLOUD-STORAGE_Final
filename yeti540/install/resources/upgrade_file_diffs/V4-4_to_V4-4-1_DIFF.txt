@@ -1,0 +1,21 @@
+AMENDED FILES:
+\admin\file_report_manage.php\admin\login.php\core\includes\composer.json\core\includes\composer.lock\core\includes\CoreHelper.class.php\core\includes\file.class.php\core\includes\fileServerContainer.class.php\core\includes\uploader.class.php\core\includes\zipFile.class.php
+\core\page\ajax\_account_home_v2_download_all_folder_files.ajax.php\core\page\ajax\_account_home_v2_file_listing.ajax.php\core\page\ajax\_account_home_v2_folder_listing.ajax.php
+\plugins\docviewer\_plugin_config.inc.php\plugins\docviewer\admin\settings.php\plugins\sociallogin\_plugin_config.inc.php\plugins\sociallogin\admin\settings.php\plugins\sociallogin\includes\hybridauth\config.php\plugins\sociallogin\includes\hybridauth\index.php\plugins\sociallogin\includes\hybridauth\Hybrid\Auth.php\plugins\sociallogin\includes\hybridauth\Hybrid\Endpoint.php\plugins\sociallogin\includes\hybridauth\Hybrid\Provider_Adapter.php\plugins\sociallogin\includes\hybridauth\Hybrid\Provider_Model.php\plugins\sociallogin\includes\hybridauth\Hybrid\Provider_Model_OAuth2.php\plugins\sociallogin\includes\hybridauth\Hybrid\User_Profile.php\plugins\sociallogin\includes\hybridauth\Hybrid\Providers\Facebook.php\plugins\sociallogin\includes\hybridauth\Hybrid\Providers\Foursquare.php\plugins\sociallogin\includes\hybridauth\Hybrid\Providers\Google.php\plugins\sociallogin\includes\hybridauth\Hybrid\Providers\LinkedIn.php\plugins\sociallogin\includes\hybridauth\Hybrid\Providers\Live.php\plugins\sociallogin\includes\hybridauth\Hybrid\Providers\Twitter.php\plugins\sociallogin\includes\hybridauth\Hybrid\Providers\Yahoo.php\plugins\sociallogin\includes\hybridauth\Hybrid\thirdparty\OAuth\OAuth2Client.php\plugins\sociallogin\site\social_login.php\themes\flow\templates\account_home.html\themes\flow\templates\search.html\themes\flow\templates\ajax\_account_add_edit_folder.ajax.php\themes\flow\templates\ajax\_account_add_edit_folder.process.ajax.php\themes\flow\templates\ajax\_account_home_v2_file_listing.ajax.php\themes\flow\templates\partial\_account_home_javascript.inc.php
+\core\includes\vendor\ (update entire folder)
+
+
+
+DELETED FILES:
+None
+
+
+
+NEW FILES:
+\install\resources\upgrade_sql_statements\v4.4 - v4.4.1.sql
+
+
+
+NOTES:
+
+Produced with WinMerge

@@ -1,0 +1,180 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}User Action Logs{% endblock %}
+{% block selected_page %}users{% endblock %}
+{% block selected_sub_page %}user_action_log{% endblock %}
+
+{% block body %}
+    <script>
+        oTable = null;
+        oldStart = 0;
+        $(document).ready(function () {
+            // datatable
+            oTable = $('#userActionLogTable').dataTable({
+                "sPaginationType": "full_numbers",
+                "bServerSide": true,
+                "bProcessing": true,
+                "sAjaxSource": 'ajax/user_action_log',
+                "deferRender": true,
+                "iDisplayLength": 25,
+                "aLengthMenu": [10, 25, 50, 100, 250],
+                "aaSorting": [[1, "desc"]],
+                "aoColumns": [
+                    {bSortable: false, sWidth: '3%', sName: 'file_icon', sClass: "center adminResponsiveHide"},
+                    {sName: 'user_action_date', sWidth: '12%', sClass: "adminResponsiveHide"},
+                    {sName: 'user_action_description'},
+                    {sName: 'category', sWidth: '10%', sClass: "center adminResponsiveHide"},
+                    {sName: 'action_type', sWidth: '10%', sClass: "center adminResponsiveHide"},
+                    {sName: 'admin_area_action', sWidth: '10%', sClass: "center adminResponsiveHide"},
+                    {bSortable: false, sName: 'action_by', sWidth: '11%', sClass: "center adminResponsiveHide"},
+                    {bSortable: false, sWidth: '10%', sClass: "center removeMultiFilesButton"}
+                ],
+                "fnServerData": function (sSource, aoData, fnCallback, oSettings) {
+                    setTableLoading();
+                    if (oSettings._iDisplayStart != oldStart) {
+                        var targetOffset = $('.dataTables_wrapper').offset().top - 10;
+                        $('html, body').animate({scrollTop: targetOffset}, 300);
+                        oldStart = oSettings._iDisplayStart;
+                    }
+                    aoData.push({"name": "filterByActionUser", "value": $('#filterByActionUser').val()});
+                    aoData.push({"name": "filterByActionSource", "value": $('#filterByActionSource').val()});
+                    aoData.push({"name": "filterByUserId", "value": $('#filterByUserId').val()});
+                    aoData.push({"name": "filterByFileId", "value": $('#filterByFileId').val()});
+                    $.ajax({
+                        "dataType": 'json',
+                        "type": "GET",
+                        "url": sSource,
+                        "data": aoData,
+                        "success": fnCallback
+                    });
+                },
+                "fnDrawCallback": function (oSettings) {
+                    postDatatableRender();
+                },
+                "oLanguage": {
+                    "sEmptyTable": "There are no results in the current filters."
+                },
+                dom: "lBfrtip",
+                buttons: [
+                    {
+                        extend: "copy",
+                        className: "btn-sm"
+                    },
+                    {
+                        extend: "csv",
+                        className: "btn-sm"
+                    },
+                    {
+                        extend: "excel",
+                        className: "btn-sm"
+                    },
+                    {
+                        extend: "pdfHtml5",
+                        className: "btn-sm"
+                    },
+                    {
+                        extend: "print",
+                        className: "btn-sm"
+                    }
+                ]
+            });
+
+            // update custom filter
+            $('.dataTables_filter').html($('#customFilter').html());
+
+            $('#filterByActionUser').typeahead({
+                source: function (request, response) {
+                    $.ajax({
+                        url: 'ajax/file_manage_auto_complete',
+                        dataType: "json",
+                        data: {
+                            filterByUser: $("#filterByActionUser").val()
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 3,
+                delay: 1,
+                afterSelect: function () {
+                    reloadTable();
+                }
+            });
+        });
+
+        function reloadTable()
+        {
+            oTable.fnDraw(false);
+        }
+
+        function showNotes(notes)
+        {
+            showBasicModal('<p>' + notes + '</p>', 'Additional Information');
+        }
+    </script>
+
+    <!-- page content -->
+    <div class="right_col" role="main">
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>{{ block('title') }}</h3>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{ msg_page_notifications|raw }}
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Action List</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <table id="userActionLogTable" class="table table-striped table-only-border dtLoading bulk_action">
+                                <thead>
+                                    <tr>
+                                        <th>-</th>
+                                        <th>{{ t('user_action_date', 'User Action Date') }}</th>
+                                        <th class="align-left">{{ t('user_action_description', 'Action Description') }}</th>
+                                        <th >{{ t('category', 'Category') }}</th>
+                                        <th>{{ t('action_type', 'Action Type') }}</th>
+                                        <th>{{ t('admin_area_action', 'Admin Area Action') }}</th>
+                                        <th>{{ t('action_by', 'Action By') }}</th>
+                                        <th class="align-left">{{ t('options', 'Options') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="20">{{ t('admin_loading_data', 'Loading data...') }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="customFilter" id="customFilter" style="display: none;">
+        <label for="filterByActionUser" style="padding-left: 6px;">
+            Action By:
+            <input name="filterByActionUser" id="filterByActionUser" type="text" class="filterByUser form-control input-sm txt-auto" style="width: 120px;" value="{{ filterByUserLabel }}" autocomplete="off"/>
+        </label>
+        <label for="filterByActionSource" class="adminResponsiveHide filterByActionSourceWrapper" style="padding-left: 6px;">
+            Action Source:
+            <select name="filterByActionSource" id="filterByActionSource" onChange="reloadTable(); return false;" style="width: 120px;" class="form-control input-sm">
+                <option value="">- all -</option>
+                {% for key,adminAreaActionDetail in adminAreaActionDetails %}
+                    <option value="{{ key }}"{{ filterByActionSource == key?' SELECTED':'' }}>{{ adminAreaActionDetail }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <input type="hidden" name="filterByUserId" id="filterByUserId" value="{{ filterByUserId }}"/>
+        <input type="hidden" name="filterByFileId" id="filterByFileId" value="{{ filterByFileId }}"/>
+    </div>
+{% endblock %}

@@ -1,0 +1,287 @@
+{% extends "admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}Manage Translations For '{{ languageDetail.languageName }}'{% endblock %}
+{% block selected_page %}configuration{% endblock %}
+{% block selected_sub_page %}translation_manage{% endblock %}
+
+{% block body %}
+<script>
+    oTable = null;
+    gTranslationId = null;
+    $(document).ready(function () {
+        // datatable
+        oTable = $('#fileTable').dataTable({
+            "sPaginationType": "full_numbers",
+            "bServerSide": true,
+            "bProcessing": true,
+            "sAjaxSource": 'ajax/translation_manage_text?languageId={{ languageDetail.id }}',
+            "iDisplayLength": 50,
+            "aaSorting": [[1, "asc"]],
+            "aoColumns": [
+                {bSortable: false, sWidth: '3%', sName: 'file_icon', sClass: "center adminResponsiveHide"},
+                {sName: 'language_key', sWidth: '17%', sClass: "adminResponsiveHide"},
+                {sName: 'english_content', sWidth: '25%', sClass: "adminResponsiveHide"},
+                {sName: 'translated_content'},
+                {bSortable: false, sWidth: '3%', sName: 'file_icon', sClass: "center adminResponsiveHide"},
+                {bSortable: false, sWidth: '10%', sClass: "center"}
+            ],
+            "fnServerData": function (sSource, aoData, fnCallback) {
+                aoData.push({"name": "filterText", "value": $('#filterText').val()});
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "GET",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            },
+            "fnDrawCallback": function (oSettings) {
+                postDatatableRender();
+            },
+            "oLanguage": {
+                "sEmptyTable": "There is no language text in the current filters."
+            },
+            dom: "lBfrtip",
+            buttons: [
+                {
+                    extend: "copy",
+                    className: "btn-sm"
+                },
+                {
+                    extend: "csv",
+                    className: "btn-sm"
+                },
+                {
+                    extend: "excel",
+                    className: "btn-sm"
+                },
+                {
+                    extend: "pdfHtml5",
+                    className: "btn-sm"
+                },
+                {
+                    extend: "print",
+                    className: "btn-sm"
+                }
+            ]
+        });
+
+        // update custom filter
+        $('.dataTables_filter').html($('#customFilter').html());
+    });
+
+    function setLoader()
+    {
+        $('#translationForm').html('Loading, please wait...');
+    }
+
+    function editTranslationForm(translationId)
+    {
+        gTranslationId = translationId;
+        showBasicModal('Loading...', 'Translate Text', '<button type="button" class="btn btn-primary" onClick="updateTranslationValue(); return false;">Update Text</button>');
+        loadEditTranslationForm();
+    }
+    
+    function loadEditTranslationForm()
+    {
+        $.ajax({
+            type: "POST",
+            url: "ajax/translation_manage_text_edit_form",
+            data: {gTranslationId: gTranslationId, languageId: {{ languageDetail.id }}},
+            dataType: 'json',
+            success: function (json) {
+                if (json.error == true)
+                {
+                    setBasicModalContent(json.msg);
+                } else
+                {
+                    setBasicModalContent(json.html);
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                setBasicModalContent(XMLHttpRequest.responseText);
+            }
+        });
+    } 
+    
+    function updateTranslationValue()
+    {
+        // get data
+        translation_item_id = $('#translation_item_id').val();
+        translated_content = $('#translated_content').val();
+
+        $.ajax({
+            type: "POST",
+            url: "ajax/translation_manage_text_edit_process",
+            data: {translation_item_id: translation_item_id, translated_content: translated_content, languageId: {{ languageDetail.id }}},
+            dataType: 'json',
+            success: function (json) {
+                if (json.error == true)
+                {
+                    showError(json.msg, 'popupMessageContainer');
+                } else
+                {
+                    showSuccess(json.msg);
+                    reloadTable();
+                    hideModal();
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                showError(XMLHttpRequest.responseText, 'popupMessageContainer');
+            }
+        });
+    }
+
+    function startAutoTranslation()
+    {
+        showBasicModal('Loading...', 'Auto Translation');
+        setBasicModalContent('Loading, please wait...');
+        setBasicModalContent('<iframe src="{{ ADMIN_WEB_ROOT }}/ajax/translation_manage_text_auto_convert/{{ languageDetail.id }}" style="background: url(\'{{ CORE_ASSETS_ADMIN_WEB_ROOT }}/images/spinner.gif\') no-repeat center center;" height="100%" width="100%" frameborder="0" scrolling="auto">Loading...</iframe>');
+    }
+
+    function reloadTable()
+    {
+        oTable.fnDraw(false);
+    }
+
+    function deleteTranslation(textId)
+    {
+        if (confirm("Are you sure you want to delete this translation text? It will be removed from ALL languages you have, not just this one. It'll be repopulated with the default translation text when it's requested by the script, or after a translation re-scan."))
+        {
+            window.location = "{{ ADMIN_WEB_ROOT }}/translation_manage_text?languageId={{ languageDetail.id }}&d=" + textId;
+        }
+
+        return false;
+    }
+
+    function processAutoTranslate()
+    {
+        {% if SITE_CONFIG_GOOGLE_TRANSLATE_API_KEY|length == 0 %}
+            alert('This process requires a valid Google Translation API key within the site settings. Please add this and try again. Note: There may be a fee from Google for using the auto translation.');
+            return false;
+        {% endif %}
+
+        var enText = $('#enTranslationText').val();
+        var toLangCode = $('#enTranslationCode').val();
+        $.ajax({
+            type: "POST",
+            url: "ajax/translation_manage_text_auto_process",
+            data: {enText: enText, toLangCode: toLangCode},
+            dataType: 'json',
+            success: function (json) {
+                if (json.error == true)
+                {
+                    showError(json.msg, 'popupMessageContainer');
+                } else
+                {
+                    showSuccess(json.msg);
+                    $('#translated_content').val(json.translation);
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                showError(XMLHttpRequest.responseText, 'popupMessageContainer');
+            }
+        });
+    }
+
+    function confirmAutomaticTranslate()
+    {
+        {% if SITE_CONFIG_GOOGLE_TRANSLATE_API_KEY|length == 0 %}
+            alert('This process requires a valid Google Translation API key within the site settings. Please add this and try again. Note: There may be a fee from Google for using the auto translation.');
+            return false;
+        {% endif %}
+
+        if (confirm("Are you sure you want to automatically translate the above 'en' text into '{{ languageDetail.language_code }}'? This will be done via the Google Translation API and may take some time to complete.\n\nIMPORTANT: This process will OVERWRITE any translations which are not locked ('{{ languageDetail.language_code }}'). If you're unsure, cancel and 'export' a copy of the language so you have a backup.\n\nIf this process timesout, you can re-run it to pickup where it failed. Each new translation is marked as 'locked' so it'll only be translated once."))
+        {
+            startAutoTranslation();
+        }
+
+        return false;
+    }
+
+    function toggleLock(contentId)
+    {
+        $.ajax({
+            type: "POST",
+            url: "ajax/translation_manage_text_set_is_locked",
+            data: {contentId: contentId},
+            dataType: 'json',
+            success: function (json) {
+                if (json.error == true)
+                {
+                    showError(json.msg);
+                } else
+                {
+                    showSuccess(json.msg);
+                    reloadTable();
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                showError(XMLHttpRequest.responseText);
+            }
+        });
+    }
+
+</script>
+
+<!-- page content -->
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3>{{ block('title') }}</h3>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+        {{ msg_page_notifications|raw }}
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Translations</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <table id="fileTable" class="table table-striped table-only-border dtLoading bulk_action">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th class="align-left">{{ t('language_key', 'Language Key') }}</th>
+                                    <th class="align-left">{{ t('english_content', 'English Content') }}</th>
+                                    <th class="align-left">{{ t('translated_content', 'Translated Content') }}</th>
+                                    <th></th>
+                                    <th class="align-left">{{ t('actions', 'Actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="20">{{ t('admin_loading_data', 'Loading data...') }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="x_panel">
+                    <a href="translation_manage" type="button" class="btn btn-primary">< Back to Languages</a>
+                    <a href="#" type="button" class="btn btn-default" onClick="confirmAutomaticTranslate(); return false;">Automatic Translate (via Google Translate)</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="customFilter" id="customFilter" style="display: none;">
+    <label>
+        Filter Results:
+        <input name="filterText" id="filterText" type="text" onKeyUp="reloadTable();
+                return false;" style="width: 160px;"/>
+    </label>
+</div>
+{% endblock %}

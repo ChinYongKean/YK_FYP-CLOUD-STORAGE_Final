@@ -1,0 +1,768 @@
+{% extends "@corePath/admin/partial/layout_logged_in.html.twig" %}
+
+{% block title %}{{ pluginName }} Settings{% endblock %}
+{% block selected_page %}plugins{% endblock %}
+{% block selected_sub_page %}plugin_manage{% endblock %}
+
+{% block body %}
+    <div class="row clearfix right_col" role="main">
+        <div class="col_12">
+            <div class="widget clearfix">
+                <h2>{{ pluginName }} Settings</h2>
+                <div class="widget_inside">
+                    {{ msg_page_notifications|raw }}
+                    <form method="POST" action="{{ ADMIN_WEB_ROOT }}/plugin/filepreviewer/settings" name="pluginForm" id="pluginForm" autocomplete="off" enctype="multipart/form-data">
+                        <div class="clearfix col_12">
+                            <div class="col_4">
+                                <h3>General Settings</h3>
+                                <p>Whether the plugin is enable and other general settings.</p>
+                            </div>
+                            <div class="col_8 last">
+                                <div class="form">
+                                    <div class="clearfix">
+                                        <label>Plugin Enabled:</label>
+                                        <div class="input">
+                                            <select name="plugin_enabled" id="plugin_enabled" class="medium validate[required]">
+                                                {% for k,yesNoOption in yesNoOptions %}
+                                                    <option value="{{ k }}"{% if plugin_enabled == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="clearfix">
+                                        <label>Show File Details Outside of Account:</label>
+                                        <div class="input">
+                                            <select name="show_file_details_outside_account" id="show_file_details_outside_account" class="medium validate[required]">
+                                                {% for k,yesNoOption in yesNoOptions %}
+                                                    <option value="{{ k }}"{% if show_file_details_outside_account == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <p class="text-muted">
+                                                If set to 'no', users will not see the file details page when visiting a download url. This would trigger a download of the file instead of previewing it. Useful if you don't want the details page but want to retain image thumbnails.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="clearfix">
+                                        <label>Show Similar Files Thumbnails:</label>
+                                        <div class="input">
+                                            <select name="show_similar_items" id="show_similar_items" class="medium validate[required]">
+                                                {% for k,yesNoOption in yesNoOptions %}
+                                                    <option value="{{ k }}"{% if show_similar_items == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <p class="text-muted">
+                                                If set to 'yes', a list of files within the same folder will be shown below the file preview. Shown for both logged in users and shared file urls.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="clearfix">
+                                        <label>Allow Direct File Links:</label>
+                                        <div class="input">
+                                            <select name="allow_direct_links" id="allow_direct_links" class="medium validate[required]">
+                                                {% for k,yesNoOption in yesNoOptions %}
+                                                    <option value="{{ k }}"{% if allow_direct_links == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <p class="text-muted">
+                                                If set to 'yes', a new direct file url will be available to users. This can be used by any user type to directly download a file. Useful for embedding videos in third party players.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <ul class="nav nav-tabs bordered">
+                            <li class="active">
+                                <a href="#images" data-toggle="tab" aria-expanded="true">
+                                    <span><i class="fa fa-photo"></i></span>
+                                    <span class="hidden-xs">Images</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="#documents" data-toggle="tab" aria-expanded="false">
+                                    <span><i class="fa fa-file-word-o"></i></span>
+                                    <span class="hidden-xs">Documents</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="#videos" data-toggle="tab" aria-expanded="false">
+                                    <span><i class="fa fa-video-camera"></i></span>
+                                    <span class="hidden-xs">Videos</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="#audio" data-toggle="tab" aria-expanded="false">
+                                    <span><i class="fa fa-music"></i></span>
+                                    <span class="hidden-xs">Audio</span>
+                                </a>
+                            </li>
+                            <li class="">
+                                <a href="#text" data-toggle="tab" aria-expanded="false">
+                                    <span><i class="fa fa-file-text-o"></i></span>
+                                    <span class="hidden-xs">Text/Code</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="images">
+                                <div class="clearfix col_12">
+                                    <div class="col_4">
+                                        <h3>Image Preview Settings</h3>
+                                        <p>Whether to enable image previews and thumbnails. If enabled, thumbnails will be shown while browsing files aswell as when you click to view a file.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Show Images:</label>
+                                                <div class="input">
+                                                    <select name="enable_preview_image" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if enable_preview_image == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix">
+                                                <label>Show Thumbnails:</label>
+                                                <div class="input">
+                                                    <select name="preview_image_show_thumb" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if preview_image_show_thumb == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix">
+                                                <label>Auto Rotate Images:</label>
+                                                <div class="input">
+                                                    <select name="auto_rotate" id="auto_rotate" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if auto_rotate == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <p class="text-muted">
+                                                        If set to 'yes', image previews will be automatically rotated the correct way up (based on EXIF data).
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix">
+                                                <label>Show Resizing Opt:</label>
+                                                <div class="input">
+                                                    <select name="show_download_sizes" id="show_download_sizes" class="medium validate[required]">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if show_download_sizes == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col_4">
+                                        <h3>Image Library</h3>
+                                        <p>Which image library to use? GD is installed by default on most PHP installs and supports 4 images types (jpg, png, gif, bmp). Imagemagick can be installed as an additional PHP module, but can support <strong>over 200 image types</strong> (inc psd, ai, raw, mng and much more).</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Choose Library:</label>
+                                                <div class="input">
+                                                    <select name="image_library" id="image_library" class="xxlarge validate[required]" onChange="showHideSupportedImages(false);
+                                                            return false;">
+                                                        {% for k,libraryOption in libraryOptions %}
+                                                            <option value="{{ k }}"{% if image_library == k %} SELECTED{% endif %}>{{ libraryOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix">
+                                                <label for="supported_image_types">Supported Formats:</label>
+                                                <div class="input">
+                                                    <textarea name="supported_image_types" id="supported_image_types" class="xxlarge" style="height: 80px;">{{ supported_image_types }}</textarea>
+                                                    <p class="text-muted">
+                                                        Set the extensions above you want to auto-generate previews on. The extension must be listed in the 'available formats' below. It is not recommended to include video file types such as mp4.
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix supportedTypesGd">
+                                                <label>Available Formats:</label>
+                                                <div class="input" style="padding-top: 5px;">
+                                                    <strong>Total 5:</strong><p class="text-muted">jpg,jpeg,png,gif,wbmp (gif is static gif only)
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix supportedTypesIm">
+                                                <label>Available Formats:</label>
+                                                <div class="input" style="padding-top: 5px; max-height: 160px; overflow: auto;">
+                                                    <strong>Total {{ formatsArr|length }}:</strong><p class="text-muted">{{ formatsArr|join(',')|lower }}
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix supportedTypesIm">
+                                                <label>Animate Thumbnails:</label>
+                                                <div class="input">
+                                                    <select name="animate_gif_thumbnails" id="animate_gif_thumbnails" class="medium validate[required]">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if animate_gif_thumbnails == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <p class="text-muted">
+                                                        If set to 'yes', GIF image thumbnails with be resized as animated. Otherwise a static image will be used.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col_4">
+                                        <h3>Watermark</h3>
+                                        <p>Whether to overlay a watermark on the images. Watermark image should be a png file. If using transparency ensure it's at least 24bit for the best results.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Watermark Enabled:</label>
+                                                <div class="input">
+                                                    <select name="watermark_enabled" id="watermark_enabled" class="medium validate[required]" onChange="showHideWatermark();
+                                                            return false;">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if watermark_enabled == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix watermarkHiddenRow">
+                                                <label for="watermark_image">Watermark PNG Image:</label>
+                                                <div class="input" style="padding-top: 2px;">
+                                                    <input type="file" name="watermark_image" id="watermark_image"/>
+                                                    {% if watermark_contents|length > 0 %}
+                                                        <br/><img src="data:image/png;base64,{{ watermark_contents_base64 }}" style="padding-top: 8px;"/>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix watermarkHiddenRow">
+                                                <label for="watermark_position">Watermark Position:</label>
+                                                <div class="input" style="padding-top: 2px;">
+                                                    <select name="watermark_position" id="watermark_position" class="medium">
+                                                        {% for k,watermark_position_option in watermark_position_options %}
+                                                            <option value="{{ k }}"{% if watermark_position == k %} SELECTED{% endif %}>{{ watermark_position_option }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix watermarkHiddenRow">
+                                                <label for="watermark_padding">Watermark Padding:</label>
+                                                <div class="input">
+                                                    <div class="input-group" style="margin-bottom: 10px;">
+                                                        <input type="text" name="watermark_padding" id="watermark_padding" class="small" value="{{ watermark_padding }}" placeholder="watermark padding px"/>
+                                                        <span class="input-group-addon">px</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="clear"></div>
+
+                                    <div class="col_4">
+                                        <h3>Image Options</h3>
+                                        <p>The preview image quality.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Preview Image Quality:</label>
+                                                <div class="input">
+                                                    <input type="text" name="image_quality" id="image_quality" class="small" value="{{ image_quality }}"/>
+                                                    <p class="text-muted">Between 1 (low quality) and 100 (best quality). Default is 90. The higher the quality the larger the filesize. This does not effect the downloaded file, only the preview/thumbnails.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col_4">
+                                        <h3>Embedded Thumbnail Options</h3>
+                                        <p>Size of externally embedded thumbnails and method of resizing. Thumbnails are used when link to the image from an external site.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Show Embedding Opt:</label>
+                                                <div class="input">
+                                                    <select name="images_show_embedding" id="images_show_embedding" class="medium validate[required]">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if images_show_embedding == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="clearfix">
+                                                <label>Max Thumbnail Size:</label>
+                                                <div class="input">
+                                                    <div class="input-group" style="margin-bottom: 10px;">
+                                                        <span class="input-group-addon">Width</span>
+                                                        <input type="text" name="thumb_size_w" id="thumb_size_w" class="small" value="{{ thumb_size_w }}" placeholder="width"/>
+                                                        <span class="input-group-addon">px</span>
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">Height</span>
+                                                        <input type="text" name="thumb_size_h" id="thumb_size_h" class="small" value="{{ thumb_size_h }}" placeholder="height"/>
+                                                        <span class="input-group-addon">px</span>
+                                                    </div>
+                                                    <p class="text-muted">The maximum size to create the thumbnail. Default is 180x150.</p>
+                                                </div>
+                                            </div>
+                                            <div class="clearfix">
+                                                <label>Resize Method:</label>
+                                                <div class="input">
+                                                    <select name="thumb_resize_method" id="thumb_resize_method" class="xxlarge validate[required]">
+                                                        {% for k,thumbResizeMethodOption in thumbResizeMethodOptions %}
+                                                            <option value="{{ k }}"{% if thumb_resize_method == k %} SELECTED{% endif %}>{{ thumbResizeMethodOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col_4">
+                                        <h3>Optional Background Thumbnail Creation</h3>
+                                        <p>Thumbnails are created and cached as the images are requested via the user interface. You can however generate the cached thumbnails via an automated background task to improve the overall user experience. To enable this setup the following cron task.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <div>
+                                                    The cron script is located here:<br/><br/>
+                                                    <code>
+                                                        {{ DOC_ROOT }}/plugins/filepreviewer/tasks/background_thumbs.cron.php
+                                                    </code>
+                                                    <br/><br/>
+                                                    To execute it, set it up on only main server as a cron task. It is not required on any file servers. This is the line for the crontab file:<br/><br/>
+                                                    <code>
+                                                        * * * * * php {{ DOC_ROOT }}/plugins/filepreviewer/tasks/background_thumbs.cron.php >> /dev/null 2>&1
+                                                    </code>
+                                                    <br/><br/>
+                                                    See <a href="http://www.cyberciti.biz/faq/how-do-i-add-jobs-to-cron-under-linux-or-unix-oses/" target="_blank">here for more information</a> on executing scripts via a cron task.<br/><br/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="documents">
+                                <div class="clearfix col_12">
+                                    <div class="col_4">
+                                        <h3>Document Preview Settings</h3>
+                                        <p>Whether to enable document previews. If enabled, the document will be shown using Google Docs or Microsoft Office Web Viewer. It's recommended you do not use the document previewer for sensitive or private files. By previewing documents via Google Docs or Microsoft Office Web Viewer you are agreeing to their terms and conditions.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Show Documents:</label>
+                                                <div class="input">
+                                                    <select name="enable_preview_document" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if enable_preview_document == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix">
+                                                <label>Show PDF Thumbnails:</label>
+                                                <div class="input">
+                                                    <select name="preview_document_pdf_thumbs" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if preview_document_pdf_thumbs == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <p class="text-muted">
+                                                        Requires ImageMagick within PHP. Please contact your host to enable this.
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix">
+                                                <label>File Extensions:</label>
+                                                <div class="input">
+                                                    <input type="text" name="preview_document_ext" class="xxlarge" value="{{ preview_document_ext }}"/>
+                                                    <p class="text-muted">
+                                                        Default: doc,docx,xls,xlsx,ppt,pptx,pdf,pages,ai,psd,tiff,dxf,svg,eps,ps,ttf,otf,xps
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col_4">
+                                        <h3>Other Options</h3>
+                                        <p>Whether to show embed code and related options.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Show Embed Code:</label>
+                                                <div class="input">
+                                                    <select name="documents_show_embedding" id="documents_show_embedding" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if documents_show_embedding == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="clearfix">
+                                                <label>Embedded Size:</label>
+                                                <div class="input">
+                                                    <div class="input-group" style="margin-bottom: 10px;">
+                                                        <span class="input-group-addon">Width</span>
+                                                        <input type="text" name="documents_embed_document_size_w" id="documents_embed_document_size_w" class="small" value="{{ documents_embed_document_size_w }}" placeholder="width"/>
+                                                        <span class="input-group-addon">px</span>
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">Height</span>
+                                                        <input type="text" name="documents_embed_document_size_h" id="documents_embed_document_size_h" class="small" value="{{ documents_embed_document_size_h }}" placeholder="height"/>
+                                                        <span class="input-group-addon">px</span>
+                                                    </div>
+                                                    <p class="text-muted">This is the size of the iframe and hence document when embedded on an external site.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="videos">
+                                <div class="clearfix col_12">
+                                    <div class="col_4">
+                                        <h3>Video Preview Settings</h3>
+                                        <p>Whether to enable video previews. If enabled, the video will be shown after you click on the file.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Play Videos:</label>
+                                                <div class="input">
+                                                    <select name="enable_preview_video" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if enable_preview_video == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                                    
+                                            <div class="clearfix filepreviewer_video_player">
+                                                <label>Video Player:</label>
+                                                <div class="input">
+                                                    <select name="preview_video_player" class="medium">
+                                                        {% for k,videoPlayer in videoPlayers %}
+                                                            <option value="{{ k }}"{% if preview_video_player == k %} SELECTED{% endif %}>{{ videoPlayer }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix">
+                                                <label>File Extensions:</label>
+                                                <div class="input">
+                                                    <input type="text" name="preview_video_ext" class="xxlarge" value="{{ preview_video_ext }}"/>
+                                                    <p class="text-muted">
+                                                        Default: mp4,flv,ogg
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="clearfix">
+                                                <label>Autoplay Videos:</label>
+                                                <div class="input">
+                                                    <select name="videos_autoplay" id="videos_autoplay" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if videos_autoplay == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <p class="text-muted">This is browser dependant and may not always be supported. In addition, autoplayed videos are initially muted to adhere to browser autoplay policies.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col_4">
+                                        <h3>Other Options</h3>
+                                        <p>Whether to show embed code and related options.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Show Embed Code:</label>
+                                                <div class="input">
+                                                    <select name="videos_show_embedding" id="videos_show_embedding" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if videos_show_embedding == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="clearfix">
+                                                <label>Embedded Size:</label>
+                                                <div class="input">
+                                                    <div class="input-group" style="margin-bottom: 10px;">
+                                                        <span class="input-group-addon">Width</span>
+                                                        <input type="text" name="videos_embed_size_w" id="videos_embed_size_w" class="small" value="{{ videos_embed_size_w }}" placeholder="width"/>
+                                                        <span class="input-group-addon">px</span>
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">Height</span>
+                                                        <input type="text" name="videos_embed_size_h" id="videos_embed_size_h" class="small" value="{{ videos_embed_size_h }}" placeholder="height"/>
+                                                        <span class="input-group-addon">px</span>
+                                                    </div>
+                                                    <p class="text-muted">This is the size of the video iframe when embedded on an external site.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="audio">
+                                <div class="clearfix col_12">
+                                    <div class="col_4">
+                                        <h3>Audio Preview Settings</h3>
+                                        <p>Whether to enable audio previews. If enabled, the audio will be played after you click on the file.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Play Audio:</label>
+                                                <div class="input">
+                                                    <select name="enable_preview_audio" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if enable_preview_audio == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix filepreviewer_audio_player">
+                                                <label>Audio Player:</label>
+                                                <div class="input">
+                                                    <select name="preview_audio_player" class="medium">
+                                                        {% for k,audioPlayer in audioPlayers %}
+                                                            <option value="{{ k }}"{% if preview_audio_player == k %} SELECTED{% endif %}>{{ audioPlayer }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix">
+                                                <label>File Extensions:</label>
+                                                <div class="input">
+                                                    <input type="text" name="preview_audio_ext" class="xxlarge" value="{{ preview_audio_ext }}"/>
+                                                    <p class="text-muted">
+                                                        Default: mp3
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="clearfix">
+                                                <label>Autoplay Audio:</label>
+                                                <div class="input">
+                                                    <select name="audio_autoplay" id="audio_autoplay" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if audio_autoplay == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <p class="text-muted">This is browser dependant and may not always be supported.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col_4">
+                                        <h3>Other Options</h3>
+                                        <p>Whether to show embed code and related options.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Show Embed Code:</label>
+                                                <div class="input">
+                                                    <select name="audio_show_embedding" id="audio_show_embedding" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if audio_show_embedding == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="clearfix">
+                                                <label>Embedded Size:</label>
+                                                <div class="input">
+                                                    <div class="input-group" style="margin-bottom: 10px;">
+                                                        <span class="input-group-addon">Width</span>
+                                                        <input type="text" name="audio_embed_size_w" id="audio_embed_size_w" class="small" value="{{ audio_embed_size_w }}" placeholder="width"/>
+                                                        <span class="input-group-addon">px</span>
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">Height</span>
+                                                        <input type="text" name="audio_embed_size_h" id="audio_embed_size_h" class="small" value="{{ audio_embed_size_h }}" placeholder="height"/>
+                                                        <span class="input-group-addon">px</span>
+                                                    </div>
+                                                    <p class="text-muted">This is the size of the audio iframe when embedded on an external site.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="text">
+                                <div class="clearfix col_12">
+                                    <div class="col_4">
+                                        <h3>Text File/Code Preview Settings</h3>
+                                        <p>Whether to enable text file &amp; code previews. If enabled, the file will be shown directly on the page. Only files up to 2MB will be previewed for performance reasons.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Show File/Code Previews:</label>
+                                                <div class="input">
+                                                    <select name="enable_preview_text" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if enable_preview_text == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix">
+                                                <label>Use Code Syntax Highlighter:</label>
+                                                <div class="input">
+                                                    <select name="syntax_highlight_text" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if syntax_highlight_text == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="clearfix">
+                                                <label>File Extensions:</label>
+                                                <div class="input">
+                                                    <input type="text" name="preview_text_ext" class="xxlarge" value="{{ preview_text_ext }}"/>
+                                                    <p class="text-muted">
+                                                        Default: txt,php,html,htm,xhtml,js,css,srt,vtt,log,sql,xml,asp,aspx,cer,cfm,cgi,pl,jsp,py,rss,c,class,cpp,h,java,sh,vb,swift,cfg,ini,text
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- COMING SOON
+                                    <div class="col_4">
+                                        <h3>Other Options</h3>
+                                        <p>Whether to show embed code and related options.</p>
+                                    </div>
+                                    <div class="col_8 last">
+                                        <div class="form">
+                                            <div class="clearfix">
+                                                <label>Show Embed Code:</label>
+                                                <div class="input">
+                                                    <select name="text_show_embedding" id="text_show_embedding" class="medium">
+                                                        {% for k,yesNoOption in yesNoOptions %}
+                                                            <option value="{{ k }}"{% if text_show_embedding == k %} SELECTED{% endif %}>{{ yesNoOption }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="clearfix">
+                                                <label>Embedded Size:</label>
+                                                <div class="input">
+                                                    <div class="input-group" style="margin-bottom: 10px;">
+                                                        <span class="input-group-addon">Width</span>
+                                                        <input type="text" name="text_embed_document_size_w" id="text_embed_document_size_w" class="small" value="{{ text_embed_document_size_w }}" placeholder="width"/>
+                                                        <span class="input-group-addon">px</span>
+                                                    </div>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">Height</span>
+                                                        <input type="text" name="text_embed_document_size_h" id="text_embed_document_size_h" class="small" value="{{ text_embed_document_size_h }}" placeholder="height"/>
+                                                        <span class="input-group-addon">px</span>
+                                                    </div>
+                                                    <p class="text-muted">This is the size of the iframe and hence text/code area when embedded on an external site.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="clearfix col_12">
+                            <div class="col_4 adminResponsiveHide">&nbsp;</div>
+                            <div class="col_8 last">
+                                <div class="clearfix">
+                                    <div class="input no-label">
+                                        <input name="caching" type="hidden" value="1"/>
+
+                                        <input type="submit" value="Submit" class="button blue">
+                                        <input type="reset" value="Cancel" class="button grey" onClick="window.location = '{{ ADMIN_WEB_ROOT }}/plugin_manage';">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input name="submitted" type="hidden" value="1"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block head_js %}
+    <script>
+        $(function () {
+            showHideWatermark();
+            showHideSupportedImages(true);
+        });
+
+        function showHideWatermark()
+        {
+            if ($('#watermark_enabled').val() == '1')
+            {
+                $('.watermarkHiddenRow').show();
+            } else
+            {
+                $('.watermarkHiddenRow').hide();
+            }
+        }
+
+        function showHideSupportedImages(isFirst)
+        {
+            if ($('#image_library').val() == 'gd')
+            {
+                $('.supportedTypesIm').hide();
+                $('.supportedTypesGd').show();
+                if (isFirst == false)
+                {
+                    $('#supported_image_types').val("jpg,jpeg,png,gif,wbmp");
+                }
+            } else
+            {
+                $('.supportedTypesGd').hide();
+                $('.supportedTypesIm').show();
+                if (isFirst == false)
+                {
+                    $('#supported_image_types').val("{{ formatsArr|join(',')|lower }}");
+                }
+            }
+        }
+    </script>
+{% endblock %}

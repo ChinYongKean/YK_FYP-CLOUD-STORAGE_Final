@@ -1,0 +1,47 @@
+<script type="text/javascript">
+    $(function () {
+        var options1c = {
+            legend: false,
+            responsive: false
+        };
+
+        new Chart(document.getElementById("canvas3"), {
+            type: 'doughnut',
+            tooltipFillColor: "rgba(51, 51, 51, 0.55)",
+            data: {
+                labels: [
+                    "{{ labels|join('", "')|raw }}"
+                ],
+                datasets: [{
+                        data: [{{ data|join(', ')|raw }}],
+                        backgroundColor: [
+                            "{{ colors|join('", "')|raw }}"
+                        ],
+                        hoverBackgroundColor: [
+                            "#CFD4D8",
+                            "#B370CF",
+                            "#E95E4F",
+                            "#36CAAB",
+                            "#49A9EA",
+                            "#36CAAB"
+                        ]
+                    }]
+            },
+            options: options1c
+        });
+  
+        $('#wrapper_user_status_chart .background-loading').removeClass('background-loading');
+        
+        updatePieChartTable1c();
+    });
+    
+    function updatePieChartTable1c()
+    {
+        tableHtml = '';
+        {% for k,label in labels %}
+        tableHtml += '<tr><td><p><i class="fa fa-square blue" style="color: {{ colors[k] }}"></i> {{ label }}</p></td><td class="pull-right">{{ data[k] }}</td></tr>';
+        {% endfor %}
+
+        $('.wrapper_user_status_chart .tile_info').html(tableHtml);
+    }
+</script>

@@ -1,0 +1,43 @@
+AMENDED FILES:
+___RELEASE_HISTORY.txt
+_account_file_details.php
+_download_page_captcha.inc.php
+_download_page_compare_all.inc.php
+_download_page_compare_timed.inc.php
+_download_page_timed.inc.php
+_file_manage_bulk_delete.ajax.php
+account_edit_item.php
+delete_file.php
+file_download.php
+upgrade.php
+admin/_admin_functions.inc.php
+admin/download_page_manage.php
+admin/server_manage.php
+admin/server_manage_test_ftp.php
+admin/ajax/check_for_upgrade.ajax.php
+admin/ajax/download_page_manage_add_process.ajax.php
+admin/ajax/server_manage_add_form.ajax.php
+admin/ajax/server_manage_add_process.ajax.php
+admin/ajax/setting_manage.ajax.php
+admin/ajax/translation_manage_add_form.ajax.php
+admin/assets/styles/style.css
+includes/class.charts.php
+includes/class.file.php
+includes/class.stats.php
+includes/class.uploader.php
+includes/functions.inc.php
+includes/recaptcha/recaptchalib.php
+install/config.tpl
+offline/database.sql
+
+
+
+DELETED FILES:
+includes/class.throttle.php
+includes/class.throttleconfig.php
+
+
+
+NEW FILES:
+offline/upgrade_sql_statements/v3.5 - v3.5.1.sql
+includes/class.fileaction.php

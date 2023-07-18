@@ -1,0 +1,255 @@
+<form id="editFileFormInner" class="form-horizontal form-label-left input_mask">
+    <div class="x_panel">
+        <div class="x_content">
+            <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">File Details</a>
+                    </li>
+                    <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Access Restrictions</a>
+                    </li>
+                    <li role="presentation" class=""><a href="#tab_content4" role="tab" id="profile-tab3" data-toggle="tab" aria-expanded="false">File Info</a>
+                    </li>
+                </ul>
+                <div id="myTabContent" class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
+                        <div class="x_title">
+                            <h2>File Details:</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                Filename:
+                            </label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <div class="input-group">
+                                    <input name="filename" id="filename" type="text" class="form-control" placeholder="Filename" value="{{ file.getFilenameExcExtension() }}"/>
+                                    {{ (file.extension|length > 0?('<span class="input-group-addon">.'~file.extension~'</span>'):'')|raw }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                File Owner:
+                            </label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <input name="file_owner" id="file_owner" type="text" class="form-control" placeholder="File Owner" value="{{ file.getOwnerUsername() }}"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                Short Url:
+                            </label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <input name="short_url" id="short_url" type="text" class="form-control" placeholder="Short Url" value="{{ file.shortUrl }}"/>
+                            </div>
+                            <div class="col-md-5 col-sm-4 col-xs-12">
+                                <p class="right-comment">The download url, no spacing, alphanumeric only</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                File Description:
+                            </label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <textarea name="file_description" id="file_description" class="form-control" placeholder="File Description">{{ file.description }}</textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                File Keywords:
+                            </label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <textarea name="file_keywords" id="file_keywords" class="tags form-control" placeholder="File Keywords">{{ file.keywords }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                Mime Type:
+                            </label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <input name="mime_type" id="mime_type" type="text" class="form-control" placeholder="Mime Type" value="{{ file.getPrimaryArtifact().file_type }}"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                Admin Notes:
+                            </label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <textarea name="admin_notes" id="admin_notes" class="form-control" placeholder="">{{ file.adminNotes }}</textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                Purge Download Stats:
+                            </label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <select name="purge_download_stats" id="purge_download_stats" class="form-control">
+                                    <option value="0">No</option>
+                                    <option value="1">Yes, delete all download stats</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
+                        <div class="x_title">
+                            <h2>Access Restrictions:</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                Access Password:
+                            </label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <div class="input-group">
+                                    <span class="input-group-btn"><input type="checkbox" name="enablePassword" id="enablePassword" value="1" {{ file.accessPassword|length > 0?'CHECKED':'' }} onClick="toggleFilePasswordField();"></span>
+                                    <input name="password" id="password" type="password" class="form-control" placeholder="Access Password" autocomplete="off" {{ file.accessPassword|length > 0?'value="**********"':'READONLY' }}/>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                Minimum User Level:
+                            </label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <select name="min_user_level" id="min_user_level" class="form-control">
+                                    <option value="">- any user type can download this file -</option>
+                                    {% for userType in userTypes %}
+                                        <option value="{{ userType['id'] }}"{{ userType['id'] == file.minUserLevel?' SELECTED':'' }}>>= {{ userType['label']|title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-5 col-sm-4 col-xs-12">
+                                <p class="right-comment">To download this file. (exc the uploader)</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                File Privacy:
+                            </label>
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <select name="is_public" id="is_public" class="form-control">
+                                    {% for k,privacyType in privacyTypes %}
+                                        <option value="{{ k }}"{{ k == file.isPublic?' SELECTED':'' }}>>= {{ privacyType }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-5 col-sm-4 col-xs-12">
+                                <p class="right-comment">If supported by the theme.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane fade" id="tab_content4" aria-labelledby="profile-tab3">
+                        <div class="x_title">
+                            <h2>File Info:</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <table class="table table-data-list" style="margin-top: 0px;">
+                                <tr>
+                                    <td style="width: 110px;">
+                                        Download Url:
+                                    </td>
+                                    <td>
+                                        <a href="{{ file.getFullShortUrl() }}" target="_blank">{{ file.getFullShortUrl() }}<span class="fa fa-external-link fa-inline-icon" aria-hidden="true"></span></td>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        File ID:
+                                    </td>
+                                    <td>
+                                        {{ file.id }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Last Downloaded:
+                                    </td>
+                                    <td>
+                                        {{ file.lastAccessed == NULL?'Never':CoreHelper.formatDate(file.lastAccessed) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        MD5 Content Hash:
+                                    </td>
+                                    <td>
+                                        {{ file.getPrimaryFileHash() }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        File is Duplicate:
+                                    </td>
+                                    <td>
+                                        {{ fileIsDuplicateText }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Upload Source:
+                                    </td>
+                                    <td>
+                                        {{ file.uploadSource|title }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        User Action Logs:
+                                    </td>
+                                    <td>
+                                        <a href="{{ ADMIN_WEB_ROOT }}/user_action_log?filterByFileId={{ file.id }}">{{ file.getFileActionCountNonAdmin() }}<span class="fa fa-search fa-inline-icon" aria-hidden="true"></span></a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="x_title" style="margin-bottom: 4px;">
+                            <h2>Artifacts:</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <p style="margin-bottom: 14px;">Artifacts represent the actual file and can exist on 1 or more storage servers. For example, a single file may be mirrored on 3 servers.</p>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                <th>Type:</th>
+                                <th>Real File Path:</th>
+                                <th>Filesize:</th>
+                                <th>Storage Server(s):</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for fileArtifact in fileArtifacts %}
+                                    <tr>
+                                        <td>
+                                            {{ fileArtifact.file_artifact_type|title }}
+                                        </td>
+                                        <td>
+                                            {{ fileArtifact.local_file_path }}
+                                        </td>
+                                        <td>
+                                            {{ fileArtifact.getFormattedFilesize() }}
+                                        </td>
+                                        <td>
+                                            {{ fileArtifact.getStorageServersLabel() }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" name="existing_file_id" id="existing_file_id" value="{{ file.id }}"/>
+</form>

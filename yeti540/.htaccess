@@ -1,0 +1,47 @@
+# for testing
+order allow,deny
+allow from all
+
+# override max php upload settings. Might not work on all servers
+#php_value upload_max_filesize 4000M
+#php_value post_max_size 4000M
+
+# setup xsendfile if the module is enabled
+<IfModule mod_xsendfile.c>
+  <Files *.php>
+    XSendFile On
+    SetEnv MOD_X_SENDFILE_ENABLED 1
+  </Files>
+</IfModule>
+
+# disable mod security for admin area
+<IfModule mod_security.c>
+    <If "%{REQUEST_URI} =~ m#/admin/#">
+        SecFilterEngine Off
+        SecFilterScanPOST Off
+    </If>
+</IfModule>
+
+# disable mod security
+#<IfModule mod_security.c>
+#    SecFilterEngine Off
+#    SecFilterScanPOST Off
+#</IfModule>
+
+RewriteEngine On
+
+# redirect www to non-www
+#RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+#RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# force https
+#RewriteCond %{HTTPS} !=on
+#RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+#RewriteRule . - [E=no-gzip:1]
+RewriteBase /
+
+# route everything via index.php if it doesn't exist as a file
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?_page_url=$1 [QSA,B]

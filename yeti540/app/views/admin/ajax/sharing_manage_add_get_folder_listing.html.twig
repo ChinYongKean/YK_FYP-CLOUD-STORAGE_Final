@@ -1,0 +1,5 @@
+{% for folderId,userFolder in userFolders %}
+    <option value="{{ folderId }}">{{ userFolder }}</option>
+{% else %}
+    <option value="">- No folders found -</option>
+{% endfor %}
